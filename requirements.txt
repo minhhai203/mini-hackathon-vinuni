@@ -1,4 +1,5 @@
 fastapi
 uvicorn[standard]
 pydantic-settings
+crawl4ai
 pytest

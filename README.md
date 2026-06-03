@@ -73,6 +73,7 @@ The project currently uses:
 - FastAPI
 - Uvicorn
 - Pydantic Settings
+- Crawl4AI
 - Pytest
 
 ## Run Locally
@@ -84,8 +85,11 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+crawl4ai-setup
 uvicorn src.main:app --reload
 ```
+
+`crawl4ai-setup` prepares the browser dependencies used by the Vinpearl crawler tool.
 
 Open:
 
@@ -116,6 +120,20 @@ The test suite currently checks:
 - Agent graph returns a valid state.
 - API health endpoint works.
 - Static homepage is served by FastAPI.
+- Vinpearl crawler URL validation and Crawl4AI integration wrapper.
+
+## Agent Tools
+
+The agent tools live in `src/agents/tools`.
+
+Current tools:
+
+| Tool | Purpose |
+|---|---|
+| `crawl_vinpearl_page` | Async tool that crawls official `vinpearl.com` pages and returns LLM-ready markdown. |
+| `crawl_vinpearl_page_sync` | Sync wrapper for scripts or non-async agent integrations. |
+
+The crawler tool is restricted to official `vinpearl.com` URLs. It respects `robots.txt`, returns source metadata, and does not crawl arbitrary external domains.
 
 ## Run With Docker
 
