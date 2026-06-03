@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Clone giao diện Vinpearl.com - Hệ thống khách sạn, resort, biệt thự nghỉ dưỡng, sân golf và khu vui chơi giải trí đẳng cấp 5 sao tại Việt Nam.">
+    <title>Vinpearl | Nghỉ dưỡng thượng lưu, Trải nghiệm đẳng cấp</title>
+    <!-- Google Fonts: Montserrat (for headers & buttons) and Inter (for body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- TOP UTILITY BAR -->
+    <div class="top-utility-bar" id="topUtilityBar">
+        <div class="container utility-container">
+            <div class="utility-left">
+                <a href="tel:1900232389" class="utility-item" id="hotlineLink">
+                    <i class="fa-solid fa-phone"></i> Hotline: 1900 23 23 89
+                </a>
+                <span class="utility-divider">|</span>
+                <span class="utility-item"><i class="fa-solid fa-envelope"></i> callcenter@vinpearl.com</span>
+            </div>
+            <div class="utility-right">
+                <div class="language-selector" id="languageSelector">
+                    <button class="lang-btn" id="langDropdownTrigger">
+                        <i class="fa-solid fa-globe"></i> Tiếng Việt <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="lang-dropdown" id="langDropdownMenu">
+                        <a href="#" class="active">Tiếng Việt (VI)</a>
+                        <a href="#">English (EN)</a>
+                        <a href="#">한국어 (KO)</a>
+                        <a href="#">日本語 (JA)</a>
+                    </div>
+                </div>
+                <span class="utility-divider">|</span>
+                <a href="#" class="pearl-club-link" id="pearlClubPromoLink">
+                    <i class="fa-solid fa-crown gold-text"></i> Pearl Club Member
+                </a>
+                <a href="#" class="utility-btn btn-login" id="loginButton">Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header class="main-header" id="mainHeader">
+        <div class="container header-container">
+            <!-- Brand Logo -->
+            <a href="#" class="brand-logo" id="brandLogo">
+                <!-- SVG styled logo or Styled Text representation of Vinpearl luxury brand -->
+                <div class="logo-wrapper">
+                    <span class="logo-vin">VINPEARL</span>
+                    <span class="logo-sub">RESORTS & HOTELS</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="nav-menu" id="navMenu">
+                <ul>
+                    <li><a href="#destinations" class="nav-link" id="navDestinations">Khách sạn & Resort</a></li>
+                    <!-- <li><a href="#offers" class="nav-link" id="navOffers">Ưu đãi độc quyền</a></li> -->
+                    <li><a href="#experiences" class="nav-link" id="navExperiences">Trải nghiệm</a></li>
+                    <li><a href="#pearl-club" class="nav-link gold-highlight" id="navPearlClub">Hội viên Pearl Club</a></li>
+                    <li><a href="#news" class="nav-link" id="navNews">Tin tức</a></li>
+                    <li><a href="#about" class="nav-link" id="navAbout">Về chúng tôi</a></li>
+                </ul>
+            </nav>
+
+            <!-- Header Action buttons -->
+            <div class="header-actions">
+                <button class="search-trigger" id="searchTriggerBtn" title="Tìm kiếm">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <a href="#booking-section" class="btn btn-gold btn-book-now" id="bookNowHeaderBtn">Đặt phòng ngay</a>
+                <button class="mobile-menu-toggle" id="mobileMenuToggleBtn" aria-label="Toggle Navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SLIDER SECTION -->
+    <section class="hero-slider-section" id="heroSliderSection">
+        <div class="slider-wrapper">
+            <!-- Slide 1 (Active) -->
+            <div class="slide active" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.45)), url('assets/hero-1.png');">
+                <div class="container slide-content">
+                    <span class="slide-subtitle">KHÁM PHÁ THIÊN ĐƯỜNG NGHỈ DƯỠNG</span>
+                    <h2 class="slide-title">Kiến tạo trải nghiệm<br>Nâng tầm chuẩn sống</h2>
+                    <p class="slide-desc">Hệ thống khách sạn & khu nghỉ dưỡng biển sang trọng bậc nhất Việt Nam</p>
+                    <a href="#destinations" class="btn btn-gold-outline" id="heroSlide1Cta">Khám phá ngay <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="slide" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.45)), url('assets/hero-2.png');">
+                <div class="container slide-content">
+                    <span class="slide-subtitle">PEARL CLUB EXCLUSIVE</span>
+                    <h2 class="slide-title">Kỳ nghỉ trọn vẹn<br>Đặc quyền thượng lưu</h2>
+                    <p class="slide-desc">Tham gia Pearl Club ngay hôm nay để nhận thêm tới 10% ưu đãi đặt phòng trực tiếp</p>
+                    <a href="#pearl-club" class="btn btn-gold-outline" id="heroSlide2Cta">Đăng ký thành viên</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider Controls -->
+        <button class="slide-arrow prev-arrow" id="slidePrevBtn" aria-label="Previous Slide"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="slide-arrow next-arrow" id="slideNextBtn" aria-label="Next Slide"><i class="fa-solid fa-chevron-right"></i></button>
+
+        <div class="slider-dots" id="sliderDots">
+            <span class="dot active" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+        </div>
+    </section>
+
+    <!-- BOOKING ENGINE BOX -->
+    <section class="booking-section" id="booking-section">
+        <div class="container">
+            <div class="booking-box" id="bookingBox">
+                <!-- Booking Tabs -->
+                <div class="booking-tabs" id="bookingTabs">
+                    <button class="booking-tab-btn active" id="tabHotelBtn" data-tab="hotel">
+                        <i class="fa-solid fa-hotel"></i> Khách sạn & Resort
+                    </button>
+                    <button class="booking-tab-btn" id="tabTicketBtn" data-tab="ticket">
+                        <i class="fa-solid fa-ticket"></i> Vé vui chơi VinWonders
+                    </button>
+                    <button class="booking-tab-btn" id="tabTourBtn" data-tab="tour">
+                        <i class="fa-solid fa-compass"></i> Tour & Trải nghiệm
+                    </button>
+                </div>
+
+                <!-- Booking Panel Content -->
+                <div class="booking-panel" id="bookingPanel">
+                    <!-- Form Khách sạn -->
+                    <form class="booking-form active" id="formHotel" onsubmit="event.preventDefault();">
+                        <!-- Input 1: Destination -->
+                        <div class="booking-field" id="fieldDestination">
+                            <label class="field-label"><i class="fa-solid fa-location-dot icon-gold"></i> Điểm đến / Khách sạn</label>
+                            <div class="field-input-wrapper">
+                                <input type="text" class="field-input" id="inputDestination" placeholder="Chọn điểm đến hoặc khách sạn..." readonly value="Phú Quốc">
+                                <i class="fa-solid fa-chevron-down field-chevron"></i>
+                            </div>
+                            <!-- Destination Dropdown -->
+                            <div class="booking-dropdown destination-dropdown" id="dropdownDestination">
+                                <div class="dropdown-header">Điểm đến phổ biến</div>
+                                <ul class="dropdown-list">
+                                    <li data-value="Phú Quốc" class="selected"><i class="fa-solid fa-umbrella-beach"></i> Phú Quốc (Vinpearl Phú Quốc)</li>
+                                    <li data-value="Nha Trang"><i class="fa-solid fa-water"></i> Nha Trang (Vinpearl Nha Trang)</li>
+                                    <li data-value="Đà Nẵng - Hội An"><i class="fa-solid fa-bridge"></i> Đà Nẵng - Nam Hội An</li>
+                                    <li data-value="Hạ Long"><i class="fa-solid fa-ship"></i> Hạ Long (Vinpearl Resort & Spa Hạ Long)</li>
+                                    <li data-value="Hải Phòng"><i class="fa-solid fa-city"></i> Hải Phòng (Vinpearl Hải Phòng)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Input 2: Dates -->
+                        <div class="booking-field" id="fieldDates">
+                            <label class="field-label"><i class="fa-solid fa-calendar-days icon-gold"></i> Ngày nhận - trả phòng</label>
+                            <div class="field-input-wrapper date-picker-wrapper">
+                                <div class="date-display" id="dateDisplay">
+                                    <span id="checkInDateDisplay">04 TH06 2026</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <span id="checkOutDateDisplay">05 TH06 2026</span>
+                                </div>
+                                <input type="date" id="inputCheckIn" class="invisible-date-input" value="2026-06-04">
+                                <input type="date" id="inputCheckOut" class="invisible-date-input" value="2026-06-05">
+                            </div>
+                        </div>
+
+                        <!-- Input 3: Guests -->
+                        <div class="booking-field" id="fieldGuests">
+                            <label class="field-label"><i class="fa-solid fa-user-group icon-gold"></i> Số lượng khách</label>
+                            <div class="field-input-wrapper">
+                                <input type="text" class="field-input" id="inputGuests" placeholder="Chọn số khách..." readonly value="2 người lớn, 0 trẻ em, 1 phòng">
+                                <i class="fa-solid fa-chevron-down field-chevron"></i>
+                            </div>
+                            <!-- Guests Selector Modal -->
+                            <div class="booking-dropdown guests-dropdown" id="dropdownGuests">
+                                <div class="guest-selector-row">
+                                    <div class="selector-info">
+                                        <span class="selector-title">Phòng</span>
+                                        <span class="selector-desc">Số lượng phòng đặt</span>
+                                    </div>
+                                    <div class="selector-controls">
+                                        <button type="button" class="btn-counter-minus" id="btnRoomsMinus">-</button>
+                                        <span class="counter-value" id="valRooms">1</span>
+                                        <button type="button" class="btn-counter-plus" id="btnRoomsPlus">+</button>
+                                    </div>
+                                </div>
+                                <div class="guest-selector-row">
+                                    <div class="selector-info">
+                                        <span class="selector-title">Người lớn</span>
+                                        <span class="selector-desc">Từ 12 tuổi trở lên</span>
+                                    </div>
+                                    <div class="selector-controls">
+                                        <button type="button" class="btn-counter-minus" id="btnAdultsMinus">-</button>
+                                        <span class="counter-value" id="valAdults">2</span>
+                                        <button type="button" class="btn-counter-plus" id="btnAdultsPlus">+</button>
+                                    </div>
+                                </div>
+                                <div class="guest-selector-row">
+                                    <div class="selector-info">
+                                        <span class="selector-title">Trẻ em</span>
+                                        <span class="selector-desc">Dưới 12 tuổi</span>
+                                    </div>
+                                    <div class="selector-controls">
+                                        <button type="button" class="btn-counter-minus" id="btnKidsMinus">-</button>
+                                        <span class="counter-value" id="valKids">0</span>
+                                        <button type="button" class="btn-counter-plus" id="btnKidsPlus">+</button>
+                                    </div>
+                                </div>
+                                <div class="guest-dropdown-footer">
+                                    <button type="button" class="btn btn-gold btn-sm btn-block" id="btnApplyGuests">Áp dụng</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Input 4: Promo Code -->
+                        <div class="booking-field" id="fieldPromo">
+                            <label class="field-label"><i class="fa-solid fa-percent icon-gold"></i> Mã ưu đãi</label>
+                            <div class="field-input-wrapper">
+                                <input type="text" class="field-input" id="inputPromo" placeholder="Nhập mã (nếu có)">
+                            </div>
+                        </div>
+
+                        <!-- Search Button -->
+                        <div class="booking-submit">
+                            <button type="submit" class="btn btn-gold btn-search" id="btnSubmitSearch">
+                                <i class="fa-solid fa-magnifying-glass"></i> TÌM KIẾM
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED DESTINATIONS GRID -->
+    <section class="section-destinations" id="destinations">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-tagline">ĐIỂM ĐẾN PHỔ BIẾN</span>
+                <h2 class="section-title">Hành trình khám phá Vinpearl</h2>
+                <div class="gold-divider"></div>
+                <p class="section-desc">Lựa chọn điểm đến lý tưởng cho chuyến nghỉ dưỡng trọn vẹn và đẳng cấp bậc nhất của bạn tại những bãi biển đẹp nhất Việt Nam</p>
+            </div>
+
+            <div class="destinations-grid">
+                <!-- Destination 1: Phu Quoc -->
+                <div class="destination-card animate-scroll" id="destCardPhuQuoc">
+                    <div class="card-image" style="background-image: url('assets/destination-phuquoc.png');"></div>
+                    <div class="card-overlay"></div>
+                    <div class="card-content">
+                        <span class="card-count">7 Khách sạn & Resort</span>
+                        <h3 class="card-name">Phú Quốc</h3>
+                        <p class="card-description">Đảo Ngọc hoang sơ với bãi biển cát trắng trải dài, tổ hợp giải trí VinWonders và Safari hoành tráng.</p>
+                        <a href="#" class="card-link" id="linkPhuQuoc">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Destination 2: Nha Trang -->
+                <div class="destination-card animate-scroll" id="destCardNhaTrang">
+                    <div class="card-image" style="background-image: url('assets/destination-nhatrang.png');"></div>
+                    <div class="card-overlay"></div>
+                    <div class="card-content">
+                        <span class="card-count">5 Khách sạn & Resort</span>
+                        <h3 class="card-name">Nha Trang</h3>
+                        <p class="card-description">Vịnh biển thiên đường lộng lẫy, khu vui chơi trên đảo Hòn Tre đỉnh cao và hệ thống cáp treo vượt biển.</p>
+                        <a href="#" class="card-link" id="linkNhaTrang">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Destination 3: Nam Hoi An -->
+                <div class="destination-card animate-scroll" id="destCardNamHoiAn">
+                    <div class="card-image" style="background-image: url('assets/destination-danang.png');"></div>
+                    <div class="card-overlay"></div>
+                    <div class="card-content">
+                        <span class="card-count">3 Khách sạn & Resort</span>
+                        <h3 class="card-name">Đà Nẵng - Nam Hội An</h3>
+                        <p class="card-description">Giao thoa văn hóa di sản Phố Cổ Hội An với khu nghỉ dưỡng sang trọng bên biển Bình Minh hoang sơ.</p>
+                        <a href="#" class="card-link" id="linkNamHoiAn">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Destination 4: Ha Long -->
+                <div class="destination-card animate-scroll" id="destCardHaLong">
+                    <div class="card-image" style="background-image: url('assets/destination-halong.png');"></div>
+                    <div class="card-overlay"></div>
+                    <div class="card-content">
+                        <span class="card-count">1 Khách sạn & Resort</span>
+                        <h3 class="card-name">Hạ Long</h3>
+                        <p class="card-description">Lâu đài tráng lệ nổi bật giữa lòng Vịnh kỳ quan thiên nhiên thế giới, mang phong cách hoàng gia Pháp.</p>
+                        <a href="#" class="card-link" id="linkHaLong">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXCLUSIVE OFFERS / PROMOTIONS -->
+    <section class="section-offers" id="offers">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-tagline">KHUYẾN MÃI NỔI BẬT</span>
+                <h2 class="section-title">Ưu đãi độc quyền</h2>
+                <div class="gold-divider"></div>
+                <p class="section-desc">Đừng bỏ lỡ các ưu đãi combo trọn gói vé máy bay, phòng nghỉ, buffet và vé vui chơi với mức giá hấp dẫn nhất</p>
+            </div>
+
+            <!-- Offers Container -->
+            <div class="offers-container">
+                <!-- Offer Card 1 -->
+                <div class="offer-card animate-scroll" id="offerCard1">
+                    <div class="offer-badge">Bán chạy nhất</div>
+                    <div class="offer-image-wrapper">
+                        <div class="offer-image" style="background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.5)), url('assets/hero-1.png');"></div>
+                    </div>
+                    <div class="offer-content">
+                        <div class="offer-meta">
+                            <span class="offer-location"><i class="fa-solid fa-location-dot"></i> Phú Quốc</span>
+                            <span class="offer-duration"><i class="fa-solid fa-clock"></i> 3N2Đ</span>
+                        </div>
+                        <h3 class="offer-title">Pearl Luxury Escape: Combo Vé máy bay + Resort 5 Sao</h3>
+                        <p class="offer-desc">Bao gồm vé máy bay khứ hồi khứ hồi Bamboo, phòng Deluxe cao cấp ăn sáng buffet hàng ngày và vui chơi VinWonders không giới hạn.</p>
+                        <div class="offer-footer">
+                            <div class="offer-price-box">
+                                <span class="price-label">Giá chỉ từ</span>
+                                <span class="price-value">4.500.000 đ <small>/khách</small></span>
+                            </div>
+                            <a href="#" class="btn btn-gold btn-sm" id="btnBookOffer1">Đặt ngay</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Offer Card 2 -->
+                <div class="offer-card animate-scroll" id="offerCard2">
+                    <div class="offer-badge">Ưu đãi đặt sớm</div>
+                    <div class="offer-image-wrapper">
+                        <div class="offer-image" style="background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.5)), url('assets/destination-nhatrang.png');"></div>
+                    </div>
+                    <div class="offer-content">
+                        <div class="offer-meta">
+                            <span class="offer-location"><i class="fa-solid fa-location-dot"></i> Toàn hệ thống</span>
+                            <span class="offer-duration"><i class="fa-solid fa-clock"></i> Hạn đặt: 30/06</span>
+                        </div>
+                        <h3 class="offer-title">Early Bird Booking: Đặt phòng sớm nhận ngay ưu đãi 20%</h3>
+                        <p class="offer-desc">Lên kế hoạch nghỉ dưỡng sớm trước 30 ngày để tận hưởng mức giá tốt nhất hệ thống biệt thự biển đẳng cấp Vinpearl.</p>
+                        <div class="offer-footer">
+                            <div class="offer-price-box">
+                                <span class="price-label">Giá chỉ từ</span>
+                                <span class="price-value">1.800.000 đ <small>/đêm</small></span>
+                            </div>
+                            <a href="#" class="btn btn-gold btn-sm" id="btnBookOffer2">Đặt ngay</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Offer Card 3 -->
+                <div class="offer-card animate-scroll" id="offerCard3">
+                    <div class="offer-badge">Ưu đãi hè</div>
+                    <div class="offer-image-wrapper">
+                        <div class="offer-image" style="background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.5)), url('assets/destination-halong.png');"></div>
+                    </div>
+                    <div class="offer-content">
+                        <div class="offer-meta">
+                            <span class="offer-location"><i class="fa-solid fa-location-dot"></i> Hạ Long</span>
+                            <span class="offer-duration"><i class="fa-solid fa-clock"></i> 2N1Đ</span>
+                        </div>
+                        <h3 class="offer-title">Family Summer Fun: Kỳ nghỉ lâu đài vịnh biển kỳ quan</h3>
+                        <p class="offer-desc">Combo phòng nghỉ tại lâu đài biển Vinpearl Hạ Long kèm buffet tối BBQ hải sản cao cấp và voucher ẩm thực, miễn phí vé xe bus đưa đón.</p>
+                        <div class="offer-footer">
+                            <div class="offer-price-box">
+                                <span class="price-label">Giá chỉ từ</span>
+                                <span class="price-value">2.900.000 đ <small>/đêm</small></span>
+                            </div>
+                            <a href="#" class="btn btn-gold btn-sm" id="btnBookOffer3">Đặt ngay</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LUXURY EXPERIENCES SHOWCASE -->
+    <section class="section-experiences" id="experiences">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-tagline">HỆ SINH THÁI VINPEARL</span>
+                <h2 class="section-title">Trải nghiệm đỉnh cao</h2>
+                <div class="gold-divider"></div>
+                <p class="section-desc">Không chỉ là nơi lưu trú, Vinpearl mang đến vũ trụ trải nghiệm đa màu sắc cho kỳ nghỉ của bạn trọn vẹn xúc cảm</p>
+            </div>
+
+            <!-- Tab Controls for Experiences -->
+            <div class="exp-tabs" id="expTabs">
+                <button class="exp-tab-btn active" data-exp="hotel" id="expTabHotel">
+                    <i class="fa-solid fa-hotel"></i> Khách sạn & Resort
+                </button>
+                <button class="exp-tab-btn" data-exp="wonders" id="expTabWonders">
+                    <i class="fa-solid fa-circle-play"></i> VinWonders
+                </button>
+                <button class="exp-tab-btn" data-exp="golf" id="expTabGolf">
+                    <i class="fa-solid fa-golf-ball-tee"></i> Vinpearl Golf
+                </button>
+                <button class="exp-tab-btn" data-exp="spa" id="expTabSpa">
+                    <i class="fa-solid fa-spa"></i> Akoya Spa
+                </button>
+            </div>
+
+            <!-- Tab Panels -->
+            <div class="exp-panels" id="expPanels">
+                <!-- Panel 1: Hotel (Active) -->
+                <div class="exp-panel active" id="expPanelHotel">
+                    <div class="exp-grid">
+                        <div class="exp-image" style="background-image: url('assets/hero-2.png');"></div>
+                        <div class="exp-info">
+                            <h3 class="exp-panel-title">Thiên đường nghỉ dưỡng 5 sao sang trọng</h3>
+                            <p class="exp-panel-desc">Sở hữu vị thế đắc địa trên các bờ biển thiên đường hàng đầu Việt Nam. Mỗi resort Vinpearl là một kiệt tác kiến trúc, hòa quyện tuyệt vời giữa phong cách thiết kế sang trọng tân cổ điển và vẻ đẹp kỳ vĩ của thiên nhiên. Dịch vụ chăm sóc tận tâm và chu đáo mang lại sự hài lòng vượt mong đợi.</p>
+                            <ul class="exp-list">
+                                <li><i class="fa-regular fa-circle-check"></i> Biệt thự hướng biển có hồ bơi riêng biệt</li>
+                                <li><i class="fa-regular fa-circle-check"></i> Bãi biển riêng và hồ bơi vô cực rộng lớn</li>
+                                <li><i class="fa-regular fa-circle-check"></i> Hệ thống nhà hàng ẩm thực Á - Âu sang trọng</li>
+                            </ul>
+                            <a href="#" class="btn btn-gold" id="expHotelCta">Xem tất cả khách sạn</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 2: Wonders -->
+                <div class="exp-panel" id="expPanelWonders">
+                    <div class="exp-grid">
+                        <div class="exp-image" style="background-image: url('assets/destination-phuquoc.png');"></div>
+                        <div class="exp-info">
+                            <h3 class="exp-panel-title">VinWonders - Công viên chủ đề hàng đầu khu vực</h3>
+                            <p class="exp-panel-desc">Hệ thống công viên giải trí, công viên nước hiện đại bậc nhất. Nơi hiện thực hóa những giấc mơ cổ tích, những trò chơi mạo hiểm kỷ lục thế giới, thủy cung lộng lẫy dưới đáy đại dương và những siêu đại nhạc hội nhạc nước đầy mãn nhãn nghệ thuật.</p>
+                            <ul class="exp-list">
+                                <li><i class="fa-regular fa-circle-check"></i> Show diễn đa phương tiện Tata Show đẳng cấp thế giới</li>
+                                <li><i class="fa-regular fa-circle-check"></i> Công viên nước với các đường trượt cảm giác mạnh khổng lồ</li>
+                                <li><i class="fa-regular fa-circle-check"></i> Safari bán hoang dã tương tác gần gũi với động vật</li>
+                            </ul>
+                            <a href="#" class="btn btn-gold" id="expWondersCta">Mua vé vui chơi</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 3: Golf -->
+                <div class="exp-panel" id="expPanelGolf">
+                    <div class="exp-grid">
+                        <div class="exp-image" style="background-image: url('assets/hero-1.png');"></div>
+                        <div class="exp-info">
+                            <h3 class="exp-panel-title">Vinpearl Golf - Sân golf tiêu chuẩn Championship</h3>
+                            <p class="exp-panel-desc">Được thiết kế bởi IMG - Đơn vị thiết kế sân golf hàng đầu thế giới. Các sân golf 18 hố tiêu chuẩn quốc tế mang lại những thử thách thú vị cho các golf thủ, đồng thời mang tầm nhìn cảnh quan ngoạn mục hướng ra biển khơi xanh ngát hoặc rừng nguyên sinh hùng vĩ.</p>
+                            <ul class="exp-list">
+                                <li><i class="fa-regular fa-circle-check"></i> Vị trí đắc địa tại Nha Trang, Phú Quốc, Hải Phòng, Nam Hội An</li>
+                                <li><i class="fa-regular fa-circle-check"></i> Clubhouse cao cấp và dịch vụ Pro Shop chuyên nghiệp</li>
+                                <li><i class="fa-regular fa-circle-check"></i> Caddy được đào tạo bài bản chuẩn quốc tế</li>
+                            </ul>
+                            <a href="#" class="btn btn-gold" id="expGolfCta">Đặt sân chơi Golf</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 4: Spa -->
+                <div class="exp-panel" id="expPanelSpa">
+                    <div class="exp-grid">
+                        <div class="exp-image" style="background-image: url('assets/destination-danang.png');"></div>
+                        <div class="exp-info">
+                            <h3 class="exp-panel-title">Akoya Spa - Liệu pháp thư giãn từ vương quốc Bali</h3>
+                            <p class="exp-panel-desc">Thương hiệu spa cao cấp của Vinpearl, lấy cảm hứng từ vẻ đẹp thanh lịch của ngọc trai Akoya Nhật Bản. Các liệu trình trị liệu độc bản kết hợp thảo mộc tự nhiên thuần khiết từ Bali mang đến sự thư giãn tuyệt đối cho cả thân - tâm - trí trong không gian chòi spa nổi trên mặt hồ thơ mộng.</p>
+                            <ul class="exp-list">
+                                <li><i class="fa-regular fa-circle-check"></i> Phòng mát-xa riêng tư ven hồ hoặc sát bờ biển lãng mạn</li>
+                                <li><i class="fa-regular fa-circle-check"></i> Liệu pháp trị liệu xông hơi Javanese truyền thống</li>
+                                <li><i class="fa-regular fa-circle-check"></i> Mỹ phẩm chăm sóc da cao cấp chiết xuất hữu cơ</li>
+                            </ul>
+                            <a href="#" class="btn btn-gold" id="expSpaCta">Liên hệ đặt chỗ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PEARL CLUB LOYALTY BANNER -->
+    <section class="section-loyalty" id="pearl-club">
+        <div class="container">
+            <div class="loyalty-card animate-scroll" id="loyaltyCard">
+                <div class="loyalty-content">
+                    <div class="loyalty-header">
+                        <i class="fa-solid fa-crown loyalty-crown"></i>
+                        <span class="loyalty-tag">CHƯƠNG TRÌNH THÀNH VIÊN PEARL CLUB</span>
+                    </div>
+                    <h2 class="loyalty-title">Mở khóa thế giới đặc quyền<br>cùng Pearl Club</h2>
+                    <p class="loyalty-desc">Đăng ký tài khoản thành viên miễn phí ngay hôm nay để tận hưởng vô vàn đặc quyền độc quyền xuyên suốt hệ sinh thái nghỉ dưỡng, vui chơi và ẩm thực của Vinpearl trên khắp Việt Nam.</p>
+                    <div class="loyalty-benefits">
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa-solid fa-tags"></i></div>
+                            <div class="benefit-text"><strong>Giảm thêm 10%</strong> giá phòng tốt nhất khi đặt trực tiếp</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa-solid fa-utensils"></i></div>
+                            <div class="benefit-text"><strong>Ưu đãi 15%</strong> cho dịch vụ Spa & Ẩm thực tại resort</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon"><i class="fa-solid fa-angles-up"></i></div>
+                            <div class="benefit-text"><strong>Tích lũy dặm bay</strong> và nâng hạng phòng miễn phí</div>
+                        </div>
+                    </div>
+                    <div class="loyalty-actions">
+                        <a href="#" class="btn btn-gold-shimmer" id="loyaltyRegisterBtn">Đăng ký miễn phí</a>
+                        <a href="#" class="btn btn-transparent" id="loyaltyInfoBtn">Tìm hiểu đặc quyền <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="loyalty-visual">
+                    <div class="gold-card-mockup" id="loyaltyCardMockup">
+                        <div class="card-logo">PEARL CLUB</div>
+                        <div class="card-chip"></div>
+                        <div class="card-number">XXXX XXXX XXXX 8888</div>
+                        <div class="card-holder">VVIP MEMBER</div>
+                        <div class="card-shiny-layer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="main-footer" id="about">
+        <div class="container footer-top">
+            <!-- Brand & Info Column -->
+            <div class="footer-col info-col">
+                <div class="footer-logo">
+                    <span class="footer-vin">VINPEARL</span>
+                    <span class="footer-sub">RESORTS & HOTELS</span>
+                </div>
+                <p class="footer-about-text">Vinpearl là thương hiệu dịch vụ du lịch nghỉ dưỡng - giải trí lớn nhất Việt Nam. Tiên phong mang lại những kỳ nghỉ đẳng cấp thế giới, nâng tầm du lịch nước nhà.</p>
+                <div class="contact-details">
+                    <p><i class="fa-solid fa-location-dot contact-icon"></i> Tòa nhà Văn phòng VinOffice, Số 7 Đường Bằng Lăng 1, Vinhomes Riverside, Long Biên, Hà Nội</p>
+                    <p><i class="fa-solid fa-phone contact-icon"></i> <a href="tel:1900232389">1900 23 23 89</a></p>
+                    <p><i class="fa-solid fa-envelope contact-icon"></i> <a href="mailto:callcenter@vinpearl.com">callcenter@vinpearl.com</a></p>
+                </div>
+            </div>
+
+            <!-- Destinations Column -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">Điểm đến nổi bật</h4>
+                <ul class="footer-links">
+                    <li><a href="#" id="footerDestPhuQuoc">Vinpearl Phú Quốc</a></li>
+                    <li><a href="#" id="footerDestNhaTrang">Vinpearl Nha Trang</a></li>
+                    <li><a href="#" id="footerDestNamHoiAn">Vinpearl Nam Hội An</a></li>
+                    <li><a href="#" id="footerDestHaLong">Vinpearl Resort & Spa Hạ Long</a></li>
+                    <li><a href="#" id="footerDestHaiPhong">Vinpearl Hải Phòng</a></li>
+                </ul>
+            </div>
+
+            <!-- Quick Links Column -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">Liên kết hữu ích</h4>
+                <ul class="footer-links">
+                    <li><a href="#" id="footerLinkAbout">Về chúng tôi</a></li>
+                    <li><a href="#" id="footerLinkOffers">Ưu đãi khuyến mãi</a></li>
+                    <li><a href="#" id="footerLinkWonders">Khu vui chơi VinWonders</a></li>
+                    <li><a href="#" id="footerLinkGolf">Sân golf đẳng cấp</a></li>
+                    <li><a href="#" id="footerLinkCareers">Cơ hội nghề nghiệp</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter & Socials Column -->
+            <div class="footer-col newsletter-col">
+                <h4 class="footer-col-title">Đăng ký nhận ưu đãi</h4>
+                <p class="newsletter-desc">Nhận thông tin sớm nhất về các khuyến mãi, combo du lịch giá gốc độc quyền của Vinpearl hàng tuần.</p>
+                <form class="newsletter-form" id="newsletterForm" onsubmit="event.preventDefault(); alert('Cảm ơn bạn đã đăng ký!');">
+                    <input type="email" class="newsletter-input" id="newsletterEmailInput" placeholder="Nhập địa chỉ email của bạn..." required>
+                    <button type="submit" class="btn btn-gold" id="newsletterSubmitBtn">ĐĂNG KÝ</button>
+                </form>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook" id="facebookLink"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram" id="instagramLink"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="Youtube" id="youtubeLink"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" aria-label="Tiktok" id="tiktokLink"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container footer-bottom-container">
+                <p class="copyright-text">&copy; 2026 Vinpearl. Clone giao diện dành cho mục đích học tập và cặp đôi lập trình.</p>
+                <div class="payment-methods">
+                    <span><i class="fa-brands fa-cc-visa"></i></span>
+                    <span><i class="fa-brands fa-cc-mastercard"></i></span>
+                    <span><i class="fa-brands fa-cc-jcb"></i></span>
+                    <span><i class="fa-solid fa-wallet"></i></span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI CHATBOT WIDGET -->
+    <div class="ai-chatbot-widget" id="aiChatbotWidget">
+        <!-- Floating Chat Trigger Button -->
+        <button class="chatbot-trigger" id="chatbotTriggerBtn" aria-label="Mở Trợ lý AI">
+            <span class="pulse-ring"></span>
+            <i class="fa-solid fa-robot chatbot-icon-open"></i>
+            <i class="fa-solid fa-xmark chatbot-icon-close" style="display: none;"></i>
+            <span class="trigger-label">Tư vấn AI</span>
+        </button>
+
+        <!-- Chat Window Box -->
+        <div class="chat-window" id="chatWindow">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="bot-profile">
+                    <div class="bot-avatar">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bot-info">
+                        <h4 class="bot-name">Vinpearl AI Assistant</h4>
+                        <span class="bot-status"><span class="status-indicator"></span> Đang trực tuyến</span>
+                    </div>
+                </div>
+                <button class="chat-close-btn" id="chatCloseBtn" aria-label="Đóng Chat">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div class="chat-body" id="chatBody">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Bot initial greeting -->
+                    <div class="message bot-msg">
+                        <div class="msg-bubble">
+                            Xin chào! Tôi là Trợ lý Ảo <strong>Vinpearl AI</strong>. Tôi có thể tư vấn các địa điểm du lịch nghỉ dưỡng, khách sạn, vé vui chơi VinWonders tại Phú Quốc, Nha Trang, Đà Nẵng, Hạ Long. Bạn đang lên kế hoạch du lịch ở đâu?
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Typing Indicator (Hidden by default) -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="quick-suggestions" id="quickSuggestions">
+                <button class="suggest-btn" data-query="Tư vấn du lịch Phú Quốc">Phú Quốc 🌴</button>
+                <button class="suggest-btn" data-query="Tư vấn du lịch Nha Trang">Nha Trang 🌊</button>
+                <button class="suggest-btn" data-query="Khám phá Đà Nẵng Hội An">Đà Nẵng 🏮</button>
+                <button class="suggest-btn" data-query="Vé vui chơi VinWonders">VinWonders 🎡</button>
+            </div>
+
+            <!-- Chat Footer Input -->
+            <form class="chat-footer" id="chatForm" onsubmit="event.preventDefault();">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Nhập câu hỏi của bạn..." autocomplete="off">
+                <button type="submit" class="chat-send-btn" id="chatSendBtn" aria-label="Gửi tin nhắn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT -->
+    <script src="app.js"></script>
+</body>
+</html>
