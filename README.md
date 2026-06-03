@@ -130,10 +130,30 @@ Current tools:
 
 | Tool | Purpose |
 |---|---|
+| `search_vinpearl_pages` | Builds official Vinpearl source candidates from keyword, destination, and category. |
 | `crawl_vinpearl_page` | Async tool that crawls official `vinpearl.com` pages and returns LLM-ready markdown. |
 | `crawl_vinpearl_page_sync` | Sync wrapper for scripts or non-async agent integrations. |
+| `extract_resort_info` | Extracts destination, amenities, best-fit tags, highlights, and confidence from crawled markdown. |
+| `extract_policy_guard` | Extracts cancellation/refund, voucher, child surcharge, restriction, and price/availability warnings. |
+| `validate_user_constraints` | Finds missing fields and contradictions in the user's trip profile. |
+| `detect_realtime_claim_risk` | Detects risky questions about exact price, availability, voucher, cancellation, or refund. |
+| `generate_followup_questions` | Generates short recovery questions for low-confidence inputs. |
+| `update_trip_profile` | Applies correction-path changes and reports what changed. |
+| `handoff_to_human` | Builds a CSKH/human-review handoff packet for risky cases. |
+| `rank_resort_options` | Ranks resort/package options against destination, group, budget, and priority. |
+| `format_recommendation_card` | Formats an option into the prototype card contract. |
+| `compare_previous_recommendations` | Compares old and new shortlists after user correction. |
+| `save_prompt_test_case` | Saves prompt/output evidence to an evaluation JSONL file. |
+| `score_agent_response` | Scores an output against the relevance, trust, and recovery rubric. |
 
 The crawler tool is restricted to official `vinpearl.com` URLs. It respects `robots.txt`, returns source metadata, and does not crawl arbitrary external domains.
+
+Optional crawler settings live in `.env` and are documented in `.env.example`:
+
+```text
+VINPEARL_CRAWLER_TIMEOUT_SECONDS=30
+VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS=6000
+```
 
 ## Run With Docker
 

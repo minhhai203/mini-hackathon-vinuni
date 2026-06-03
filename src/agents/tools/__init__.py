@@ -1,6 +1,21 @@
 """Agent tools."""
 
+from src.agents.tools.evaluation import save_prompt_test_case, score_agent_response
 from src.agents.tools.example import example_tool
+from src.agents.tools.extraction import extract_policy_guard, extract_resort_info
+from src.agents.tools.recommendation import (
+    compare_previous_recommendations,
+    format_recommendation_card,
+    rank_resort_options,
+)
+from src.agents.tools.source_discovery import search_vinpearl_pages
+from src.agents.tools.trip_planning import (
+    detect_realtime_claim_risk,
+    generate_followup_questions,
+    handoff_to_human,
+    update_trip_profile,
+    validate_user_constraints,
+)
 from src.agents.tools.vinpearl_crawler import (
     crawl_vinpearl_page,
     crawl_vinpearl_page_sync,
@@ -10,15 +25,41 @@ from src.agents.tools.vinpearl_crawler import (
 
 AGENT_TOOLS = {
     "example_tool": example_tool,
+    "search_vinpearl_pages": search_vinpearl_pages,
     "crawl_vinpearl_page": crawl_vinpearl_page,
     "crawl_vinpearl_page_sync": crawl_vinpearl_page_sync,
+    "extract_resort_info": extract_resort_info,
+    "extract_policy_guard": extract_policy_guard,
+    "validate_user_constraints": validate_user_constraints,
+    "detect_realtime_claim_risk": detect_realtime_claim_risk,
+    "generate_followup_questions": generate_followup_questions,
+    "update_trip_profile": update_trip_profile,
+    "handoff_to_human": handoff_to_human,
+    "rank_resort_options": rank_resort_options,
+    "format_recommendation_card": format_recommendation_card,
+    "compare_previous_recommendations": compare_previous_recommendations,
+    "save_prompt_test_case": save_prompt_test_case,
+    "score_agent_response": score_agent_response,
 }
 
 
 __all__ = [
     "AGENT_TOOLS",
+    "compare_previous_recommendations",
     "crawl_vinpearl_page",
     "crawl_vinpearl_page_sync",
+    "detect_realtime_claim_risk",
+    "extract_policy_guard",
+    "extract_resort_info",
     "example_tool",
+    "format_recommendation_card",
+    "generate_followup_questions",
+    "handoff_to_human",
     "normalize_vinpearl_url",
+    "rank_resort_options",
+    "save_prompt_test_case",
+    "score_agent_response",
+    "search_vinpearl_pages",
+    "update_trip_profile",
+    "validate_user_constraints",
 ]

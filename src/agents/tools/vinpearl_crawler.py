@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from typing import Any
 from urllib.parse import urlparse
 
 
 ALLOWED_VINPEARL_HOSTS = {"vinpearl.com", "www.vinpearl.com"}
-DEFAULT_TIMEOUT_SECONDS = 30
-DEFAULT_MAX_MARKDOWN_CHARS = 6000
+DEFAULT_TIMEOUT_SECONDS = int(os.getenv("VINPEARL_CRAWLER_TIMEOUT_SECONDS", "30"))
+DEFAULT_MAX_MARKDOWN_CHARS = int(os.getenv("VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS", "6000"))
 
 
 def normalize_vinpearl_url(url: str) -> str:
