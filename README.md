@@ -1,0 +1,181 @@
+# Vinpearl AI Resort & Package Fit Assistant
+
+Prototype for Track B: Travel & Hospitality.
+
+This project demos an AI-assisted flow for helping first-time or low-confidence Vinpearl travelers choose a suitable resort or package before booking. The assistant asks for a short trip profile, returns a shortlist of matching options, explains trade-offs, shows policy warnings, and asks for clarification or hands off to human support when confidence is low.
+
+## Problem
+
+Vinpearl has many destinations, resorts, packages, vouchers, membership offers, and booking conditions. A family or couple planning a 2-5 day trip can easily get stuck comparing options or worrying about hidden restrictions such as cancellation rules, child surcharge, voucher eligibility, or real-time availability.
+
+The goal of this prototype is not to replace the booking flow. It helps the user make a safer decision before checkout.
+
+## What This Prototype Does
+
+- Collects key trip needs: destination, dates, group type, budget, and travel priority.
+- Recommends top 2-3 resort or package options.
+- Explains why each option fits.
+- Shows trade-offs and policy guards.
+- Displays confidence instead of pretending all answers are certain.
+- Handles unclear, conflicting, or risky requests by asking follow-up questions or suggesting human support.
+
+## What This Prototype Does Not Do
+
+- It does not book rooms or take payment.
+- It does not check real-time room availability.
+- It does not confirm exact price, voucher eligibility, cancellation, or refund policy without a source/API.
+- It does not log in to MyVinpearl or call private Vinpearl APIs.
+- It does not compare live prices with OTA platforms.
+
+## Key User Paths
+
+| Path | Expected behavior |
+|---|---|
+| Happy path | User gives destination, dates, group, budget, and preference. The assistant returns matching resort/package cards with reason, trade-off, policy guard, confidence, and next step. |
+| Low-confidence path | User gives vague input. The assistant asks for missing information instead of guessing. |
+| Failure path | User asks for risky or real-time claims such as voucher, cancellation, or availability. The assistant warns that it cannot confirm and suggests checking Vinpearl/MyVinpearl or CSKH. |
+| Correction path | User changes destination, budget, group, or preference. The assistant updates the shortlist and explains what changed. |
+
+## Project Structure
+
+```text
+src/
+  agents/              LangGraph-style agent boundary
+    graph.py           Agent graph entry point
+    state.py           Agent state schema
+    nodes/             Agent node functions
+    tools/             Agent tools
+  api/                 FastAPI backend routes
+    routes.py          API endpoints
+  models/              Pydantic schemas
+  services/            Business logic and LLM service boundary
+  static/              Current frontend prototype UI
+  config.py            App settings
+  main.py              FastAPI app entry point
+
+tests/
+  test_agents/         Agent tests
+  test_api/            API and static-serving tests
+
+scripts/               AI logging helper scripts
+docs/                  Technical guide and architecture diagram
+eval/                  Evaluation outputs
+presentation/          Demo day slides
+```
+
+## Requirements
+
+- Python 3.11+ recommended
+- `pip`
+
+The project currently uses:
+
+- FastAPI
+- Uvicorn
+- Pydantic Settings
+- Pytest
+
+## Run Locally
+
+From the project root:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+uvicorn src.main:app --reload
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/
+```
+
+Health check:
+
+```text
+http://127.0.0.1:8000/api/health
+```
+
+Expected response:
+
+```json
+{"status":"ok"}
+```
+
+## Run Tests
+
+```bash
+python -m pytest -q
+```
+
+The test suite currently checks:
+
+- Agent graph returns a valid state.
+- API health endpoint works.
+- Static homepage is served by FastAPI.
+
+## Run With Docker
+
+Build and start:
+
+```bash
+docker compose up --build
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+## Static-Only Preview
+
+If you only want to preview the current frontend without the FastAPI backend, open:
+
+```text
+src/static/index.html
+```
+
+This mode does not require installing dependencies.
+
+## AI Response Contract
+
+Every main assistant response should include:
+
+1. Need summary: destination, group, nights, budget, priority, constraints.
+2. Top 2-3 resort/package options: option name, reason, trade-off, confidence.
+3. Policy guard: cancellation/refund, voucher/membership, child surcharge, restrictions, possible extra costs.
+4. Next action: choose option, answer missing questions, check Vinpearl/MyVinpearl, or contact CSKH/human review.
+
+The assistant must not:
+
+- Auto-book or auto-pay.
+- Claim exact price or availability without an API/source.
+- Confirm voucher or cancellation policy without enough booking context.
+- Suggest options outside the user's hard destination constraint.
+- Return generic brochure text without decision support.
+
+## Evaluation Criteria
+
+| Metric | Target |
+|---|---|
+| Relevance | 4/5 test cases return options matching destination and main constraints. |
+| Trust/Safety | 100% of price, policy, voucher, cancellation, and availability answers include confidence or warning. |
+| Recovery | 3/3 low-confidence, failure, and correction cases ask follow-up, update the answer, or hand off safely. |
+
+## Demo Script
+
+1. Explain the problem: users struggle to choose a Vinpearl resort/package and worry about policy or hidden restrictions.
+2. Show happy path: complete trip profile -> top resort/package recommendations.
+3. Show low-confidence path: vague request -> assistant asks missing questions.
+4. Show failure path: risky real-time claim -> assistant refuses to confirm and suggests verification/handoff.
+5. Show correction path: user changes destination or priority -> assistant updates the shortlist.
