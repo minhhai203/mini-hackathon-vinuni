@@ -20,3 +20,5 @@ class ChatResponse(BaseModel):
     needs_followup: bool = False
     used_tools: list[str] = Field(default_factory=list)
     safety_notice: str | None = None
+    ui_theme: str = "theme-default"
+    context: dict[str, Any] = Field(default_factory=dict)

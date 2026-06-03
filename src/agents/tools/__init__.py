@@ -1,5 +1,6 @@
 """Agent tools."""
 
+from src.agents.tools.context import get_mock_news_context, get_mock_review_signals, get_mock_weather_context
 from src.agents.tools.evaluation import save_prompt_test_case, score_agent_response
 from src.agents.tools.example import example_tool
 from src.agents.tools.extraction import extract_policy_guard, extract_resort_info
@@ -28,6 +29,9 @@ AGENT_TOOLS = {
     "search_vinpearl_pages": search_vinpearl_pages,
     "crawl_vinpearl_page": crawl_vinpearl_page,
     "crawl_vinpearl_page_sync": crawl_vinpearl_page_sync,
+    "get_mock_weather_context": get_mock_weather_context,
+    "get_mock_news_context": get_mock_news_context,
+    "get_mock_review_signals": get_mock_review_signals,
     "extract_resort_info": extract_resort_info,
     "extract_policy_guard": extract_policy_guard,
     "validate_user_constraints": validate_user_constraints,
@@ -53,6 +57,9 @@ __all__ = [
     "extract_resort_info",
     "example_tool",
     "format_recommendation_card",
+    "get_mock_news_context",
+    "get_mock_review_signals",
+    "get_mock_weather_context",
     "generate_followup_questions",
     "handoff_to_human",
     "normalize_vinpearl_url",

@@ -13,10 +13,12 @@ The goal of this prototype is not to replace the booking flow. It helps the user
 ## What This Prototype Does
 
 - Collects key trip needs: destination, dates, group type, budget, and travel priority.
-- Recommends top 2-3 resort or package options.
+- Recommends top 3 resort, package, or activity options.
 - Explains why each option fits.
 - Shows trade-offs and policy guards.
 - Displays confidence instead of pretending all answers are certain.
+- Shows image-based recommendation cards in the chatbot.
+- Uses mock weather, news, and review signals for prototype context.
 - Handles unclear, conflicting, or risky requests by asking follow-up questions or suggesting human support.
 
 ## What This Prototype Does Not Do
@@ -133,6 +135,9 @@ Current tools:
 | `search_vinpearl_pages` | Builds official Vinpearl source candidates from keyword, destination, and category. |
 | `crawl_vinpearl_page` | Async tool that crawls official `vinpearl.com` pages and returns LLM-ready markdown. |
 | `crawl_vinpearl_page_sync` | Sync wrapper for scripts or non-async agent integrations. |
+| `get_mock_weather_context` | Returns mock weather context and UI theme by destination. |
+| `get_mock_news_context` | Returns mock travel/news signals by destination. |
+| `get_mock_review_signals` | Returns mock review positives and watch-outs by destination. |
 | `extract_resort_info` | Extracts destination, amenities, best-fit tags, highlights, and confidence from crawled markdown. |
 | `extract_policy_guard` | Extracts cancellation/refund, voucher, child surcharge, restriction, and price/availability warnings. |
 | `validate_user_constraints` | Finds missing fields and contradictions in the user's trip profile. |

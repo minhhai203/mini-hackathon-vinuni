@@ -32,10 +32,25 @@ def test_chatbot_recommends_when_profile_is_complete():
     )
 
     assert result["needs_followup"] is False
-    assert result["cards"]
+    assert len(result["cards"]) == 3
     assert "Phu Quoc" in result["cards"][0]["option"]
+    assert result["cards"][0]["image_url"]
+    assert result["ui_theme"] == "theme-beach"
+    assert "weather" in result["context"]
     assert "rank_resort_options" in result["used_tools"]
+    assert "get_mock_weather_context" in result["used_tools"]
     assert result["safety_notice"]
+
+
+def test_chatbot_can_recommend_with_uncertain_budget():
+    service = ChatbotService()
+
+    result = service.reply("Đi Nha Trang, ưu tiên nghỉ biển và vui chơi cho trẻ em.")
+
+    assert result["needs_followup"] is True
+    assert len(result["cards"]) == 3
+    assert "Ngân sách dự kiến" in result["reply"]
+    assert result["ui_theme"] == "theme-sea"
 
 
 def test_chatbot_refuses_realtime_confirmation():

@@ -404,6 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
             chatHistory.push({ role: "user", content: query });
             chatHistory.push({ role: "assistant", content: data.reply });
             typingIndicator.classList.remove("active");
+            applyChatTheme(data.ui_theme);
             appendMessage(data.reply, "bot", true);
             updateQuickSuggestions(data.suggestions || []);
         } catch (error) {
@@ -423,5 +424,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.setAttribute("data-query", suggestions[index]);
             }
         });
+    }
+
+    function applyChatTheme(themeName) {
+        const themes = ["theme-default", "theme-beach", "theme-sea", "theme-bay", "theme-heritage"];
+        chatWindow.classList.remove(...themes);
+        chatWindow.classList.add(themes.includes(themeName) ? themeName : "theme-default");
     }
 });

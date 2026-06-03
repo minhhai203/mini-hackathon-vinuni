@@ -131,6 +131,9 @@ def test_agent_tools_registry_contains_project_tools():
         "rank_resort_options",
         "format_recommendation_card",
         "score_agent_response",
+        "get_mock_weather_context",
+        "get_mock_news_context",
+        "get_mock_review_signals",
     }
 
     assert expected.issubset(AGENT_TOOLS)

@@ -111,6 +111,10 @@ def format_recommendation_card(option: dict[str, Any], *, policy_guard: dict[str
 
     return {
         "option": option.get("name") or "Vinpearl option",
+        "option_type": option.get("option_type") or "recommendation",
+        "destination": (option.get("destinations") or [None])[0],
+        "image_url": option.get("image_url"),
+        "context_badges": option.get("context_badges") or [],
         "best_for": option.get("best_for") or [],
         "why_it_fits": option.get("rank_reason") or "Matches the user's trip profile.",
         "trade_off": trade_offs,
