@@ -55,6 +55,12 @@ src/
   config.py            App settings
   main.py              FastAPI app entry point
 
+frontend/
+  src/app/             Next.js App Router pages, layout, and global CSS
+  src/components/      React UI components
+  src/lib/             Frontend TypeScript types/helpers
+  public/assets/       Static image assets served by Next.js
+
 tests/
   test_agents/         Agent tests
   test_api/            API and static-serving tests
@@ -77,10 +83,14 @@ The project currently uses:
 - Pydantic Settings
 - Crawl4AI
 - Pytest
+- Next.js
+- React
+- TypeScript
+- ESLint
 
 ## Run Locally
 
-From the project root:
+Backend from the project root:
 
 ```bash
 python -m venv .venv
@@ -93,7 +103,23 @@ uvicorn src.main:app --reload
 
 `crawl4ai-setup` prepares the browser dependencies used by the Vinpearl crawler tool.
 
-Open:
+Frontend in a second terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the Next.js UI:
+
+```text
+http://127.0.0.1:3000/
+```
+
+The Next.js frontend proxies `/api/*` to FastAPI using `BACKEND_URL`.
+
+FastAPI backend URL:
 
 ```text
 http://127.0.0.1:8000/
@@ -115,6 +141,9 @@ Expected response:
 
 ```bash
 python -m pytest -q
+cd frontend
+npm run lint
+npm run build
 ```
 
 The test suite currently checks:
@@ -124,9 +153,43 @@ The test suite currently checks:
 - Static homepage is served by FastAPI.
 - Vinpearl crawler URL validation and Crawl4AI integration wrapper.
 
+The frontend checks verify TypeScript, ESLint, and production Next.js build.
+
 ## Agent Tools
 
 The agent tools live in `src/agents/tools`.
+
+Whenever agent behavior, chatbot flow, or tool wiring changes, update the diagram below in the same change. This diagram is the visual source of truth for how the assistant works.
+
+```mermaid
+flowchart TD
+    U["User in Vinpearl UI"] --> FE["Next.js UI\nfrontend/"]
+    FE --> W["Legacy chatbot widget\nfrontend/public/legacy/app.js"]
+    W --> API["POST /api/chat\nFastAPI routes.py"]
+    API --> S["ChatbotService.reply\nsrc/services/chatbot.py"]
+
+    S --> P["parse_trip_profile\nextract destination, dates, group, budget, priority"]
+    P --> UP["update_trip_profile\nmerge new info with existing session profile"]
+    UP --> RISK["detect_realtime_claim_risk\nprice, availability, voucher, cancellation"]
+
+    RISK -->|"high risk"| H["handoff_to_human\nsafe warning + CSKH/MyVinpearl check"]
+    H --> OUT["ChatResponse\nreply, profile, suggestions, cards, confidence"]
+
+    RISK -->|"safe enough"| VAL["validate_user_constraints\nmissing fields + contradictions"]
+    VAL -->|"core info missing"| Q["generate_followup_questions\nask basic trip questions"]
+    Q --> OUT
+
+    VAL -->|"rankable or partial rankable"| CTX["Context tools\nget_mock_weather_context\nget_mock_news_context\nget_mock_review_signals"]
+    CTX --> RANK["rank_resort_options\nrank local Vinpearl stay/activity data"]
+    RANK --> CARD["format_recommendation_card\nimage, badges, trade-off, policy guard"]
+    CARD --> SRC["search_vinpearl_pages\nsource candidates for later crawl/verification"]
+    SRC --> OUT
+
+    OUT --> W
+    W --> U
+
+    CRAWL["crawl_vinpearl_page\nofficial vinpearl.com crawler"] -. "used for source expansion / future data refresh" .-> SRC
+```
 
 Current tools:
 
@@ -171,6 +234,12 @@ docker compose up --build
 Open:
 
 ```text
+http://127.0.0.1:3000/
+```
+
+Backend remains available at:
+
+```text
 http://127.0.0.1:8000/
 ```
 
@@ -180,15 +249,12 @@ Stop:
 docker compose down
 ```
 
-## Static-Only Preview
+## Frontend Notes
 
-If you only want to preview the current frontend without the FastAPI backend, open:
-
-```text
-src/static/index.html
-```
-
-This mode does not require installing dependencies.
+- Next.js lives in `frontend/` so the Python backend and agent code remain under `src/`.
+- Static images are served from `frontend/public/assets`.
+- The chatbot React component calls `/api/chat`; `frontend/next.config.ts` rewrites that to `BACKEND_URL`.
+- `npm audit` currently reports a moderate PostCSS advisory through the installed Next.js dependency. The suggested `npm audit fix --force` would downgrade Next.js to 9.x, so it is intentionally not applied.
 
 ## AI Response Contract
 

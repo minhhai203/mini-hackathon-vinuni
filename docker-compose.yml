@@ -1,5 +1,14 @@
 services:
-  app:
+  backend:
     build: .
     ports:
       - "8000:8000"
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      BACKEND_URL: "http://backend:8000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

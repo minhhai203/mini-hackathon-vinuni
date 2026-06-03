@@ -53,6 +53,25 @@ def test_chatbot_can_recommend_with_uncertain_budget():
     assert result["ui_theme"] == "theme-sea"
 
 
+def test_chatbot_understands_light_schedule_correction():
+    service = ChatbotService()
+
+    result = service.reply(
+        "lịch nhẹ",
+        profile={
+            "destination": "Phu Quoc",
+            "dates": "Tôi muốn nghỉ 2 đêm",
+            "group": "2 lớn, 2 bé",
+            "budget": "10tr",
+        },
+    )
+
+    assert result["needs_followup"] is False
+    assert result["cards"]
+    assert result["profile"]["priority"] == "spa và nghỉ dưỡng nhẹ"
+    assert "Ưu tiên chính" not in result["reply"]
+
+
 def test_chatbot_refuses_realtime_confirmation():
     service = ChatbotService()
 
