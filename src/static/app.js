@@ -295,6 +295,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const suggestBtns = document.querySelectorAll(".suggest-btn");
     const chatbotIconOpen = chatbotTriggerBtn.querySelector(".chatbot-icon-open");
     const chatbotIconClose = chatbotTriggerBtn.querySelector(".chatbot-icon-close");
+    let chatProfile = {};
+    const chatHistory = [];
 
     // Toggle Chat Window
     chatbotTriggerBtn.addEventListener("click", (e) => {
@@ -345,11 +347,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const query = chatInput.value.trim();
         if (!query) return;
 
-        // User Message
         appendMessage(query, "user");
         chatInput.value = "";
-        
-        // Trigger bot reply
+
         handleBotResponse(query);
     });
 
@@ -363,72 +363,65 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Append Message to UI
-    function appendMessage(text, sender) {
+    function appendMessage(text, sender, allowHtml = false) {
         const msgDiv = document.createElement("div");
         msgDiv.classList.add("message", sender === "user" ? "user-msg" : "bot-msg");
-        msgDiv.innerHTML = `<div class="msg-bubble">${text}</div>`;
+        const bubble = document.createElement("div");
+        bubble.classList.add("msg-bubble");
+        if (allowHtml) {
+            bubble.innerHTML = text;
+        } else {
+            bubble.textContent = text;
+        }
+        msgDiv.appendChild(bubble);
         chatMessages.appendChild(msgDiv);
         scrollChatToBottom();
     }
 
-    // Bot Response Logic with Keywords Matching
-    function handleBotResponse(query) {
-        // Show Typing Indicator
+    async function handleBotResponse(query) {
         typingIndicator.classList.add("active");
         scrollChatToBottom();
 
-        const lowerQuery = query.toLowerCase();
-        let reply = "";
+        try {
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: query,
+                    profile: chatProfile,
+                    history: chatHistory.slice(-8)
+                })
+            });
 
-        // Keywords rules
-        if (lowerQuery.includes("phú quốc") || lowerQuery.includes("phu quoc")) {
-            reply = "🌴 <strong>Vinpearl Phú Quốc</strong> sở hữu quần thể nghỉ dưỡng khép kín đẳng cấp 5 sao tại Bãi Dài với các căn villa hồ bơi riêng biệt. Trải nghiệm không thể bỏ lỡ tại đây:<br>" +
-                    "- Vui chơi tại <strong>VinWonders</strong> (Công viên chủ đề hàng đầu Việt Nam)<br>" +
-                    "- Khám phá thế giới động vật bán hoang dã tại <strong>Vinpearl Safari</strong><br>" +
-                    "- Tham quan thành phố không ngủ Grand World.<br><br>" +
-                    "Bạn có muốn đặt phòng trực tiếp tại Vinpearl Phú Quốc hôm nay để được giảm giá 10% Pearl Club không?";
-        } else if (lowerQuery.includes("nha trang")) {
-            reply = "🌊 <strong>Vinpearl Nha Trang</strong> là thiên đường nghỉ dưỡng tọa lạc trên đảo Hòn Tre thơ mộng và các khách sạn trung tâm thành phố:<br>" +
-                    "- Trải nghiệm cáp treo vượt biển kỳ vĩ dài hơn 3km.<br>" +
-                    "- Công viên giải trí <strong>VinWonders Nha Trang</strong> với show diễn thực cảnh Tata Show độc bản.<br>" +
-                    "- Hệ thống sân golf 18 hố Vinpearl Golf đầy thử thách.<br><br>" +
-                    "Tôi có thể hỗ trợ kiểm tra giá phòng ưu đãi tại Nha Trang cho bạn ngay lúc này!";
-        } else if (lowerQuery.includes("đà nẵng") || lowerQuery.includes("hội an") || lowerQuery.includes("nam hội an") || lowerQuery.includes("da nang") || lowerQuery.includes("hoi an")) {
-            reply = "🏮 <strong>Vinpearl Nam Hội An</strong> là sự giao thoa hoàn hảo giữa di sản văn hóa và phong cách sống hiện đại:<br>" +
-                    "- Nằm dọc bãi biển Bình Minh hoang sơ dài 1.3km.<br>" +
-                    "- Gần khu bảo tồn văn hóa VinWonders Nam Hội An và Đảo Văn Hóa Dân Gian độc đáo.<br>" +
-                    "- Sân golf 18 hố tiêu chuẩn Championship thiết kế bởi IMG.<br><br>" +
-                    "Bạn có muốn tôi tư vấn gói combo trọn gói gồm vé máy bay và phòng khách sạn Nam Hội An không?";
-        } else if (lowerQuery.includes("hạ long") || lowerQuery.includes("ha long")) {
-            reply = "🏰 <strong>Vinpearl Resort & Spa Hạ Long</strong> là lâu đài nghỉ dưỡng tráng lệ 4 mặt hướng biển độc bản giữa lòng Vịnh kỳ quan:<br>" +
-                    "- Thiết kế lấy cảm hứng từ Nhà hát thành phố Rennes (Pháp) vô cùng sang trọng.<br>" +
-                    "- Hồ bơi ngoài trời siêu rộng ngắm hoàng hôn vịnh biển.<br>" +
-                    "- Cách Hà Nội chỉ 2 giờ lái xe qua cao tốc.<br><br>" +
-                    "Hạ Long hiện đang có ưu đãi combo hè <strong>Family Summer Fun</strong> giảm tới 30%, bạn có muốn tìm hiểu?";
-        } else if (lowerQuery.includes("khuyến mãi") || lowerQuery.includes("ưu đãi") || lowerQuery.includes("combo") || lowerQuery.includes("giá")) {
-            reply = "🔥 <strong>Ưu đãi cực hot hiện tại của Vinpearl:</strong><br>" +
-                    "1. <strong>Pearl Luxury Escape</strong>: Combo Vé máy bay khứ hồi + phòng 3N2Đ Vinpearl Phú Quốc chỉ từ 4.500.000đ/khách.<br>" +
-                    "2. <strong>Early Bird Booking</strong>: Đặt trước phòng 30 ngày giảm ngay 20% giá phòng trên toàn hệ thống.<br>" +
-                    "3. <strong>Pearl Club Exclusive</strong>: Đăng ký thành viên nhận thêm 10% giảm giá trực tiếp và tích điểm nâng hạng phòng.<br><br>" +
-                    "Bạn muốn tìm hiểu kỹ hơn về chương trình ưu đãi nào?";
-        } else if (lowerQuery.includes("vinwonders") || lowerQuery.includes("vé") || lowerQuery.includes("safari") || lowerQuery.includes("chơi")) {
-            reply = "🎡 <strong>Hệ thống vui chơi giải trí VinWonders:</strong><br>" +
-                    "- Đặt vé trực tuyến nhanh chóng, không cần xếp hàng, nhận mã QR vào cổng ngay lập tức.<br>" +
-                    "- Hỗ trợ mua vé combo lẻ hoặc tích hợp cùng phòng lưu trú nghỉ dưỡng với giá tốt hơn.<br><br>" +
-                    "Bạn có muốn tham khảo bảng giá vé vui chơi VinWonders tại Phú Quốc, Nha Trang hay Nam Hội An không?";
-        } else {
-            reply = "Cảm ơn câu hỏi của bạn! Trợ lý ảo Vinpearl AI sẵn sàng tư vấn cho bạn các thông tin sau:<br>" +
-                    "1. 🌴 Địa điểm du lịch (Phú Quốc, Nha Trang, Hội An, Hạ Long).<br>" +
-                    "2. 🔥 Các chương trình Khuyến mãi/Combo Hot.<br>" +
-                    "3. 🎡 Mua vé vui chơi giải trí VinWonders & Safari.<br><br>" +
-                    "Bạn hãy nhập từ khóa địa điểm hoặc dịch vụ bạn muốn tìm hiểu nhé!";
-        }
+            if (!response.ok) {
+                throw new Error(`Chat API error: ${response.status}`);
+            }
 
-        // Simulate network delay for typing indicator (800ms to 1500ms)
-        const delay = Math.random() * 700 + 800; 
-        setTimeout(() => {
+            const data = await response.json();
+            chatProfile = data.profile || {};
+            chatHistory.push({ role: "user", content: query });
+            chatHistory.push({ role: "assistant", content: data.reply });
             typingIndicator.classList.remove("active");
-            appendMessage(reply, "bot");
-        }, delay);
+            appendMessage(data.reply, "bot", true);
+            updateQuickSuggestions(data.suggestions || []);
+        } catch (error) {
+            typingIndicator.classList.remove("active");
+            appendMessage(
+                "Xin lỗi, hiện trợ lý AI chưa kết nối được backend. Bạn thử chạy lại server hoặc gửi lại câu hỏi sau nhé.",
+                "bot"
+            );
+        }
+    }
+
+    function updateQuickSuggestions(suggestions) {
+        if (!suggestions.length) return;
+        suggestBtns.forEach((btn, index) => {
+            if (suggestions[index]) {
+                btn.textContent = suggestions[index];
+                btn.setAttribute("data-query", suggestions[index]);
+            }
+        });
     }
 });

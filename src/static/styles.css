@@ -2060,6 +2060,31 @@ button, input, select, textarea {
     border: 1px solid var(--color-border);
 }
 
+.bot-msg .msg-bubble p {
+    margin: 0 0 8px;
+}
+
+.bot-msg .msg-bubble p:last-child {
+    margin-bottom: 0;
+}
+
+.bot-msg .msg-bubble ol {
+    margin: 6px 0 0 18px;
+}
+
+.chat-card {
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-gold);
+    border-radius: 6px;
+    background-color: var(--color-gold-light);
+}
+
+.chat-card p {
+    margin: 6px 0 0;
+}
+
 .user-msg {
     align-self: flex-end;
 }
