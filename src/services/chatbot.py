@@ -1,4 +1,4 @@
-"""Rule-based chatbot service that uses the project agent tools."""
+"""Chatbot services: Gemini-powered (primary) and rule-based (legacy)."""
 
 from __future__ import annotations
 
@@ -556,3 +556,68 @@ def summarize_profile(profile: dict[str, Any]) -> str:
         if profile.get(field):
             parts.append(f"{label}: {escape(str(profile[field]))}")
     return "; ".join(parts) if parts else "chưa có đủ thông tin chuyến đi"
+
+
+# ---------------------------------------------------------------------------
+# Gemini-powered chatbot (primary)
+# ---------------------------------------------------------------------------
+
+class AIChatbotService:
+    """Vinpearl travel consultant — provider is selected via LLM_PROVIDER in .env."""
+
+    def __init__(self) -> None:
+        from src.providers import get_provider  # local import avoids circular deps at module load
+        self._llm = get_provider()
+
+    def reply(
+        self,
+        message: str,
+        profile: dict[str, Any] | None = None,
+        history: list[dict[str, str]] | None = None,
+    ) -> dict[str, Any]:
+        profile = profile or {}
+
+        # Extract profile fields from the new message (reuse existing parser)
+        updates = parse_trip_profile(message)
+        profile_result = update_trip_profile(profile, updates)
+        current_profile = profile_result["profile"]
+
+        reply_text, used_tools, context_data = self._llm.chat(message, history=history)
+
+        destination = current_profile.get("destination")
+        weather_context = get_mock_weather_context(destination)
+
+        context: dict[str, Any] = {}
+        if "get_weather_forecast" in context_data:
+            context["weather_forecast"] = context_data["get_weather_forecast"]
+
+        return {
+            "reply": reply_text,
+            "profile": current_profile,
+            "suggestions": _default_suggestions(destination),
+            "cards": [],
+            "confidence": "high",
+            "needs_followup": not bool(current_profile.get("destination")),
+            "used_tools": used_tools,
+            "safety_notice": (
+                "Giá, phòng trống và voucher cần xác nhận trực tiếp tại vinpearl.com hoặc MyVinpearl."
+            ),
+            "ui_theme": weather_context["ui_theme"],
+            "context": context,
+        }
+
+
+# Backward-compat alias
+GeminiChatbotService = AIChatbotService
+
+
+def _default_suggestions(destination: str | None) -> list[str]:
+    if destination == "Phu Quoc":
+        return ["Xem gói VinWonders Phú Quốc", "Thời tiết Phú Quốc tháng tới?", "Combo gia đình có trẻ em"]
+    if destination == "Nha Trang":
+        return ["Gói spa Nha Trang", "Thời tiết Nha Trang tuần này?", "VinWonders Nha Trang"]
+    if destination == "Ha Long":
+        return ["Nghỉ dưỡng Hạ Long cuối tuần", "Thời tiết Hạ Long?", "Cruise add-on Hạ Long"]
+    if destination == "Nam Hoi An":
+        return ["VinWonders Nam Hội An", "Thời tiết Đà Nẵng?", "Kết hợp Hội An cổ trấn"]
+    return ["Tư vấn Phú Quốc", "Tư vấn Nha Trang", "So sánh các điểm đến Vinpearl"]

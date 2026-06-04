@@ -94,3 +94,10 @@ class LLMService:
             return LLMResult(text=text, used_provider=bool(text), provider="openai")
         except Exception as exc:  # pragma: no cover - network/provider failure.
             return LLMResult(text="", used_provider=False, provider="openai", error=str(exc))
+"""Backward-compatibility shim — actual provider logic lives in src/providers/."""
+
+from src.providers import get_provider
+from src.providers.base import LLMProvider
+from src.providers.google import GoogleProvider as GeminiService  # legacy alias
+
+__all__ = ["get_provider", "GeminiService", "LLMProvider"]
