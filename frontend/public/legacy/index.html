@@ -134,6 +134,9 @@
                     <button class="booking-tab-btn" id="tabTourBtn" data-tab="tour">
                         <i class="fa-solid fa-compass"></i> Tour & Trải nghiệm
                     </button>
+                    <button class="booking-tab-btn planner-tab-btn" id="tabPlannerBtn" data-tab="planner">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Hôm nào mình đi chơi đi?
+                    </button>
                 </div>
 
                 <!-- Booking Panel Content -->
@@ -261,7 +264,10 @@
                         <span class="card-count">7 Khách sạn & Resort</span>
                         <h3 class="card-name">Phú Quốc</h3>
                         <p class="card-description">Đảo Ngọc hoang sơ với bãi biển cát trắng trải dài, tổ hợp giải trí VinWonders và Safari hoành tráng.</p>
-                        <a href="#" class="card-link" id="linkPhuQuoc">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                        <div class="card-actions">
+                            <a href="#" class="card-link" id="linkPhuQuoc">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                            <button class="card-ai-btn" data-planner-destination="Phú Quốc"><i class="fa-solid fa-sparkles"></i> AI lên lịch</button>
+                        </div>
                     </div>
                 </div>
 
@@ -273,7 +279,10 @@
                         <span class="card-count">5 Khách sạn & Resort</span>
                         <h3 class="card-name">Nha Trang</h3>
                         <p class="card-description">Vịnh biển thiên đường lộng lẫy, khu vui chơi trên đảo Hòn Tre đỉnh cao và hệ thống cáp treo vượt biển.</p>
-                        <a href="#" class="card-link" id="linkNhaTrang">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                        <div class="card-actions">
+                            <a href="#" class="card-link" id="linkNhaTrang">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                            <button class="card-ai-btn" data-planner-destination="Nha Trang"><i class="fa-solid fa-sparkles"></i> AI lên lịch</button>
+                        </div>
                     </div>
                 </div>
 
@@ -285,7 +294,10 @@
                         <span class="card-count">3 Khách sạn & Resort</span>
                         <h3 class="card-name">Đà Nẵng - Nam Hội An</h3>
                         <p class="card-description">Giao thoa văn hóa di sản Phố Cổ Hội An với khu nghỉ dưỡng sang trọng bên biển Bình Minh hoang sơ.</p>
-                        <a href="#" class="card-link" id="linkNamHoiAn">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                        <div class="card-actions">
+                            <a href="#" class="card-link" id="linkNamHoiAn">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                            <button class="card-ai-btn" data-planner-destination="Nam Hội An"><i class="fa-solid fa-sparkles"></i> AI lên lịch</button>
+                        </div>
                     </div>
                 </div>
 
@@ -297,7 +309,10 @@
                         <span class="card-count">1 Khách sạn & Resort</span>
                         <h3 class="card-name">Hạ Long</h3>
                         <p class="card-description">Lâu đài tráng lệ nổi bật giữa lòng Vịnh kỳ quan thiên nhiên thế giới, mang phong cách hoàng gia Pháp.</p>
-                        <a href="#" class="card-link" id="linkHaLong">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                        <div class="card-actions">
+                            <a href="#" class="card-link" id="linkHaLong">Khám phá ngay <i class="fa-solid fa-chevron-right"></i></a>
+                            <button class="card-ai-btn" data-planner-destination="Hạ Long"><i class="fa-solid fa-sparkles"></i> AI lên lịch</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -600,6 +615,106 @@
             </div>
         </div>
     </footer>
+
+    <!-- AI TRIP PLANNER PAGE -->
+    <section class="planner-page" id="plannerPage" aria-hidden="true">
+        <div class="planner-shell">
+            <div class="planner-topbar">
+                <button class="planner-back-btn" id="plannerBackBtn" aria-label="Quay lại Vinpearl">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="planner-brand">
+                    <span class="planner-logo">Vinpearl AI</span>
+                    <span class="planner-subtitle">Hôm nào mình đi chơi đi?</span>
+                </div>
+                <button class="planner-close-btn" id="plannerCloseBtn" aria-label="Đóng planner">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="planner-layout">
+                <aside class="planner-chat-panel">
+                    <div class="planner-chat-scroll" id="plannerMessages">
+                        <div class="planner-msg planner-bot-msg">
+                            <p><strong>Đi chơi nhưng chưa biết muốn gì cũng được.</strong></p>
+                            <p>Mình sẽ hỏi vài điều cơ bản rồi gợi ý điểm đến, chỗ ở và lịch vui chơi hợp với bạn.</p>
+                        </div>
+                    </div>
+
+                    <div class="planner-chip-row">
+                        <button class="planner-chip" data-planner-chip="Tôi chưa biết đi đâu, hãy truyền cảm hứng cho tôi">Chưa biết đi đâu</button>
+                        <button class="planner-chip" data-planner-chip="Gia đình có trẻ em, muốn đi nhẹ và vui">Gia đình có bé</button>
+                        <button class="planner-chip" data-planner-chip="Tôi muốn nghỉ biển, spa và ăn uống ngon">Nghỉ biển nhẹ</button>
+                    </div>
+
+                    <form class="planner-composer" id="plannerForm" onsubmit="event.preventDefault();">
+                        <input id="plannerInput" class="planner-input" type="text" autocomplete="off" placeholder="Nói tự nhiên: đi đâu, mấy người, ngân sách, muốn chill hay vui chơi...">
+                        <button class="planner-send-btn" id="plannerSendBtn" type="submit" aria-label="Gửi planning prompt">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+                    </form>
+                </aside>
+
+                <main class="planner-board">
+                    <div class="planner-board-inner">
+                        <div class="planner-progress-card">
+                            <div class="planner-progress-ring" id="plannerProgressRing">0/5</div>
+                            <div>
+                                <span class="planner-kicker">Trip checklist</span>
+                                <h2 class="planner-title">Kỳ đi chơi đang thành hình</h2>
+                                <p class="planner-progress-text" id="plannerProgressText">0 of 5 captured</p>
+                            </div>
+                        </div>
+
+                        <div class="planner-timeline" id="plannerChecklist">
+                            <div class="planner-step" data-field="destination">
+                                <span class="planner-step-dot"><i class="fa-solid fa-location-dot"></i></span>
+                                <div>
+                                    <strong>Đi đâu</strong>
+                                    <p>Mình sẽ gợi ý nếu bạn chưa có điểm đến</p>
+                                </div>
+                            </div>
+                            <div class="planner-step" data-field="origin">
+                                <span class="planner-step-dot"><i class="fa-solid fa-plane-departure"></i></span>
+                                <div>
+                                    <strong>Xuất phát từ đâu</strong>
+                                    <p>Để ước lượng độ tiện di chuyển</p>
+                                </div>
+                            </div>
+                            <div class="planner-step" data-field="group">
+                                <span class="planner-step-dot"><i class="fa-solid fa-user-group"></i></span>
+                                <div>
+                                    <strong>Ai đi cùng</strong>
+                                    <p>Gia đình, cặp đôi, bạn bè hay công ty</p>
+                                </div>
+                            </div>
+                            <div class="planner-step" data-field="dates">
+                                <span class="planner-step-dot"><i class="fa-solid fa-calendar-days"></i></span>
+                                <div>
+                                    <strong>Khi nào đi</strong>
+                                    <p>Ngày cụ thể hoặc số đêm dự kiến</p>
+                                </div>
+                            </div>
+                            <div class="planner-step" data-field="priority">
+                                <span class="planner-step-dot"><i class="fa-solid fa-heart"></i></span>
+                                <div>
+                                    <strong>Muốn gì nhất</strong>
+                                    <p>Vui chơi, nghỉ biển, spa, ăn uống hay lịch nhẹ</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="planner-result-panel" id="plannerResultPanel">
+                            <button class="planner-generate-btn" id="plannerGenerateBtn">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate my trip
+                            </button>
+                            <p>AI sẽ lấp phần còn thiếu bằng câu hỏi ngắn, hoặc tạo shortlist khi checklist đã đủ.</p>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
 
     <!-- AI CHATBOT WIDGET -->
     <div class="ai-chatbot-widget" id="aiChatbotWidget">

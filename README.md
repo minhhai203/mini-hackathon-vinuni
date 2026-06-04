@@ -226,7 +226,9 @@ Whenever agent behavior, chatbot flow, or tool wiring changes, update the diagra
 flowchart TD
     U["User in Vinpearl UI"] --> FE["Next.js UI\nfrontend/"]
     FE --> W["Legacy chatbot widget\nfrontend/public/legacy/app.js"]
+    FE --> PLANNER["Trip planner page\nHôm nào mình đi chơi đi?\nAI entrypoints on booking tab + destination cards"]
     W --> API["POST /api/chat\nFastAPI routes.py"]
+    PLANNER --> API
     API --> S["ChatbotService.reply\nsrc/services/chatbot.py"]
 
     S --> P["parse_trip_profile\nextract destination, dates, group, budget, priority"]
@@ -250,7 +252,9 @@ flowchart TD
     SRC --> LLM
 
     OUT --> W
+    OUT --> PLANNER
     W --> U
+    PLANNER --> U
 
     CRAWL["crawl_vinpearl_page\nofficial vinpearl.com crawler"] -. "writes reusable cache" .-> DATA
 ```
