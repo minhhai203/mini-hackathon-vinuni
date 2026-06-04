@@ -7,7 +7,7 @@ from typing import Any
 
 from openai import OpenAI
 
-from src.providers.base import SYSTEM_PROMPT, WEATHER_TOOL_SCHEMA, LLMProvider, execute_tool
+from src.providers.base import WEATHER_TOOL_SCHEMA, LLMProvider, build_system_prompt, execute_tool
 
 # OpenAI tool format wraps the schema under a "function" key
 _OPENAI_TOOLS: list[dict] = [
@@ -90,7 +90,7 @@ class OpenAICompatibleProvider(LLMProvider):
 # ---------------------------------------------------------------------------
 
 def _build_messages(message: str, history: list[dict[str, str]]) -> list[dict]:
-    msgs: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    msgs: list[dict] = [{"role": "system", "content": build_system_prompt()}]
     for turn in history:
         role = turn.get("role", "user")
         msgs.append({"role": role if role in {"user", "assistant"} else "user", "content": turn.get("content", "")})

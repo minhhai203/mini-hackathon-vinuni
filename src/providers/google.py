@@ -8,7 +8,7 @@ from typing import Any
 from google import genai
 from google.genai import types
 
-from src.providers.base import SYSTEM_PROMPT, WEATHER_TOOL_SCHEMA, LLMProvider, execute_tool
+from src.providers.base import WEATHER_TOOL_SCHEMA, LLMProvider, build_system_prompt, execute_tool
 
 
 def _build_gemini_tool() -> types.Tool:
@@ -43,16 +43,17 @@ class GoogleProvider(LLMProvider):
     def __init__(self, api_key: str, model: str) -> None:
         self._model = model
         self._client = genai.Client(api_key=api_key)
-        self._config = types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
-            tools=[_build_gemini_tool()],
-        )
+        self._tool = _build_gemini_tool()
 
     def chat(
         self,
         message: str,
         history: list[dict[str, str]] | None = None,
     ) -> tuple[str, list[str], dict[str, Any]]:
+        config = types.GenerateContentConfig(
+            system_instruction=build_system_prompt(),
+            tools=[self._tool],
+        )
         gemini_history = [
             types.Content(
                 role="user" if t.get("role") == "user" else "model",
@@ -63,7 +64,7 @@ class GoogleProvider(LLMProvider):
 
         session = self._client.chats.create(
             model=self._model,
-            config=self._config,
+            config=config,
             history=gemini_history,
         )
 
