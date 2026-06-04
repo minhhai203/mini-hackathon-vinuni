@@ -30,7 +30,8 @@ def main() -> None:
     parser.add_argument("--output-dir", default="data/raw/vinpearl", help="Directory for JSON crawl cache.")
     parser.add_argument("--force", action="store_true", help="Refresh even when a cache file already exists.")
     parser.add_argument("--max-markdown-chars", type=int, default=12000)
-    parser.add_argument("--timeout-seconds", type=int, default=45)
+    parser.add_argument("--timeout-seconds", type=int, default=90)
+    parser.add_argument("--fail-fast", action="store_true", help="Stop immediately when one URL fails.")
     args = parser.parse_args()
 
     urls = args.urls or DEFAULT_URLS
@@ -38,23 +39,45 @@ def main() -> None:
     summary = []
 
     for url in urls:
-        result = crawl_and_cache_vinpearl_page_sync(
-            url,
-            output_dir=output_dir,
-            force=args.force,
-            max_markdown_chars=args.max_markdown_chars,
-            timeout_seconds=args.timeout_seconds,
-        )
-        payload = result["result"]
+        try:
+            result = crawl_and_cache_vinpearl_page_sync(
+                url,
+                output_dir=output_dir,
+                force=args.force,
+                max_markdown_chars=args.max_markdown_chars,
+                timeout_seconds=args.timeout_seconds,
+            )
+            payload = result["result"]
+            path = result["path"]
+            from_cache = result["from_cache"]
+        except Exception as exc:
+            if args.fail_fast:
+                raise
+            payload = {
+                "requested_url": url,
+                "url": url,
+                "success": False,
+                "title": None,
+                "error_message": f"{type(exc).__name__}: {exc}",
+            }
+            path = None
+            from_cache = False
+
         row = {
             "url": payload.get("requested_url") or payload.get("url"),
-            "path": result["path"],
-            "from_cache": result["from_cache"],
+            "path": path,
+            "from_cache": from_cache,
             "success": payload.get("success"),
             "title": payload.get("title"),
+            "error_message": payload.get("error_message"),
         }
         summary.append(row)
-        status = "cache" if result["from_cache"] else "crawled"
+        if from_cache:
+            status = "cache"
+        elif payload.get("success"):
+            status = "crawled"
+        else:
+            status = "failed"
         print(f"[{status}] {row['url']} -> {row['path']}")
 
     summary_path = output_dir / "crawl-summary.json"

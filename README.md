@@ -308,7 +308,7 @@ For OpenAI-compatible providers, set `OPENAI_BASE_URL`. Leave it empty for the o
 Optional crawler settings live in `.env` and are documented in `.env.example`:
 
 ```text
-VINPEARL_CRAWLER_TIMEOUT_SECONDS=30
+VINPEARL_CRAWLER_TIMEOUT_SECONDS=90
 VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS=6000
 VINPEARL_CRAWL_CACHE_DIR=data/raw/vinpearl
 ```
@@ -351,9 +351,15 @@ python scripts/crawl_vinpearl.py
 
 # Force refresh all seed URLs
 python scripts/crawl_vinpearl.py --force
+
+# Give slow Vinpearl pages more time
+python scripts/crawl_vinpearl.py --timeout-seconds 120
+
+# Stop immediately when one URL fails
+python scripts/crawl_vinpearl.py --fail-fast
 ```
 
-The running app does not auto-crawl on startup. It only reads cached JSON files that already exist in `data/raw/vinpearl`.
+The crawler writes `success=false` cache entries for pages that time out or are blocked, then continues to the next URL. The running app does not auto-crawl on startup. It only reads usable cached JSON files that already exist in `data/raw/vinpearl`; failed cache entries are ignored by the recommendation loader.
 
 ## Run With Docker
 

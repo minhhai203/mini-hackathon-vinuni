@@ -7,13 +7,16 @@ import json
 import os
 import re
 from datetime import datetime, timezone
+from html import unescape
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 
 ALLOWED_VINPEARL_HOSTS = {"vinpearl.com", "www.vinpearl.com"}
-DEFAULT_TIMEOUT_SECONDS = int(os.getenv("VINPEARL_CRAWLER_TIMEOUT_SECONDS", "30"))
+DEFAULT_TIMEOUT_SECONDS = int(os.getenv("VINPEARL_CRAWLER_TIMEOUT_SECONDS", "90"))
 DEFAULT_MAX_MARKDOWN_CHARS = int(os.getenv("VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS", "6000"))
 DEFAULT_CRAWL_CACHE_DIR = Path(os.getenv("VINPEARL_CRAWL_CACHE_DIR", "data/raw/vinpearl"))
 
@@ -54,6 +57,70 @@ def _markdown_to_text(markdown: Any) -> str:
         return str(raw_markdown)
 
     return str(markdown)
+
+
+def _html_to_text(html: str) -> str:
+    cleaned = re.sub(r"(?is)<(script|style|noscript).*?>.*?</\1>", " ", html)
+    cleaned = re.sub(r"(?i)<br\s*/?>", "\n", cleaned)
+    cleaned = re.sub(r"(?i)</(p|div|li|h[1-6]|section|article|header|footer)>", "\n", cleaned)
+    cleaned = re.sub(r"(?s)<[^>]+>", " ", cleaned)
+    cleaned = unescape(cleaned)
+    lines = [re.sub(r"\s+", " ", line).strip() for line in cleaned.splitlines()]
+    return "\n".join(line for line in lines if line)
+
+
+def _fallback_fetch_vinpearl_page(
+    url: str,
+    *,
+    max_markdown_chars: int,
+    timeout_seconds: int,
+) -> dict[str, Any] | None:
+    request = Request(
+        url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "vi-VN,vi;q=0.9,en;q=0.8",
+        },
+    )
+    try:
+        with urlopen(request, timeout=timeout_seconds) as response:
+            raw_html = response.read().decode("utf-8", errors="ignore")
+            markdown = _html_to_text(raw_html)
+            status_code = getattr(response, "status", None)
+    except (HTTPError, URLError, TimeoutError, OSError):
+        return None
+
+    title_match = re.search(r"(?is)<title[^>]*>(.*?)</title>", raw_html)
+    title = unescape(re.sub(r"\s+", " ", title_match.group(1)).strip()) if title_match else None
+    return {
+        "url": url,
+        "requested_url": url,
+        "success": bool(markdown),
+        "status_code": status_code,
+        "title": title,
+        "markdown": markdown[:max_markdown_chars],
+        "markdown_truncated": len(markdown) > max_markdown_chars,
+        "error_message": None,
+        "source": "official_vinpearl_fallback_html",
+    }
+
+
+def _failed_crawl_result(url: str, error: Exception) -> dict[str, Any]:
+    return {
+        "url": url,
+        "requested_url": url,
+        "success": False,
+        "status_code": None,
+        "title": None,
+        "markdown": "",
+        "markdown_truncated": False,
+        "error_message": f"{type(error).__name__}: {error}",
+        "source": "official_vinpearl",
+    }
 
 
 def vinpearl_cache_path(url: str, *, output_dir: str | Path = DEFAULT_CRAWL_CACHE_DIR) -> Path:
@@ -144,15 +211,38 @@ async def crawl_vinpearl_page(
         check_robots_txt=True,
         remove_overlay_elements=True,
         word_count_threshold=10,
+        page_timeout=timeout_seconds * 1000,
+        max_retries=1,
     )
 
     async def _run_crawl() -> Any:
         async with AsyncWebCrawler(config=browser_config) as crawler:
             return await crawler.arun(url=normalized_url, config=run_config)
 
-    result = await asyncio.wait_for(_run_crawl(), timeout=timeout_seconds)
+    try:
+        result = await _run_crawl()
+    except Exception as exc:
+        fallback_result = _fallback_fetch_vinpearl_page(
+            normalized_url,
+            max_markdown_chars=max_markdown_chars,
+            timeout_seconds=timeout_seconds,
+        )
+        if fallback_result:
+            fallback_result["error_message"] = f"crawl4ai fallback after {type(exc).__name__}: {exc}"
+            return fallback_result
+        return _failed_crawl_result(normalized_url, exc)
+
     markdown = _markdown_to_text(getattr(result, "markdown", ""))
     markdown = markdown.strip()
+    if not bool(getattr(result, "success", False)) and not markdown:
+        fallback_result = _fallback_fetch_vinpearl_page(
+            normalized_url,
+            max_markdown_chars=max_markdown_chars,
+            timeout_seconds=timeout_seconds,
+        )
+        if fallback_result:
+            fallback_result["error_message"] = f"crawl4ai fallback after failed result: {getattr(result, 'error_message', None)}"
+            return fallback_result
 
     return {
         "url": getattr(result, "url", normalized_url),

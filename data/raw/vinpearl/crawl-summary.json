@@ -1,0 +1,42 @@
+[
+  {
+    "url": "https://vinpearl.com/vi/phu-quoc",
+    "path": "data/raw/vinpearl/vinpearl-com-vi-phu-quoc.json",
+    "from_cache": false,
+    "success": true,
+    "title": "Quần thể Phú Quốc United Center | Website chính thức",
+    "error_message": ""
+  },
+  {
+    "url": "https://vinpearl.com/vi/nha-trang",
+    "path": "data/raw/vinpearl/vinpearl-com-vi-nha-trang.json",
+    "from_cache": false,
+    "success": true,
+    "title": "Quần thể Vinpearl Nha Trang | Website chính thức",
+    "error_message": ""
+  },
+  {
+    "url": "https://vinpearl.com/vi/ha-long",
+    "path": "data/raw/vinpearl/vinpearl-com-vi-ha-long.json",
+    "from_cache": false,
+    "success": true,
+    "title": "Hạ Long | Vinpearl",
+    "error_message": ""
+  },
+  {
+    "url": "https://vinpearl.com/vi/nam-hoi-an",
+    "path": "data/raw/vinpearl/vinpearl-com-vi-nam-hoi-an.json",
+    "from_cache": false,
+    "success": true,
+    "title": "Quần thể Vinpearl Nam Hội An | Website chính thức",
+    "error_message": ""
+  },
+  {
+    "url": "https://vinpearl.com/vi/uu-dai",
+    "path": "data/raw/vinpearl/vinpearl-com-vi-uu-dai.json",
+    "from_cache": false,
+    "success": true,
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "error_message": ""
+  }
+]

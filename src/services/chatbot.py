@@ -244,7 +244,12 @@ class ChatbotService:
         self.llm_service = llm_service or LLMService()
         self.crawl_cache_dir = crawl_cache_dir
 
-    def reply(self, message: str, profile: dict[str, Any] | None = None) -> dict[str, Any]:
+    def reply(
+        self,
+        message: str,
+        profile: dict[str, Any] | None = None,
+        history: list[dict[str, str]] | None = None,
+    ) -> dict[str, Any]:
         profile = profile or {}
         updates = parse_trip_profile(message)
         profile_update = update_trip_profile(profile, updates)
@@ -567,7 +572,12 @@ class AIChatbotService:
 
     def __init__(self) -> None:
         from src.providers import get_provider  # local import avoids circular deps at module load
-        self._llm = get_provider()
+        try:
+            self._llm = get_provider()
+            self._fallback_service: ChatbotService | None = None
+        except Exception:
+            self._llm = None
+            self._fallback_service = ChatbotService()
 
     def reply(
         self,
@@ -575,6 +585,9 @@ class AIChatbotService:
         profile: dict[str, Any] | None = None,
         history: list[dict[str, str]] | None = None,
     ) -> dict[str, Any]:
+        if self._fallback_service is not None:
+            return self._fallback_service.reply(message, profile=profile)
+
         profile = profile or {}
 
         # Extract profile fields from the new message (reuse existing parser)

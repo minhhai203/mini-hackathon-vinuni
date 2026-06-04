@@ -98,6 +98,14 @@ class LLMService:
 
 from src.providers import get_provider
 from src.providers.base import LLMProvider
-from src.providers.google import GoogleProvider as GeminiService  # legacy alias
+
+try:
+    from src.providers.google import GoogleProvider as GeminiService  # legacy alias
+except ImportError as exc:  # pragma: no cover - only hit when optional SDK is missing.
+    _gemini_import_error = exc
+
+    class GeminiService:  # type: ignore[no-redef]
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            raise RuntimeError("google-genai is not installed. Run `python -m pip install -r requirements.txt`.") from _gemini_import_error
 
 __all__ = ["get_provider", "GeminiService", "LLMProvider"]
