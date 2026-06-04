@@ -1,0 +1,12 @@
+{
+  "name": null,
+  "url": "https://vietnam.travel/places-to-go/south-central-coast/nha-trang-khanh-hoa",
+  "success": false,
+  "status_code": null,
+  "raw_text": "",
+  "raw_truncated": false,
+  "error_message": "RuntimeError: crawl4ai not installed and fallback failed",
+  "source": "destination_crawler",
+  "cached_at": "2026-06-04T08:01:26.634781+00:00",
+  "cache_version": 1
+}

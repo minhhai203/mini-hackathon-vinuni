@@ -1,0 +1,12 @@
+{
+  "name": null,
+  "url": "https://www.klook.com/vi/blog/dia-diem-du-lich-da-nang/",
+  "success": false,
+  "status_code": null,
+  "raw_text": "",
+  "raw_truncated": false,
+  "error_message": "RuntimeError: crawl4ai not installed and fallback failed",
+  "source": "destination_crawler",
+  "cached_at": "2026-06-04T08:16:39.622575+00:00",
+  "cache_version": 1
+}
