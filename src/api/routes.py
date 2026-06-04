@@ -7,10 +7,17 @@ from src.logger import get_logger
 from src.models.chat import ChatRequest, ChatResponse
 from src.models.health import HealthResponse
 from src.services.chatbot import AIChatbotService
+from src.session_limit import active_count, MAX_USERS
 
 log = get_logger("chatbot.api")
 router = APIRouter()
 chatbot_service = AIChatbotService()
+
+
+@router.get("/queue-status")
+def queue_status() -> dict:
+    current = active_count()
+    return {"active": current, "max": MAX_USERS}
 
 
 @router.get("/health", response_model=HealthResponse)
