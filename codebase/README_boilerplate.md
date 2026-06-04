@@ -2,13 +2,21 @@
 
 ## Project Structure
 
+This README lives inside `codebase/`. From the repository root, enter this folder first:
+
+```bash
+# From the repository root
+cd codebase
+```
+
 - `src/agents`: LangGraph agent graph, state, nodes, and tools
 - `src/api`: FastAPI routes
 - `src/models`: Pydantic schemas
 - `src/services`: business logic
-- `src/static`: existing frontend UI
+- `src/static`: preserved FastAPI-served static UI
+- `frontend`: Next.js frontend UI
 - `tests`: pytest suite
-- `scripts`: AI usage logging hooks
+- `scripts`: crawler and AI usage logging hooks
 - `docs`: guidebook and architecture notes
 - `eval`: evaluation artifacts
 - `presentation`: demo day slides
@@ -16,8 +24,19 @@
 ## Run
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 python -m pip install -r requirements.txt
-uvicorn src.main:app --reload
+python -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+For the Next.js UI, open a second terminal:
+
+```bash
+# From the repository root
+cd codebase/frontend
+npm install
+npm run dev
 ```
 
 ---
@@ -50,7 +69,8 @@ URLS_TO_CRAWL = [
 **Bước 2:** Chạy file:
 
 ```bash
-cd "c:\Users\Huawei\AI in Action\mini-hackathon-vinuni"
+# From the repository root
+cd codebase
 python src/agents/tools/destination_crawler.py
 ```
 

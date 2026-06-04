@@ -7,7 +7,7 @@
 Mở trực tiếp file:
 
 ```text
-02-group-spec/prototype-demo/index.html
+codebase/docs/lab5/02-group-spec/prototype-demo/index.html
 ```
 
 Không cần cài dependency, không cần chạy server.
@@ -24,9 +24,9 @@ Không cần cài dependency, không cần chạy server.
 
 Dữ liệu là mock data rút từ evidence public và self-use evidence trong:
 
-- `02-group-spec/spec-final.md`
-- `02-group-spec/thin-spec-final.md`
-- `02-group-spec/prompt-tests-or-failure-log.md`
-- `02-group-spec/evidence/`
+- `codebase/docs/lab5/02-group-spec/spec-final.md`
+- `codebase/docs/lab5/02-group-spec/thin-spec-final.md`
+- `codebase/docs/lab5/02-group-spec/prompt-tests-or-failure-log.md`
+- `codebase/docs/lab5/02-group-spec/evidence/`
 
 Prototype không tích hợp API MyVinpearl thật và không kiểm tra availability realtime.

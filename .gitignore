@@ -18,8 +18,8 @@ env/
 # Environment files
 .env
 .env.*
-!.env.example
-!frontend/.env.example
+!codebase/.env.example
+!codebase/frontend/.env.example
 
 # Runtime logs and generated AI logs
 *.log
@@ -34,9 +34,12 @@ dist/
 # Frontend/package manager leftovers
 node_modules/
 frontend/node_modules/
+codebase/frontend/node_modules/
 .next/
 frontend/.next/
+codebase/frontend/.next/
 frontend/out/
+codebase/frontend/out/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -50,3 +53,4 @@ Thumbs.db
 
 # Local test/server artifacts
 .uvicorn/
+codebase/.uvicorn/
