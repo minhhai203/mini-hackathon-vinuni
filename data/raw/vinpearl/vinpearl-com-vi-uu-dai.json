@@ -2,12 +2,36 @@
   "url": "https://vinpearl.com/vi/uu-dai",
   "requested_url": "https://vinpearl.com/vi/uu-dai",
   "success": true,
-  "status_code": 404,
+  "status_code": null,
   "title": "Trải nghiệm tại Vinwonders | Vinpearl",
-  "markdown": "[ ![](https://statics.vinpearl.com/files/img/vinpearl/vp.svg) Vui quý khách lòng xác thực email   \nđể đăng nhập được vào hệ thống.   \nXin cảm ơn! Đóng ](https://vinpearl.com/vi/user/logout)\nXem thêm Thu gọn\nMùng 1 Mùng 2 Mùng 3 Mùng 4 Mùng 5 Mùng 6 Mùng 7 Mùng 8 Mùng 9 Mùng 10 Ngày 11 Ngày 12 Ngày 13 Ngày 14 Ngày 15 Ngày 16 Ngày 17 Ngày 18 Ngày 19 Ngày 20 Ngày 21 Ngày 22 Ngày 23 Ngày 24 Ngày 25 Ngày 26 Ngày 27 Ngày 28 Hàng ngày Hàng tuần Hàng tháng Tuần cuối cùng của tháng Thứ Hai Thứ Ba Thứ Tư Thứ Năm Thứ Sáu Thứ Bảy Chủ Nhật",
+  "markdown": "# Ưu đãi khuyến mãi Vinpearl\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/uu-dai)\nNhóm dữ liệu: offer\nTiện ích/trải nghiệm: voucher, restaurant, theme_park, beach\nPhù hợp: deal_hunter, family_with_children\nTrang ưu đãi khuyến mãi chính thức của Vinpearl.",
   "markdown_truncated": false,
-  "error_message": "",
-  "source": "official_vinpearl",
-  "cached_at": "2026-06-04T04:14:49.732863+00:00",
+  "error_message": null,
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Ưu đãi khuyến mãi Vinpearl",
+    "category": "offer",
+    "destinations": [],
+    "amenities": [
+      "voucher",
+      "restaurant",
+      "theme_park",
+      "beach"
+    ],
+    "best_for": [
+      "deal_hunter",
+      "family_with_children"
+    ],
+    "option_type": "offer",
+    "summary": "Trang ưu đãi khuyến mãi chính thức của Vinpearl.",
+    "image_url": "assets/hero-1.png",
+    "context_badges": [
+      "Official",
+      "Offer"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:37:02.898568+00:00",
   "cache_version": 1
 }

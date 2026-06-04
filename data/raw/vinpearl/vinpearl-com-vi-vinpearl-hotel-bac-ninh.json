@@ -1,0 +1,37 @@
+{
+  "url": "https://vinpearl.com/vi/vinpearl-hotel-bac-ninh",
+  "requested_url": "https://vinpearl.com/vi/vinpearl-hotel-bac-ninh",
+  "success": true,
+  "status_code": 301,
+  "title": "Vinpearl Hotel Bắc Ninh: Khách sạn sang trọng bậc nhất",
+  "markdown": "# Vinpearl Hotel Bắc Ninh\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/vinpearl-hotel-bac-ninh)\nNhóm dữ liệu: hotel\nĐiểm đến: Bac Ninh\nTiện ích/trải nghiệm: restaurant, pool\nPhù hợp: business_or_short_trip\nVinpearl Hotel Bắc Ninh thuộc nhóm khách sạn/resort Vinpearl tại Bac Ninh, phù hợp để đưa vào shortlist lưu trú.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Vinpearl Hotel Bắc Ninh",
+    "category": "hotel",
+    "destinations": [
+      "Bac Ninh"
+    ],
+    "amenities": [
+      "restaurant",
+      "pool"
+    ],
+    "best_for": [
+      "business_or_short_trip"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Hotel Bắc Ninh thuộc nhóm khách sạn/resort Vinpearl tại Bac Ninh, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/hero-1.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Bac Ninh"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:35:09.720973+00:00",
+  "cache_version": 1
+}

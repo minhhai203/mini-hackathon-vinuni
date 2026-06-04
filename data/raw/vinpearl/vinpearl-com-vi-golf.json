@@ -1,0 +1,35 @@
+{
+  "url": "https://vinpearl.com/vi/golf",
+  "requested_url": "https://vinpearl.com/vi/golf",
+  "success": true,
+  "status_code": 200,
+  "title": "Golf | Vinpearl",
+  "markdown": "# Vinpearl Golf\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/golf)\nNhóm dữ liệu: experience\nTiện ích/trải nghiệm: golf, restaurant\nPhù hợp: golf_trip, premium_or_private_stay\nTrải nghiệm golf trong hệ sinh thái Vinpearl.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Vinpearl Golf",
+    "category": "experience",
+    "destinations": [],
+    "amenities": [
+      "golf",
+      "restaurant"
+    ],
+    "best_for": [
+      "golf_trip",
+      "premium_or_private_stay"
+    ],
+    "option_type": "activity",
+    "summary": "Trải nghiệm golf trong hệ sinh thái Vinpearl.",
+    "image_url": "assets/hero-1.png",
+    "context_badges": [
+      "Official menu",
+      "Golf"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:36:39.956617+00:00",
+  "cache_version": 1
+}

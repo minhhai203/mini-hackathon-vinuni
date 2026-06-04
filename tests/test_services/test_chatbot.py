@@ -3,7 +3,7 @@ from src.services.llm import LLMResult, LLMService
 
 
 def make_service() -> ChatbotService:
-    return ChatbotService(llm_service=LLMService(enabled=False))
+    return ChatbotService(llm_service=LLMService(enabled=False), crawl_cache_dir="tests/fixtures/no-crawl-cache")
 
 
 def test_parse_trip_profile_extracts_core_fields():

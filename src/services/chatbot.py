@@ -326,6 +326,18 @@ class ChatbotService:
             data_source = "knowledge_base"
 
         ranked = rank_resort_options(current_profile, recommendation_options)
+        if data_source == "vinpearl_crawl_cache" and len(ranked["shortlist"]) < 3:
+            fill_ranked = rank_resort_options(current_profile, KNOWLEDGE_BASE)
+            existing_names = {option.get("name") for option in ranked["shortlist"]}
+            for option in fill_ranked["shortlist"]:
+                if option.get("name") in existing_names:
+                    continue
+                ranked["shortlist"].append({**option, "data_source": "knowledge_base_fill"})
+                existing_names.add(option.get("name"))
+                if len(ranked["shortlist"]) >= 3:
+                    break
+            used_tools.append("knowledge_base_fill")
+
         used_tools.append("rank_resort_options")
         cards = [
             format_recommendation_card(option, policy_guard=option.get("policy_guard"))

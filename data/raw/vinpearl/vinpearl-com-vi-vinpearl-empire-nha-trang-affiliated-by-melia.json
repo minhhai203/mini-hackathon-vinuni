@@ -1,0 +1,38 @@
+{
+  "url": "https://vinpearl.com/vi/vinpearl-empire-nha-trang-affiliated-by-melia",
+  "requested_url": "https://vinpearl.com/vi/vinpearl-empire-nha-trang-affiliated-by-melia",
+  "success": true,
+  "status_code": 404,
+  "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+  "markdown": "# Vinpearl Empire Nha Trang, Affiliated by Meliá\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/vinpearl-empire-nha-trang-affiliated-by-melia)\nNhóm dữ liệu: hotel\nĐiểm đến: Nha Trang\nTiện ích/trải nghiệm: restaurant, pool\nPhù hợp: city_beach_stay, business_or_short_trip\nVinpearl Empire Nha Trang, Affiliated by Meliá thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Vinpearl Empire Nha Trang, Affiliated by Meliá",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "restaurant",
+      "pool"
+    ],
+    "best_for": [
+      "city_beach_stay",
+      "business_or_short_trip"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Empire Nha Trang, Affiliated by Meliá thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:34:20.111818+00:00",
+  "cache_version": 1
+}

@@ -1,0 +1,42 @@
+{
+  "url": "https://vinpearl.com/vi/vinpearl-resort-spa-phu-quoc",
+  "requested_url": "https://vinpearl.com/vi/vinpearl-resort-spa-phu-quoc",
+  "success": true,
+  "status_code": 301,
+  "title": "Vinpearl Resort & Spa Phú Quốc | Website chính thức",
+  "markdown": "# Vinpearl Resort & Spa Phú Quốc\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/vinpearl-resort-spa-phu-quoc)\nNhóm dữ liệu: hotel\nĐiểm đến: Phu Quoc\nTiện ích/trải nghiệm: spa, pool, beach, restaurant, kids\nPhù hợp: family_with_children, beach_holiday, relaxed_couple_or_family\nVinpearl Resort & Spa Phú Quốc thuộc nhóm khách sạn/resort Vinpearl tại Phu Quoc, phù hợp để đưa vào shortlist lưu trú.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Vinpearl Resort & Spa Phú Quốc",
+    "category": "hotel",
+    "destinations": [
+      "Phu Quoc"
+    ],
+    "amenities": [
+      "spa",
+      "pool",
+      "beach",
+      "restaurant",
+      "kids"
+    ],
+    "best_for": [
+      "family_with_children",
+      "beach_holiday",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Resort & Spa Phú Quốc thuộc nhóm khách sạn/resort Vinpearl tại Phu Quoc, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-phuquoc.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Phu Quoc"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:33:11.921781+00:00",
+  "cache_version": 1
+}

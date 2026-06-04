@@ -1,0 +1,29 @@
+{
+  "url": "https://vinpearl.com/vi",
+  "requested_url": "https://vinpearl.com/vi",
+  "success": true,
+  "status_code": 200,
+  "title": "Vinpearl | Website chính thức",
+  "markdown": "# Vinpearl Vietnam\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi)\nNhóm dữ liệu: homepage\nTrang chủ Vinpearl tiếng Việt, nguồn chính để phát hiện khách sạn, trải nghiệm, ưu đãi và tin tức.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Vinpearl Vietnam",
+    "category": "homepage",
+    "destinations": [],
+    "amenities": [],
+    "best_for": [],
+    "option_type": "homepage",
+    "summary": "Trang chủ Vinpearl tiếng Việt, nguồn chính để phát hiện khách sạn, trải nghiệm, ưu đãi và tin tức.",
+    "image_url": null,
+    "context_badges": [
+      "Official",
+      "Homepage"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:32:41.801615+00:00",
+  "cache_version": 1
+}

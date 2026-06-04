@@ -246,7 +246,8 @@ flowchart TD
     VAL -->|"rankable or partial rankable"| CTX["Context tools\nget_mock_weather_context\nget_mock_news_context\nget_mock_review_signals"]
     CTX --> DATA["Recommendation data source\nload cached crawl JSON from data/raw/vinpearl\nfallback to KNOWLEDGE_BASE when empty"]
     DATA --> EXT["extract_resort_info + extract_policy_guard\nconvert crawled markdown into rankable options"]
-    EXT --> RANK["rank_resort_options\nrank crawled data or fallback local data"]
+    EXT --> FILL["knowledge_base_fill\nfill top 3 only when crawl shortlist is short"]
+    FILL --> RANK["rank_resort_options\nrank crawled data or fallback local data"]
     RANK --> CARD["format_recommendation_card\nimage, badges, trade-off, policy guard"]
     CARD --> SRC["search_vinpearl_pages\nsource candidates for later crawl/verification"]
     SRC --> LLM
@@ -309,7 +310,7 @@ Optional crawler settings live in `.env` and are documented in `.env.example`:
 
 ```text
 VINPEARL_CRAWLER_TIMEOUT_SECONDS=90
-VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS=6000
+VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS=24000
 VINPEARL_CRAWL_CACHE_DIR=data/raw/vinpearl
 ```
 
@@ -317,14 +318,14 @@ VINPEARL_CRAWL_CACHE_DIR=data/raw/vinpearl
 
 `crawl4ai-setup` only prepares browser dependencies. It does not crawl Vinpearl data by itself.
 
-Crawl data only when you want to refresh official source snapshots:
+Crawl data only when you want to refresh official source snapshots and the structured Vinpearl catalog:
 
 ```bash
 source .venv/bin/activate
 python scripts/crawl_vinpearl.py
 ```
 
-By default, the script crawls a small official Vinpearl seed list and saves JSON files to:
+By default, the script uses the official Vinpearl menu/catalog captured from `vinpearl.com/vi`, including hotels/resorts by destination, experiences, offers, and news. It then attempts to crawl the corresponding official URLs and saves enriched JSON files to:
 
 ```text
 data/raw/vinpearl/
@@ -334,11 +335,12 @@ It also writes:
 
 ```text
 data/raw/vinpearl/crawl-summary.json
+data/raw/vinpearl/catalog-index.json
 ```
 
 The cached JSON files are intended to be committed and pushed so teammates do not need to crawl every time they run the app.
 
-When cached crawl JSON exists, the chatbot automatically loads it, extracts rankable resort/activity signals, and uses those options before ranking. When the cache folder is empty or has no usable JSON, the chatbot falls back to the built-in `KNOWLEDGE_BASE` mock/local data so the demo still works.
+When cached crawl JSON exists, the chatbot automatically loads it, extracts rankable resort/activity signals, and uses those options before ranking. If the crawl shortlist has fewer than 3 matching cards, the chatbot fills the remaining slots from the built-in `KNOWLEDGE_BASE` so the UI still has a complete top 3. When the cache folder is empty or has no usable JSON, the chatbot falls back to `KNOWLEDGE_BASE` mock/local data so the demo still works.
 
 Useful commands:
 
@@ -352,6 +354,12 @@ python scripts/crawl_vinpearl.py
 # Force refresh all seed URLs
 python scripts/crawl_vinpearl.py --force
 
+# Write the rich structured catalog without waiting for browser crawling
+python scripts/crawl_vinpearl.py --catalog-only --force
+
+# Try to discover extra official links from crawled pages
+python scripts/crawl_vinpearl.py --discover-links --max-pages 80
+
 # Give slow Vinpearl pages more time
 python scripts/crawl_vinpearl.py --timeout-seconds 120
 
@@ -359,7 +367,7 @@ python scripts/crawl_vinpearl.py --timeout-seconds 120
 python scripts/crawl_vinpearl.py --fail-fast
 ```
 
-The crawler writes `success=false` cache entries for pages that time out or are blocked, then continues to the next URL. The running app does not auto-crawl on startup. It only reads usable cached JSON files that already exist in `data/raw/vinpearl`; failed cache entries are ignored by the recommendation loader.
+The crawler writes structured `official_vinpearl_catalog_enriched` cache entries even when a page is slow, blocked, or returns noisy modal text. It continues to the next URL unless `--fail-fast` is set. The running app does not auto-crawl on startup. It only reads usable cached JSON files that already exist in `data/raw/vinpearl`; failed cache entries are ignored by the recommendation loader.
 
 ## Run With Docker
 

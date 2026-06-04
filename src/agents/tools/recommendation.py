@@ -31,6 +31,15 @@ def _destination_matches(profile_destination: str, option: dict[str, Any]) -> bo
     return any(normalize_text(profile_destination) in normalize_text(destination) for destination in destinations)
 
 
+def _destination_score(profile_destination: str, option: dict[str, Any]) -> int:
+    if not profile_destination:
+        return 0
+    destinations = option.get("destinations") or []
+    if not destinations:
+        return 0
+    return 4 if any(normalize_text(profile_destination) in normalize_text(destination) for destination in destinations) else 0
+
+
 def _priority_score(priority: str, amenities: list[str]) -> int:
     score = 0
     normalized_priority = normalize_text(priority)
@@ -59,7 +68,7 @@ def rank_resort_options(
             continue
 
         amenities = option.get("amenities") or []
-        score = 1 + _priority_score(priority, amenities)
+        score = 1 + _destination_score(destination, option) + _priority_score(priority, amenities)
         if contains_any(str(user_profile.get("group") or ""), ["tre em", "trẻ em", "child", "family"]):
             score += 2 if "kids" in amenities or "theme_park" in amenities else 0
         if option.get("confidence") == "high":

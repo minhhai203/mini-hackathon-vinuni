@@ -17,7 +17,7 @@ from urllib.request import Request, urlopen
 
 ALLOWED_VINPEARL_HOSTS = {"vinpearl.com", "www.vinpearl.com"}
 DEFAULT_TIMEOUT_SECONDS = int(os.getenv("VINPEARL_CRAWLER_TIMEOUT_SECONDS", "90"))
-DEFAULT_MAX_MARKDOWN_CHARS = int(os.getenv("VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS", "6000"))
+DEFAULT_MAX_MARKDOWN_CHARS = int(os.getenv("VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS", "24000"))
 DEFAULT_CRAWL_CACHE_DIR = Path(os.getenv("VINPEARL_CRAWL_CACHE_DIR", "data/raw/vinpearl"))
 
 
@@ -174,7 +174,7 @@ def load_cached_vinpearl_pages(
 
     pages: list[dict[str, Any]] = []
     for path in sorted(directory.glob("*.json")):
-        if path.name == "crawl-summary.json":
+        if path.name in {"crawl-summary.json", "catalog-index.json"}:
             continue
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))

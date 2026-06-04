@@ -1,0 +1,42 @@
+{
+  "url": "https://vinpearl.com/vi/vinpearl-resort-golf-nam-hoi-an",
+  "requested_url": "https://vinpearl.com/vi/vinpearl-resort-golf-nam-hoi-an",
+  "success": true,
+  "status_code": 301,
+  "title": "Vinpearl Resort & Golf Nam Hội An | Website chính thức",
+  "markdown": "# Vinpearl Resort & Golf Nam Hội An\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/vinpearl-resort-golf-nam-hoi-an)\nNhóm dữ liệu: hotel\nĐiểm đến: Nam Hoi An\nTiện ích/trải nghiệm: golf, pool, beach, restaurant, kids\nPhù hợp: family_with_children, golf_trip, beach_holiday\nVinpearl Resort & Golf Nam Hội An thuộc nhóm khách sạn/resort Vinpearl tại Nam Hoi An, phù hợp để đưa vào shortlist lưu trú.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Vinpearl Resort & Golf Nam Hội An",
+    "category": "hotel",
+    "destinations": [
+      "Nam Hoi An"
+    ],
+    "amenities": [
+      "golf",
+      "pool",
+      "beach",
+      "restaurant",
+      "kids"
+    ],
+    "best_for": [
+      "family_with_children",
+      "golf_trip",
+      "beach_holiday"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Resort & Golf Nam Hội An thuộc nhóm khách sạn/resort Vinpearl tại Nam Hoi An, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-danang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nam Hoi An"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:34:35.933658+00:00",
+  "cache_version": 1
+}

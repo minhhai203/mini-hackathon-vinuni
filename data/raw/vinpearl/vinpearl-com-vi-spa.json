@@ -1,0 +1,34 @@
+{
+  "url": "https://vinpearl.com/vi/spa",
+  "requested_url": "https://vinpearl.com/vi/spa",
+  "success": true,
+  "status_code": 404,
+  "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+  "markdown": "# Akoya Spa\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/spa)\nNhóm dữ liệu: experience\nTiện ích/trải nghiệm: spa, restaurant\nPhù hợp: relaxed_couple_or_family\nTrải nghiệm spa và nghỉ dưỡng nhẹ trong hệ sinh thái Vinpearl.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Akoya Spa",
+    "category": "experience",
+    "destinations": [],
+    "amenities": [
+      "spa",
+      "restaurant"
+    ],
+    "best_for": [
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "activity",
+    "summary": "Trải nghiệm spa và nghỉ dưỡng nhẹ trong hệ sinh thái Vinpearl.",
+    "image_url": "assets/destination-danang.png",
+    "context_badges": [
+      "Official menu",
+      "Spa"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:37:02.358998+00:00",
+  "cache_version": 1
+}

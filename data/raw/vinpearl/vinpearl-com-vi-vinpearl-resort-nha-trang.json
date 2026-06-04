@@ -1,0 +1,40 @@
+{
+  "url": "https://vinpearl.com/vi/vinpearl-resort-nha-trang",
+  "requested_url": "https://vinpearl.com/vi/vinpearl-resort-nha-trang",
+  "success": true,
+  "status_code": 301,
+  "title": "Vinpearl Resort Nha Trang | Official website",
+  "markdown": "# Vinpearl Resort Nha Trang\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/vinpearl-resort-nha-trang)\nNhóm dữ liệu: hotel\nĐiểm đến: Nha Trang\nTiện ích/trải nghiệm: pool, beach, kids, theme_park\nPhù hợp: family_with_children, beach_holiday\nVinpearl Resort Nha Trang thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Vinpearl Resort Nha Trang",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "pool",
+      "beach",
+      "kids",
+      "theme_park"
+    ],
+    "best_for": [
+      "family_with_children",
+      "beach_holiday"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Resort Nha Trang thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:33:42.367027+00:00",
+  "cache_version": 1
+}

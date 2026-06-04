@@ -1,0 +1,39 @@
+{
+  "url": "https://vinpearl.com/vi/vinholidays-fiesta-phu-quoc",
+  "requested_url": "https://vinpearl.com/vi/vinholidays-fiesta-phu-quoc",
+  "success": true,
+  "status_code": 404,
+  "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+  "markdown": "# VinHolidays Fiesta Phú Quốc\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/vinholidays-fiesta-phu-quoc)\nNhóm dữ liệu: hotel\nĐiểm đến: Phu Quoc\nTiện ích/trải nghiệm: restaurant, pool, kids\nPhù hợp: family_with_children, budget_friendly_stay\nVinHolidays Fiesta Phú Quốc thuộc nhóm khách sạn/resort Vinpearl tại Phu Quoc, phù hợp để đưa vào shortlist lưu trú.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "VinHolidays Fiesta Phú Quốc",
+    "category": "hotel",
+    "destinations": [
+      "Phu Quoc"
+    ],
+    "amenities": [
+      "restaurant",
+      "pool",
+      "kids"
+    ],
+    "best_for": [
+      "family_with_children",
+      "budget_friendly_stay"
+    ],
+    "option_type": "stay",
+    "summary": "VinHolidays Fiesta Phú Quốc thuộc nhóm khách sạn/resort Vinpearl tại Phu Quoc, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-phuquoc.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Phu Quoc"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:32:54.864074+00:00",
+  "cache_version": 1
+}

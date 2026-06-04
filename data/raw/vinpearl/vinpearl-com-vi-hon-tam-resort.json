@@ -1,0 +1,40 @@
+{
+  "url": "https://vinpearl.com/vi/hon-tam-resort",
+  "requested_url": "https://vinpearl.com/vi/hon-tam-resort",
+  "success": true,
+  "status_code": 200,
+  "title": "[MỚI] Hòn Tằm Resort: Địa chỉ, các loại phòng, dịch vụ và tiện ích",
+  "markdown": "# Hòn Tằm Resort\nNguồn: menu/trang chính thức Vinpearl (https://vinpearl.com/vi/hon-tam-resort)\nNhóm dữ liệu: hotel\nĐiểm đến: Nha Trang\nTiện ích/trải nghiệm: beach, pool, restaurant, spa\nPhù hợp: beach_holiday, relaxed_couple_or_family\nHòn Tằm Resort thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+  "markdown_truncated": false,
+  "error_message": "",
+  "source": "official_vinpearl_catalog_enriched",
+  "crawl_success": true,
+  "structured": {
+    "name": "Hòn Tằm Resort",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "beach",
+      "pool",
+      "restaurant",
+      "spa"
+    ],
+    "best_for": [
+      "beach_holiday",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "stay",
+    "summary": "Hòn Tằm Resort thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high"
+  },
+  "cached_at": "2026-06-04T04:33:20.901814+00:00",
+  "cache_version": 1
+}

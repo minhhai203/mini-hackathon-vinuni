@@ -4,10 +4,10 @@ from fastapi import APIRouter
 
 from src.models.chat import ChatRequest, ChatResponse
 from src.models.health import HealthResponse
-from src.services.chatbot import AIChatbotService
+from src.services.chatbot import ChatbotService
 
 router = APIRouter()
-chatbot_service = AIChatbotService()
+chatbot_service = ChatbotService()
 
 
 @router.get("/health", response_model=HealthResponse)

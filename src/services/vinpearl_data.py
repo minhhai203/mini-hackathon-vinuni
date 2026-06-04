@@ -49,32 +49,52 @@ def load_vinpearl_options_from_cache(
 
 
 def _option_from_payload(payload: dict[str, Any]) -> dict[str, Any] | None:
+    structured = payload.get("structured") or {}
     markdown = str(payload.get("markdown") or "").strip()
+    if not markdown and structured:
+        markdown = _structured_markdown(structured)
     if not markdown:
         return None
 
     source_url = str(payload.get("requested_url") or payload.get("url") or "")
     resort = extract_resort_info(markdown, source_url=source_url)
     policy = extract_policy_guard(markdown, source_url=source_url)
-    name = resort.get("name") or payload.get("title") or source_url or path.stem
-    destinations = resort.get("destinations") or _infer_destinations_from_url(source_url)
-    amenities = resort.get("amenities") or []
+    name = structured.get("name") or resort.get("name") or payload.get("title") or source_url or "Vinpearl option"
+    destinations = structured.get("destinations") or resort.get("destinations") or _infer_destinations_from_url(source_url)
+    amenities = _unique([*(structured.get("amenities") or []), *(resort.get("amenities") or [])])
 
     return {
         "name": name,
-        "option_type": _infer_option_type(markdown, amenities),
+        "option_type": structured.get("option_type") or _infer_option_type(markdown, amenities),
         "destinations": destinations,
         "amenities": amenities,
-        "image_url": _image_for_destination(destinations),
-        "context_badges": _build_context_badges(amenities),
-        "best_for": resort.get("best_for") or [],
-        "trade_offs": _build_trade_offs(resort, policy),
-        "confidence": resort.get("confidence") or "medium",
+        "image_url": structured.get("image_url") or _image_for_destination(destinations),
+        "context_badges": structured.get("context_badges") or _build_context_badges(amenities),
+        "best_for": structured.get("best_for") or resort.get("best_for") or [],
+        "trade_offs": structured.get("trade_offs") or _build_trade_offs(resort, policy),
+        "confidence": structured.get("confidence") or resort.get("confidence") or "medium",
         "source_url": source_url,
-        "data_source": "vinpearl_crawl_cache",
+        "data_source": payload.get("source") or "vinpearl_crawl_cache",
         "cache_path": str(payload.get("cache_path") or ""),
         "policy_guard": policy,
     }
+
+
+def _structured_markdown(structured: dict[str, Any]) -> str:
+    lines = [f"# {structured.get('name') or 'Vinpearl option'}"]
+    if structured.get("destinations"):
+        lines.append("Điểm đến: " + ", ".join(structured["destinations"]))
+    if structured.get("amenities"):
+        lines.append("Tiện ích/trải nghiệm: " + ", ".join(structured["amenities"]))
+    if structured.get("best_for"):
+        lines.append("Phù hợp: " + ", ".join(structured["best_for"]))
+    if structured.get("summary"):
+        lines.append(str(structured["summary"]))
+    return "\n".join(lines)
+
+
+def _unique(items: list[Any]) -> list[Any]:
+    return list(dict.fromkeys(item for item in items if item))
 
 
 def _infer_destinations_from_url(source_url: str) -> list[str]:

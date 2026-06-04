@@ -7,7 +7,10 @@ from src.services.llm import LLMService
 
 
 def disable_llm_for_api_tests():
-    routes.chatbot_service = ChatbotService(llm_service=LLMService(enabled=False))
+    routes.chatbot_service = ChatbotService(
+        llm_service=LLMService(enabled=False),
+        crawl_cache_dir="tests/fixtures/no-crawl-cache",
+    )
 
 
 def test_health_check():
