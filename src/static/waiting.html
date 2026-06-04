@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinpearl – Phòng chờ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a2342 0%, #1a4a7a 50%, #0d3360 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            padding: 24px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 52px 48px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            color: #c9a84c;
+            margin-bottom: 32px;
+        }
+
+        .icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .status-box {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(201,168,76,0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .status-box .count {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #c9a84c;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #c9a84c, #e8c96d);
+            color: #0a2342;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 36px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-bottom: 16px;
+        }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+
+        .refresh-note {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.45);
+        }
+
+        .progress-bar-wrap {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #c9a84c, #e8c96d);
+            border-radius: 2px;
+            width: 100%;
+            animation: countdown 30s linear forwards;
+            transform-origin: left;
+        }
+        @keyframes countdown {
+            from { transform: scaleX(1); }
+            to   { transform: scaleX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">VINPEARL</div>
+        <div class="icon">⏳</div>
+        <h1>Demo đang đông khách</h1>
+        <p class="subtitle">
+            Hiện tại đã có <strong>20 người</strong> đang sử dụng hệ thống.<br>
+            Vui lòng đợi – chúng tôi sẽ cấp chỗ cho bạn khi có chỗ trống.
+        </p>
+
+        <div class="status-box">
+            <span class="count" id="activeCount">—</span>
+            người đang hoạt động / tối đa 20
+        </div>
+
+        <div class="progress-bar-wrap">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <a href="/" class="btn" id="tryBtn">Thử lại ngay</a>
+        <p class="refresh-note">Trang sẽ tự động thử lại sau <span id="countdown">30</span> giây</p>
+    </div>
+
+    <script>
+        const REFRESH_INTERVAL = 30; // seconds
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch('/api/queue-status');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('activeCount').textContent = data.active;
+                }
+            } catch (_) {}
+        }
+
+        fetchStatus();
+
+        let remaining = REFRESH_INTERVAL;
+        const countdownEl = document.getElementById('countdown');
+
+        const timer = setInterval(() => {
+            remaining -= 1;
+            countdownEl.textContent = remaining;
+            if (remaining <= 0) {
+                clearInterval(timer);
+                window.location.href = '/';
+            }
+        }, 1000);
+
+        // Restart progress bar animation on each page load (already done via CSS)
+    </script>
+</body>
+</html>

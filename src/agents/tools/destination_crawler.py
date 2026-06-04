@@ -402,7 +402,14 @@ def crawl_and_cache_destination(
 # ---------------------------------------------------------------------------
 
 URLS_TO_CRAWL = [
-    "https://www.klook.com/vi/blog/dia-diem-du-lich-da-nang/",
+    "https://www.klook.com/vi/blog/dia-diem-du-lich-da-nang/"
+    "https://www.traveloka.com/vi-vn/explore/destination/canh-dep-phu-quoc/581563?id=4633158913685659889&adloc=vi-vn&kw=4633158913685659889_&gmt=a&gn=g&gd=c&gdm=&gcid=730351993185&gdp=&gdt=&gap=&pc=1&cp=4633158913685659889_VN_TA_SM_AU_AL_Google_RSA_VI_BRA_DOM_Vietnam_X_X_SunWorld_Products_X_4633158913685659889_&aid=177624594407&wid=kwl-3500001&fid=&gid=1028580&kid=_k_CjwKCAjwxITRBhBYEiwA6mZm7WfmQbpsQrOEZJnq-Nah7AIm7Yotc9W2ls7vNHIuK_IHSmEZ0-_5gRoC9aMQAvD_BwE_k_&utm_id=gfGF3x6s&ad_id=730351993185&target_id=kwl-3500001&click_id=CjwKCAjwxITRBhBYEiwA6mZm7WfmQbpsQrOEZJnq-Nah7AIm7Yotc9W2ls7vNHIuK_IHSmEZ0-_5gRoC9aMQAvD_BwE&group_id=177624594407&contexts=%7D&accessCode=vnsem&gad_source&gad_source=1&gad_campaignid=22163770942&gbraid=0AAAAADi60UmTThjI4n14-ysHZ335SMVTj&gclid=CjwKCAjwxITRBhBYEiwA6mZm7WfmQbpsQrOEZJnq-Nah7AIm7Yotc9W2ls7vNHIuK_IHSmEZ0-_5gRoC9aMQAvD_BwE",
+    "https://vinpearl.com/vi/du-lich-nha-trang-nen-di-dau-goi-y-21-diem-du-lich-nha-trang-hap-dan",
+    "https://vinpearl.com/vi/kinh-nghiem-du-lich-hoi-an-tron-bo-thoi-gian-di-lai-an-o-vui-choi",
+    "https://www.traveloka.com/vi-vn/explore/destination/dia-diem-du-lich-hoi-an/123917",
+    "https://vnexpress.net/cam-nang-du-lich-hoi-an-4446174.html",
+    "https://www.vietravel.com/vn/am-thuc-kham-pha/dia-diem-du-lich-ha-long-v16076.aspx",
+    "https://vnexpress.net/cam-nang-du-lich-ha-long-4457134.html"
 ]
 
 if __name__ == "__main__":
