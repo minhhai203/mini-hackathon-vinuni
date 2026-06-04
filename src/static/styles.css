@@ -742,40 +742,206 @@ button, input, select, textarea {
 /* Date Display Styling */
 .date-picker-wrapper {
     position: relative;
+    cursor: pointer;
+    user-select: none;
 }
 
 .date-display {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
     width: 100%;
-    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.date-range-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+
+.date-range-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
     font-weight: 600;
-    pointer-events: none; /* Let clicks pass to absolute inputs behind it */
-    z-index: 2;
+    letter-spacing: 0.04em;
 }
 
-.date-display i {
-    font-size: 0.75rem;
+.date-range-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    white-space: nowrap;
+}
+
+.date-range-arrow {
+    font-size: 0.68rem;
     color: var(--color-gold);
+    flex-shrink: 0;
 }
 
-.invisible-date-input {
+/* Custom Calendar Dropdown */
+.calendar-dropdown {
+    display: none;
     position: absolute;
-    top: 0;
-    width: 48%;
-    height: 100%;
-    opacity: 0;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,43,73,0.18);
+    z-index: 200;
+    width: 310px;
+    overflow: hidden;
+}
+
+.calendar-dropdown.show {
+    display: block;
+    animation: calDropIn 0.2s ease;
+}
+
+@keyframes calDropIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    background: var(--color-navy);
+}
+
+.cal-month-label {
+    font-family: var(--font-title);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-white);
+    letter-spacing: 0.03em;
+}
+
+.cal-nav-btn {
+    background: none;
+    border: none;
+    color: var(--color-gold);
     cursor: pointer;
-    z-index: 5;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    font-size: 0.75rem;
 }
 
-#inputCheckIn {
-    left: 0;
+.cal-nav-btn:hover {
+    background: rgba(184, 156, 90, 0.25);
 }
 
-#inputCheckOut {
-    right: 0;
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 7px 10px 4px;
+    background: var(--color-navy-dark);
+}
+
+.calendar-weekdays span {
+    text-align: center;
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    padding: 3px 0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 8px 10px 10px;
+    gap: 2px;
+}
+
+.cal-day {
+    text-align: center;
+    padding: 7px 2px;
+    font-size: 0.81rem;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    color: var(--color-text-dark);
+    border: none;
+    background: none;
+    line-height: 1;
+    font-family: var(--font-primary);
+}
+
+.cal-day:hover:not(.disabled):not(.empty) {
+    background: rgba(184, 156, 90, 0.18);
+    color: var(--color-gold-dark);
+}
+
+.cal-day.today:not(.selected-start):not(.selected-end) {
+    font-weight: 700;
+    color: var(--color-gold);
+    background: rgba(184, 156, 90, 0.09);
+}
+
+.cal-day.selected-start,
+.cal-day.selected-end {
+    background: var(--color-gold) !important;
+    color: var(--color-white) !important;
+    font-weight: 700;
+}
+
+.cal-day.selected-start {
+    border-radius: 5px 0 0 5px;
+}
+
+.cal-day.selected-end {
+    border-radius: 0 5px 5px 0;
+}
+
+.cal-day.selected-start.selected-end {
+    border-radius: 5px;
+}
+
+.cal-day.in-range {
+    background: rgba(184, 156, 90, 0.13);
+    color: var(--color-navy);
+    border-radius: 0;
+}
+
+.cal-day.disabled {
+    color: #CBD5E1;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.cal-day.empty {
+    cursor: default;
+    pointer-events: none;
+}
+
+.calendar-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 13px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-light-gray);
+}
+
+.cal-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-style: italic;
 }
 
 /* Guest Dropdown specifically */

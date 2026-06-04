@@ -157,41 +157,143 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // --- 7. BOOKING BAR: DATE IN/OUT SYNC ---
-    const dateDisplay = document.getElementById("dateDisplay");
+    // --- 7. BOOKING BAR: CUSTOM CALENDAR DATE PICKER ---
     const checkInDateDisplay = document.getElementById("checkInDateDisplay");
     const checkOutDateDisplay = document.getElementById("checkOutDateDisplay");
-    const inputCheckIn = document.getElementById("inputCheckIn");
-    const inputCheckOut = document.getElementById("inputCheckOut");
+    const datePickerTrigger = document.getElementById("datePickerTrigger");
+    const calendarDropdown = document.getElementById("calendarDropdown");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const calMonthLabel = document.getElementById("calMonthLabel");
+    const calPrevBtn = document.getElementById("calPrevBtn");
+    const calNextBtn = document.getElementById("calNextBtn");
+    const calHint = document.getElementById("calHint");
+    const calApplyBtn = document.getElementById("calApplyBtn");
 
-    // Format dates to "DD THMM YYYY" (e.g. 04 TH06 2026)
-    function formatDateString(dateVal) {
-        if (!dateVal) return "";
-        const dateObj = new Date(dateVal);
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const year = dateObj.getFullYear();
-        return `${day} TH${month} ${year}`;
+    const MONTHS_VI = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6",
+                       "Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+
+    const calToday = new Date();
+    calToday.setHours(0, 0, 0, 0);
+
+    const calState = {
+        viewYear: 2026,
+        viewMonth: 5, // June (0-indexed)
+        checkIn: new Date(2026, 5, 4),
+        checkOut: new Date(2026, 5, 5),
+        selecting: null // 'start' | 'end' | null
+    };
+
+    function formatCalDate(d) {
+        if (!d) return "---";
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${day} TH${month} ${d.getFullYear()}`;
     }
 
-    // Close dropdowns when clicking date inputs, and sync values on change
-    inputCheckIn.addEventListener("click", (e) => {
+    function sameDay(a, b) {
+        return a && b && a.getFullYear() === b.getFullYear()
+            && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+
+    function renderCalendar() {
+        const { viewYear, viewMonth, checkIn, checkOut } = calState;
+        calMonthLabel.textContent = `${MONTHS_VI[viewMonth]} ${viewYear}`;
+
+        const firstDay = new Date(viewYear, viewMonth, 1);
+        let startOffset = firstDay.getDay() - 1;
+        if (startOffset < 0) startOffset = 6;
+
+        const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+        calendarGrid.innerHTML = '';
+
+        for (let i = 0; i < startOffset; i++) {
+            const empty = document.createElement('button');
+            empty.type = 'button';
+            empty.className = 'cal-day empty';
+            calendarGrid.appendChild(empty);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const date = new Date(viewYear, viewMonth, d);
+            date.setHours(0, 0, 0, 0);
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cal-day';
+            btn.textContent = d;
+            btn.dataset.ts = date.getTime();
+
+            if (date < calToday) {
+                btn.classList.add('disabled');
+            } else {
+                if (sameDay(date, calToday)) btn.classList.add('today');
+                if (checkIn && sameDay(date, checkIn)) btn.classList.add('selected-start');
+                if (checkOut && sameDay(date, checkOut)) btn.classList.add('selected-end');
+                if (checkIn && checkOut && date > checkIn && date < checkOut) btn.classList.add('in-range');
+
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    onDayClick(new Date(parseInt(btn.dataset.ts)));
+                });
+            }
+
+            calendarGrid.appendChild(btn);
+        }
+    }
+
+    function onDayClick(date) {
+        if (calState.selecting === 'end' && calState.checkIn && date > calState.checkIn) {
+            calState.checkOut = date;
+            calState.selecting = null;
+            checkOutDateDisplay.textContent = formatCalDate(date);
+            calHint.textContent = `Nhận: ${formatCalDate(calState.checkIn)} · Trả: ${formatCalDate(date)}`;
+        } else {
+            calState.checkIn = date;
+            calState.checkOut = null;
+            calState.selecting = 'end';
+            checkInDateDisplay.textContent = formatCalDate(date);
+            checkOutDateDisplay.textContent = '---';
+            calHint.textContent = 'Chọn ngày trả phòng';
+        }
+        renderCalendar();
+    }
+
+    datePickerTrigger.addEventListener('click', (e) => {
         e.stopPropagation();
         closeAllDropdowns();
+        calState.selecting = 'start';
+        calHint.textContent = 'Chọn ngày nhận phòng';
+        const isOpen = calendarDropdown.classList.toggle('show');
+        if (isOpen) {
+            const ref = calState.checkIn || calToday;
+            calState.viewYear = ref.getFullYear();
+            calState.viewMonth = ref.getMonth();
+            renderCalendar();
+        }
     });
 
-    inputCheckOut.addEventListener("click", (e) => {
+    calPrevBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        closeAllDropdowns();
+        calState.viewMonth--;
+        if (calState.viewMonth < 0) { calState.viewMonth = 11; calState.viewYear--; }
+        renderCalendar();
     });
 
-    inputCheckIn.addEventListener("change", () => {
-        checkInDateDisplay.textContent = formatDateString(inputCheckIn.value);
+    calNextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        calState.viewMonth++;
+        if (calState.viewMonth > 11) { calState.viewMonth = 0; calState.viewYear++; }
+        renderCalendar();
     });
 
-    inputCheckOut.addEventListener("change", () => {
-        checkOutDateDisplay.textContent = formatDateString(inputCheckOut.value);
+    calApplyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        calendarDropdown.classList.remove('show');
+        calState.selecting = null;
+        if (calState.checkIn) checkInDateDisplay.textContent = formatCalDate(calState.checkIn);
+        if (calState.checkOut) checkOutDateDisplay.textContent = formatCalDate(calState.checkOut);
     });
+
+    calendarDropdown.addEventListener('click', (e) => e.stopPropagation());
 
     // --- 8. BOOKING BAR: GUESTS DROPDOWN SELECTOR ---
     const inputGuests = document.getElementById("inputGuests");
@@ -249,6 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
         langDropdownMenu.classList.remove("show");
         dropdownDestination.classList.remove("show");
         dropdownGuests.classList.remove("show");
+        calendarDropdown.classList.remove("show");
     }
     
     // Close dropdowns when clicking outside
