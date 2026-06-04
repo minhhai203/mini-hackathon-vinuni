@@ -3,3 +3,6 @@ uvicorn[standard]
 pydantic-settings
 crawl4ai
 pytest
+google-genai
+openai
+httpx
