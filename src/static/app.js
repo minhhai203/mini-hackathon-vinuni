@@ -667,8 +667,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         plannerResultIcon.innerHTML = '<i class="fa-solid fa-list-check"></i>';
-        plannerResultTitle.textContent = missingCount === 1 ? "Còn 1 mảnh nữa là mở khóa plan" : `Còn ${missingCount} mảnh nữa`;
-        plannerResultText.textContent = "Cứ trả lời tự nhiên ở khung chat. Mỗi thông tin đúng sẽ làm sáng một node bên cạnh.";
+        plannerResultTitle.textContent = missingCount === 1 ? "Sắp xong rồi, còn một ý nhỏ" : `Mình hỏi thêm ${missingCount} ý nữa nhé`;
+        plannerResultText.textContent = "Bạn cứ nhắn như đang kể chuyến đi mong muốn. Càng rõ gu, mình càng dễ chốt plan hợp bạn.";
     }
 
     function getPlannerPlaceholder(field) {
