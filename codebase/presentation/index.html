@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>F2 - Vinpearl AI Booking Assistant</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="deck" aria-label="F2 presentation slides">
+      <section class="slide cover active" data-title="Cover">
+        <div class="topline">
+          <span class="brand">F2 · VinUni Mini Hackathon</span>
+          <span class="tag">AI Product Labs</span>
+        </div>
+        <div class="hero-layout">
+          <div class="hero-copy">
+            <p class="eyebrow">Vinpearl Booking Experience</p>
+            <h1>AI Assistant giúp khách không bị kẹt khi đặt kỳ nghỉ</h1>
+            <p class="lead">
+              Nhóm F2 xây dựng lớp hỗ trợ thông minh cho luồng tìm kiếm Vinpearl:
+              hiểu nhu cầu, gợi ý bộ lọc tốt hơn, xử lý trạng thái không có kết quả
+              và giúp người dùng luôn có bước tiếp theo để tiếp tục đặt dịch vụ.
+            </p>
+            <div class="members">
+              <span>Đặng Minh Hải</span>
+              <span>Phạm Mai Hạnh</span>
+              <span>Hoàng Phúc Quân</span>
+              <span>Nguyễn Đức Thành</span>
+            </div>
+          </div>
+          <figure class="image-slot cover-shot">
+            <img src="assets/vinpearl-old-empty-state.png" alt="Ảnh thực tế lỗi không có kết quả trên Vinpearl" />
+            <figcaption>
+              Ảnh thực tế: lưu screenshot lỗi hiện tại vào
+              <b>presentation/assets/vinpearl-old-empty-state.png</b>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Problem">
+        <p class="eyebrow">Vấn đề từ trải nghiệm thật</p>
+        <h2>Người dùng đã có nhu cầu, nhưng hệ thống không dẫn họ đi tiếp</h2>
+        <div class="split">
+          <figure class="image-slot problem-shot">
+            <img src="assets/vinpearl-loading-or-no-flight.png" alt="Ảnh lỗi loading hoặc không tìm được chuyến bay" />
+            <figcaption>
+              Thêm ảnh lỗi loading hoặc không tìm được chuyến bay tại
+              <b>assets/vinpearl-loading-or-no-flight.png</b>
+            </figcaption>
+          </figure>
+          <div class="stack">
+            <article>
+              <span>01</span>
+              <h3>Không tìm được chuyến bay dù chọn khoảng thời gian rộng</h3>
+              <p>
+                Đây là tín hiệu khách đang linh hoạt và có ý định mua, nhưng website cũ
+                trả về trạng thái cụt thay vì gợi ý ngày bay, khách sạn hoặc combo thay thế.
+              </p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Mắc kẹt ở loading trong một số tính năng</h3>
+              <p>
+                Khi loading kéo dài, người dùng không biết hệ thống đang xử lý gì,
+                có nên đợi hay phải quay lại từ đầu.
+              </p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Thông báo lỗi chưa tạo được niềm tin</h3>
+              <p>
+                Trải nghiệm cũ nói “vui lòng tìm kiếm lại”, nhưng chưa giải thích nguyên nhân
+                và chưa đưa ra lựa chọn cụ thể để khách tiếp tục.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Product">
+        <p class="eyebrow">Sản phẩm nhóm F2 đã hoàn thành</p>
+        <h2>Một lớp AI hỗ trợ ngay trong hành trình tìm kiếm và đặt phòng</h2>
+        <div class="cards four">
+          <article>
+            <span class="chip">AI</span>
+            <h3>Hiểu nhu cầu tự nhiên</h3>
+            <p>
+              Người dùng có thể mô tả chuyến đi bằng ngôn ngữ đời thường; hệ thống chuyển
+              nhu cầu đó thành điểm đến, ngày đi, số khách và tiêu chí tìm kiếm.
+            </p>
+          </article>
+          <article>
+            <span class="chip">Filter</span>
+            <h3>Gợi ý bộ lọc thông minh</h3>
+            <p>
+              Thay vì bắt khách tự thử nhiều lần, app đề xuất cách nới ngày, đổi resort,
+              đổi loại phòng hoặc xem combo phù hợp hơn.
+            </p>
+          </article>
+          <article>
+            <span class="chip">Recovery</span>
+            <h3>Không để lỗi thành điểm dừng</h3>
+            <p>
+              Các trạng thái loading, không có kết quả hoặc lỗi dữ liệu được biến thành
+              màn hình có lời giải thích và hành động tiếp theo.
+            </p>
+          </article>
+          <article>
+            <span class="chip">Demo</span>
+            <h3>Luồng demo có thể trình bày ngay</h3>
+            <p>
+              Sau pitch, nhóm có thể demo trực tiếp kịch bản tìm chuyến Hà Nội - Phú Quốc
+              và cách app F2 xử lý tốt hơn website cũ.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="slide" data-title="System">
+        <p class="eyebrow">Cách hệ thống hoạt động</p>
+        <h2>Từ câu hỏi của khách đến lựa chọn có thể đặt</h2>
+        <div class="flow">
+          <div>
+            <span>1</span>
+            <h3>Nhận intent</h3>
+            <p>Khách nhập nhu cầu: điểm đi, điểm đến, khoảng ngày, ngân sách, số phòng, số khách.</p>
+          </div>
+          <div>
+            <span>2</span>
+            <h3>Chuẩn hóa bộ lọc</h3>
+            <p>App chuyển intent thành điều kiện tìm kiếm rõ ràng để gọi dữ liệu phòng, khách sạn, vé bay.</p>
+          </div>
+          <div>
+            <span>3</span>
+            <h3>Kiểm tra kết quả</h3>
+            <p>Nếu không có kết quả, hệ thống không dừng lại mà tìm phương án gần nhất.</p>
+          </div>
+          <div>
+            <span>4</span>
+            <h3>Đề xuất tiếp theo</h3>
+            <p>Khách nhận gợi ý đổi ngày, đổi resort, chọn combo hoặc thử lại khi dịch vụ bị lỗi.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Old vs New">
+        <p class="eyebrow">F2 tốt hơn website cũ Vinpearl ở đâu?</p>
+        <h2>Không chỉ sửa giao diện, mà sửa điểm nghẽn trong phễu đặt dịch vụ</h2>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Tình huống</th>
+              <th>Website cũ</th>
+              <th>Giải pháp F2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Không có kết quả</td>
+              <td>Hiển thị màn hình rỗng và yêu cầu người dùng tự tìm lại.</td>
+              <td>Gợi ý ngày, resort, phòng hoặc combo thay thế để khách tiếp tục.</td>
+            </tr>
+            <tr>
+              <td>Loading kéo dài</td>
+              <td>Người dùng bị kẹt, không biết nên chờ hay thoát.</td>
+              <td>Có trạng thái rõ ràng, nút thử lại và phương án fallback.</td>
+            </tr>
+            <tr>
+              <td>Tìm kiếm phức tạp</td>
+              <td>Khách phải tự lọc, tự đoán và thử nhiều lần.</td>
+              <td>AI hiểu nhu cầu và đề xuất bộ lọc gần với ý định mua.</td>
+            </tr>
+            <tr>
+              <td>Giá trị doanh nghiệp</td>
+              <td>Website chỉ phản hồi kết quả có sẵn.</td>
+              <td>App chủ động tư vấn, giữ khách ở lại và tăng cơ hội chuyển đổi.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="Business">
+        <p class="eyebrow">Luận điểm doanh nghiệp</p>
+        <h2>Vì sao Vinpearl nên chọn giải pháp của F2?</h2>
+        <div class="cards three">
+          <article>
+            <span class="chip">Conversion</span>
+            <h3>Giữ khách ở thời điểm quyết định</h3>
+            <p>
+              Người dùng đã nhập điểm đến và khoảng ngày là người dùng có ý định mua.
+              F2 giúp họ không rời khỏi phễu chỉ vì một trạng thái rỗng.
+            </p>
+          </article>
+          <article>
+            <span class="chip">Trust</span>
+            <h3>Tăng cảm giác hệ thống đáng tin</h3>
+            <p>
+              Thay vì “lỗi rồi, tìm lại”, app giải thích vấn đề và đưa ra phương án cụ thể,
+              làm trải nghiệm giống được tư vấn bởi nhân viên thật.
+            </p>
+          </article>
+          <article>
+            <span class="chip">Upsell</span>
+            <h3>Mở thêm cơ hội bán combo</h3>
+            <p>
+              Khi khách không tìm thấy lựa chọn ban đầu, F2 có thể gợi ý combo phòng,
+              vé bay, voucher và trải nghiệm phù hợp hơn.
+            </p>
+          </article>
+        </div>
+        <p class="statement">
+          F2 nổi bật vì không dừng ở việc làm đẹp UI. Nhóm tập trung vào một câu hỏi kinh doanh:
+          làm sao để khách vẫn tiếp tục đặt dịch vụ khi website cũ trả về lỗi hoặc không có kết quả?
+        </p>
+      </section>
+
+      <section class="slide closing" data-title="Close">
+        <p class="eyebrow">Chuyển sang demo</p>
+        <h2>Pitch kết thúc bằng một trải nghiệm có thể kiểm chứng ngay</h2>
+        <div class="demo-steps">
+          <div><span>01</span>Nhập nhu cầu Hà Nội đến Phú Quốc, 11/06 - 30/06, 1 phòng.</div>
+          <div><span>02</span>Cho thấy vấn đề website cũ: không có kết quả hoặc loading kéo dài.</div>
+          <div><span>03</span>Demo app F2: AI hiểu nhu cầu và đề xuất phương án thay thế.</div>
+          <div><span>04</span>Chốt: F2 giúp Vinpearl giữ khách, tăng niềm tin và tăng conversion.</div>
+        </div>
+        <div class="endmark">F2 · Ready for demo</div>
+      </section>
+
+      <section class="slide demo-link" data-title="Demo Link">
+        <p class="eyebrow">Demo sản phẩm</p>
+        <h2>Quét QR hoặc mở link để xem demo F2</h2>
+        <div class="demo-link-layout">
+          <div class="demo-info">
+            <article>
+              <span class="chip">Demo URL</span>
+              <h3>Link demo</h3>
+              <p class="demo-url">
+                <a href="https://suddenly-greensboro-handbook-istanbul.trycloudflare.com/" target="_blank" rel="noreferrer">
+                  https://suddenly-greensboro-handbook-istanbul.trycloudflare.com/
+                </a>
+              </p>
+            </article>
+            <article>
+              <span class="chip">Project Path</span>
+              <h3>Đường dẫn project</h3>
+              <p class="demo-path">mini-hackathon-vinuni/</p>
+            </article>
+          </div>
+          <figure class="qr-slot">
+            <img src="assets/demo-qr.png" alt="QR code demo F2" />
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <nav class="controls" aria-label="Slide controls">
+      <button id="prev" type="button" aria-label="Previous slide">‹</button>
+      <div id="counter">1 / 8</div>
+      <button id="next" type="button" aria-label="Next slide">›</button>
+    </nav>
+
+    <script src="script.js"></script>
+  </body>
+</html>
