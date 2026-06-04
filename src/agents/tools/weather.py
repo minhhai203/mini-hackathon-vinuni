@@ -40,10 +40,43 @@ _WMO_DESCRIPTIONS: dict[int, str] = {
 _FORECAST_MAX_DAYS = 16
 
 
+def _weather_visual_for_code(code: int | None, precipitation_mm: float | None = None) -> dict[str, str]:
+    if code is None:
+        return {"icon": "🌦️", "icon_class": "weather-mixed", "fa_icon": "fa-cloud-sun", "label": "thay đổi"}
+    if code == 0:
+        return {"icon": "☀️", "icon_class": "weather-sun", "fa_icon": "fa-sun", "label": "nắng đẹp"}
+    if code in {1, 2}:
+        return {"icon": "🌤️", "icon_class": "weather-partly", "fa_icon": "fa-cloud-sun", "label": "nắng nhẹ, có mây"}
+    if code == 3:
+        return {"icon": "☁️", "icon_class": "weather-cloud", "fa_icon": "fa-cloud", "label": "nhiều mây"}
+    if code in {45, 48}:
+        return {"icon": "🌫️", "icon_class": "weather-fog", "fa_icon": "fa-smog", "label": "sương mù"}
+    if 51 <= code <= 65 or 80 <= code <= 82:
+        if precipitation_mm is not None and precipitation_mm < 2:
+            return {"icon": "🌦️", "icon_class": "weather-mixed", "fa_icon": "fa-cloud-sun-rain", "label": "mưa nhẹ thoáng qua"}
+        return {"icon": "🌧️", "icon_class": "weather-rain", "fa_icon": "fa-cloud-rain", "label": "có mưa"}
+    if code >= 95:
+        if precipitation_mm is not None and precipitation_mm < 2:
+            return {"icon": "🌦️", "icon_class": "weather-mixed", "fa_icon": "fa-cloud-sun-rain", "label": "dông nhẹ, mưa ít"}
+        return {"icon": "⛈️", "icon_class": "weather-storm", "fa_icon": "fa-cloud-bolt", "label": "dông/mưa lớn"}
+    return {"icon": "🌦️", "icon_class": "weather-mixed", "fa_icon": "fa-cloud-sun-rain", "label": "thay đổi"}
+
+
+def _wmo_icon(code: int) -> str:
+    return _weather_visual_for_code(code)["icon"]
+
+
 def _wmo_label(code: int) -> str:
-    for threshold in sorted(_WMO_DESCRIPTIONS, reverse=True):
-        if code >= threshold:
-            return _WMO_DESCRIPTIONS[threshold]
+    if code in _WMO_DESCRIPTIONS:
+        return _WMO_DESCRIPTIONS[code]
+    if code == 0:
+        return _WMO_DESCRIPTIONS[0]
+    if code in {1, 2, 3}:
+        return _WMO_DESCRIPTIONS.get(code, "có mây")
+    if 51 <= code <= 65 or 80 <= code <= 82:
+        return "có mưa"
+    if code >= 95:
+        return "dông"
     return "không xác định"
 
 
@@ -57,9 +90,11 @@ def _resolve_location(destination: str) -> tuple[dict, str]:
     return VINPEARL_LOCATIONS["Phu Quoc"], "Phu Quoc"
 
 
-def _assess_suitability(avg_max: float | None, rainy_days: int, total_days: int) -> str:
+def _assess_suitability(avg_max: float | None, rainy_days: int, total_days: int, storm_days: int = 0) -> str:
     if avg_max is None or total_days == 0:
         return "Không đủ dữ liệu để đánh giá"
+    if storm_days:
+        return "Cần cân nhắc — có khả năng dông, nên giữ lịch linh hoạt và ưu tiên hoạt động trong nhà"
     rain_ratio = rainy_days / total_days
     if rain_ratio > 0.6:
         return "Không lý tưởng — nhiều mưa, nên cân nhắc thời gian khác hoặc chuẩn bị áo mưa"
@@ -141,6 +176,10 @@ def get_weather_forecast(destination: str, start_date: str, end_date: str) -> di
             "temp_min_c": temp_min_list[i] if i < len(temp_min_list) else None,
             "precipitation_mm": precip_list[i] if i < len(precip_list) else None,
             "condition": _wmo_label(code_list[i]) if i < len(code_list) else "không xác định",
+            **_weather_visual_for_code(
+                code_list[i] if i < len(code_list) else None,
+                precip_list[i] if i < len(precip_list) else None,
+            ),
             "windspeed_kmh": wind_list[i] if i < len(wind_list) else None,
         }
         for i in range(len(dates))
@@ -153,16 +192,27 @@ def get_weather_forecast(destination: str, start_date: str, end_date: str) -> di
     avg_max = sum(valid_max) / len(valid_max) if valid_max else None
     avg_min = sum(valid_min) / len(valid_min) if valid_min else None
     rainy_days = sum(1 for p in valid_precip if p > 5)
+    storm_days = sum(1 for code in code_list if code >= 95)
+    total_precip = round(sum(valid_precip), 1)
+    significant_codes = [
+        code
+        for code, precip in zip(code_list, precip_list, strict=False)
+        if precip is not None and (precip >= 2 or code < 51)
+    ]
+    dominant_code = significant_codes[0] if significant_codes else (code_list[0] if code_list else 2)
+    visual = _weather_visual_for_code(dominant_code, total_precip)
 
     result: dict = {
         "destination": location["name"],
         "period": f"{effective_start.isoformat()} → {effective_end.isoformat()}",
+        **visual,
         "avg_temperature": (
             f"{avg_min:.1f}°C – {avg_max:.1f}°C" if avg_max is not None and avg_min is not None else "N/A"
         ),
-        "total_precipitation_mm": round(sum(valid_precip), 1),
+        "total_precipitation_mm": total_precip,
         "rainy_days": rainy_days,
-        "travel_suitability": _assess_suitability(avg_max, rainy_days, len(dates)),
+        "storm_days": storm_days,
+        "travel_suitability": _assess_suitability(avg_max, rainy_days, len(dates), storm_days),
         "daily_forecast": daily_summaries[:7],  # cap at 7 days for concise output
     }
 

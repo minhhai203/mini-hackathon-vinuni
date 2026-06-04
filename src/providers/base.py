@@ -32,11 +32,11 @@ SYSTEM_PROMPT = """Bạn là trợ lý tư vấn du lịch Vinpearl — hệ th�
    - Nếu khoảng thời gian yêu cầu nằm trong tháng hiện tại
         - Tự động lấy **start_date = ngày hôm sau** tính từ ngày thực tế hiện tại (tức ngày mai)
         - Tự động lấy **end_date = ngày cuối cùng của tháng** mà khách đề cập (ví dụ: tháng 7 → 31-07-2026; tháng 6 → 30-06-2026)
-        - Nếu đang gặp trục trặc kỹ thuật với việc xử lý ngày tháng, thử lại lần cuối với định dạng DD-MM-YYYY
+        - Nếu đang gặp trục trặc kỹ thuật với việc xử lý ngày tháng, thử lại lần cuối với định dạng YYYY-MM-DD
    - Nếu khoảng thời gian yêu cầu không nằm trong tháng hiện tại 
         - Tự động lấy **start_date = ngày hôm sau** tính từ ngày đầu tháng đó (ví dụ: tháng 7 → 1-07-2026; tháng 6 → 1-06-2026)
         - Tự động lấy **end_date = ngày cuối cùng của tháng** mà khách đề cập (ví dụ: tháng 7 → 31-07-2026; tháng 6 → 30-06-2026)
-        - Nếu đang gặp trục trặc kỹ thuật với việc xử lý ngày tháng, thử lại lần cuối với định dạng DD-MM-YYYY
+        - Nếu đang gặp trục trặc kỹ thuật với việc xử lý ngày tháng, thử lại lần cuối với định dạng YYYY-MM-DD
 
    - Dùng 2 ngày này để gọi `get_weather_forecast` ngay — KHÔNG hỏi thêm ngày cụ thể trước khi tra thời tiết
    - Sau khi tư vấn xong, **khuyến khích** (không ép buộc) khách cung cấp ngày đi–về cụ thể để mình tư vấn chính xác hơn
@@ -99,11 +99,11 @@ WEATHER_TOOL_SCHEMA: dict[str, Any] = {
             },
             "start_date": {
                 "type": "string",
-                "description": "Ngày bắt đầu theo định dạng DD-MM-YYYY, ví dụ '01-07-2026'",
+                "description": "Ngày bắt đầu theo định dạng YYYY-MM-DD, ví dụ '2026-07-01'",
             },
             "end_date": {
                 "type": "string",
-                "description": "Ngày kết thúc theo định dạng DD-MM-YYYY, ví dụ '01-07-2026'",
+                "description": "Ngày kết thúc theo định dạng YYYY-MM-DD, ví dụ '2026-07-05'",
             },
         },
         "required": ["destination", "start_date", "end_date"],

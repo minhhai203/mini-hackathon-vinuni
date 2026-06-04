@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import datetime
+import re
 from html import escape
 from typing import Any
 
@@ -20,6 +22,7 @@ from src.agents.tools import (
 )
 from src.agents.tools.extraction import extract_budget_amounts
 from src.agents.tools.text_utils import contains_any, normalize_text
+from src.agents.tools.weather import get_weather_forecast
 from src.services.llm import LLMResult, LLMService
 from src.services.vinpearl_data import load_vinpearl_options_from_cache
 
@@ -86,6 +89,92 @@ GROUP_KEYWORDS = [
 ]
 BUDGET_KEYWORDS = ["triệu", "trieu", "ngân sách", "budget", "vnd", "vnđ", "đồng", "/dem", "/đêm"]
 DATE_KEYWORDS = ["ngày", "ngay", "đêm", "dem", "cuối tuần", "cuoi tuan", "tháng", "thang", "2026"]
+WEATHER_INTENT_KEYWORDS = [
+    "thời tiết",
+    "thoi tiet",
+    "trời",
+    "troi",
+    "mưa",
+    "mua",
+    "nắng",
+    "nang",
+    "có mây",
+    "co may",
+    "khí hậu",
+    "khi hau",
+]
+SUPPORTED_DESTINATION_NAMES = "Phú Quốc, Nha Trang, Hạ Long, Nam Hội An/Đà Nẵng"
+OUT_OF_SCOPE_DESTINATION_ALIASES = [
+    "han quoc",
+    "hàn quốc",
+    "korea",
+    "seoul",
+    "nhat ban",
+    "nhật bản",
+    "japan",
+    "tokyo",
+    "thai lan",
+    "thái lan",
+    "thailand",
+    "bangkok",
+    "singapore",
+    "malaysia",
+    "paris",
+    "europe",
+    "châu âu",
+    "chau au",
+    "usa",
+]
+PROMPT_INJECTION_ALIASES = [
+    "ignore previous",
+    "ignore all previous",
+    "bỏ qua hướng dẫn",
+    "bo qua huong dan",
+    "bỏ qua instruction",
+    "bo qua instruction",
+    "system prompt",
+    "developer message",
+    "system message",
+    "prompt injection",
+    "jailbreak",
+    "tiết lộ prompt",
+    "tiet lo prompt",
+    "hiện prompt",
+    "hien prompt",
+    "show prompt",
+    "tool schema",
+    "api key",
+    "secret key",
+    "cách tác động đến hệ thống",
+    "cach tac dong den he thong",
+]
+OFF_TOPIC_ALIASES = [
+    "python",
+    "javascript",
+    "java",
+    "c++",
+    "c#",
+    "sql",
+    "html",
+    "css",
+    "react",
+    "nextjs",
+    "next.js",
+    "fastapi",
+    "lập trình",
+    "lap trinh",
+    "ngôn ngữ lập trình",
+    "ngon ngu lap trinh",
+    "dạy tôi code",
+    "day toi code",
+    "dạy tôi ngôn ngữ",
+    "day toi ngon ngu",
+    "viết code",
+    "viet code",
+    "debug code",
+    "bài tập code",
+    "bai tap code",
+]
 
 
 KNOWLEDGE_BASE: list[dict[str, Any]] = [
@@ -296,6 +385,65 @@ class ChatbotService:
         }
         used_tools.extend(["get_mock_weather_context", "get_mock_news_context", "get_mock_review_signals"])
 
+        boundary = detect_chatbot_boundary_violation(message, current_profile)
+        if boundary["blocked"]:
+            used_tools.append("detect_chatbot_boundary_violation")
+            return {
+                "reply": build_boundary_reply(boundary, current_profile),
+                "profile": current_profile,
+                "suggestions": [
+                    "Tư vấn Phú Quốc",
+                    "Tư vấn Nha Trang",
+                    "So sánh Hạ Long và Nam Hội An",
+                ],
+                "cards": [],
+                "confidence": "high",
+                "needs_followup": True,
+                "used_tools": used_tools,
+                "safety_notice": boundary["safety_notice"],
+                "ui_theme": weather_context["ui_theme"],
+                "context": travel_context,
+            }
+
+        if is_weather_intent(message):
+            used_tools.append("detect_weather_intent")
+            if not current_profile.get("destination"):
+                start_date, end_date = extract_weather_date_range(message, current_profile)
+                forecasts = [
+                    get_weather_forecast(destination, start_date, end_date)
+                    for destination in ["Phu Quoc", "Nha Trang", "Ha Long", "Nam Hoi An"]
+                ]
+                travel_context["weather_forecasts"] = forecasts
+                used_tools.extend(["get_weather_forecast"] * len(forecasts))
+                return {
+                    "reply": build_weather_comparison_reply(forecasts, start_date, end_date),
+                    "profile": current_profile,
+                    "suggestions": ["Tôi thích biển nhẹ", "Đi cùng gia đình", "Ưu tiên ít mưa"],
+                    "cards": [],
+                    "confidence": "high" if any(not forecast.get("error") for forecast in forecasts) else "medium",
+                    "needs_followup": True,
+                    "used_tools": used_tools,
+                    "safety_notice": "Dữ liệu thời tiết lấy từ Open-Meteo, chỉ hỗ trợ dự báo ngắn hạn và nên kiểm tra lại trước ngày đi.",
+                    "ui_theme": weather_context["ui_theme"],
+                    "context": travel_context,
+                }
+            start_date, end_date = extract_weather_date_range(message, current_profile)
+            forecast = get_weather_forecast(current_profile["destination"], start_date, end_date)
+            travel_context["weather_forecast"] = forecast
+            used_tools.append("get_weather_forecast")
+            return {
+                "reply": build_weather_reply(forecast, current_profile),
+                "profile": current_profile,
+                "suggestions": ["Tư vấn lịch đi theo thời tiết", "So sánh điểm đến khác", "Gợi ý chỗ ở phù hợp"],
+                "cards": [],
+                "confidence": "high" if not forecast.get("error") else "medium",
+                "needs_followup": bool(forecast.get("error")),
+                "used_tools": used_tools,
+                "safety_notice": "Dữ liệu thời tiết lấy từ Open-Meteo, chỉ hỗ trợ dự báo ngắn hạn và nên kiểm tra lại trước ngày đi.",
+                "ui_theme": weather_context["ui_theme"],
+                "context": travel_context,
+            }
+
         if realtime_risk["risk_level"] == "high":
             handoff = handoff_to_human("realtime_or_policy_claim", current_profile)
             used_tools.append("handoff_to_human")
@@ -459,6 +607,77 @@ def can_recommend_with_partial_profile(profile: dict[str, Any], validation: dict
     return has_core_intent and soft_missing_only and not validation["contradictions"]
 
 
+def is_weather_intent(message: str) -> bool:
+    return contains_any(message, WEATHER_INTENT_KEYWORDS)
+
+
+def extract_weather_date_range(message: str, profile: dict[str, Any] | None = None) -> tuple[str, str]:
+    text = " ".join(str(value) for value in [message, (profile or {}).get("dates")] if value)
+    dates = re.findall(r"\d{4}-\d{2}-\d{2}", text)
+    if len(dates) >= 2:
+        return dates[0], dates[1]
+    if len(dates) == 1:
+        return dates[0], dates[0]
+
+    today = datetime.date.today()
+    normalized = normalize_text(text)
+    if "ngay mai" in normalized or "ngày mai" in text:
+        day = today + datetime.timedelta(days=1)
+        return day.isoformat(), day.isoformat()
+    if "cuoi tuan" in normalized or "cuối tuần" in text:
+        days_until_saturday = (5 - today.weekday()) % 7
+        saturday = today + datetime.timedelta(days=days_until_saturday or 7)
+        sunday = saturday + datetime.timedelta(days=1)
+        return saturday.isoformat(), sunday.isoformat()
+
+    start = today + datetime.timedelta(days=1)
+    end = start + datetime.timedelta(days=3)
+    return start.isoformat(), end.isoformat()
+
+
+def detect_chatbot_boundary_violation(message: str, profile: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Guard the public chatbot boundary before any provider can interpret user text."""
+    normalized = normalize_text(message or "")
+    matched_injection = [
+        alias for alias in PROMPT_INJECTION_ALIASES if normalize_text(alias) in normalized
+    ]
+    if matched_injection:
+        return {
+            "blocked": True,
+            "reason": "prompt_injection_or_system_access",
+            "matched": matched_injection,
+            "safety_notice": "Chatbot chỉ xử lý nhu cầu tư vấn du lịch Vinpearl và không tiết lộ/chỉnh sửa hướng dẫn hệ thống.",
+        }
+
+    matched_off_topic = [
+        alias for alias in OFF_TOPIC_ALIASES if normalize_text(alias) in normalized
+    ]
+    if matched_off_topic:
+        return {
+            "blocked": True,
+            "reason": "off_topic_non_travel",
+            "matched": matched_off_topic,
+            "safety_notice": "Chatbot tập trung tư vấn chuyến đi Vinpearl; câu hỏi ngoài du lịch sẽ được chuyển hướng nhẹ nhàng.",
+        }
+
+    has_supported_destination_in_message = any(
+        any(normalize_text(alias) in normalized for alias in aliases)
+        for aliases in DESTINATION_ALIASES.values()
+    )
+    matched_out_of_scope_destination = [
+        alias for alias in OUT_OF_SCOPE_DESTINATION_ALIASES if normalize_text(alias) in normalized
+    ]
+    if matched_out_of_scope_destination and not has_supported_destination_in_message:
+        return {
+            "blocked": True,
+            "reason": "unsupported_destination",
+            "matched": matched_out_of_scope_destination,
+            "safety_notice": "Chatbot chỉ tư vấn các điểm đến Vinpearl trong phạm vi demo.",
+        }
+
+    return {"blocked": False, "reason": None, "matched": [], "safety_notice": None}
+
+
 def llm_used_tools(result: LLMResult) -> list[str]:
     if result.used_provider:
         return ["openai_responses_api"]
@@ -515,6 +734,180 @@ def build_risk_reply(
         "<p><strong>Mình chưa thể xác nhận chắc chắn</strong> giá, phòng trống, voucher hoặc hủy miễn phí vì cần dữ liệu realtime.</p>"
         f"<p>Thông tin cần kiểm tra: {missing}.</p>"
         f"<p>{escape(handoff['message'])}</p>"
+    )
+
+
+def build_boundary_reply(boundary: dict[str, Any], profile: dict[str, Any]) -> str:
+    if boundary["reason"] == "prompt_injection_or_system_access":
+        return (
+            "<p>Mình nghe thấy tiếng gọi từ hậu trường hệ thống, nhưng vé vào khu đó mình không bán nha.</p>"
+            f"<p>Mình ở đây để giúp bạn chọn chuyến Vinpearl thật hợp gu: {escape(SUPPORTED_DESTINATION_NAMES)}. "
+            "Bạn muốn đi kiểu nghỉ yên tĩnh, vui chơi hết pin, hay ăn ngon rồi chill?</p>"
+        )
+
+    if boundary["reason"] == "off_topic_non_travel":
+        return (
+            "<p>Mình khoanh nhẹ câu này lại nhé: Python thì mình thương, nhưng hôm nay mình đang mặc đồng phục tư vấn du lịch Vinpearl.</p>"
+            f"<p>Nếu bạn muốn đổi mood sang một chuyến đi cho dễ thở hơn, mình có thể gợi ý trong các điểm: {escape(SUPPORTED_DESTINATION_NAMES)}. "
+            "Bạn thích healing một mình, đi biển nhẹ, hay kiếm chỗ ăn ngon rồi thả não?</p>"
+        )
+
+    summary = summarize_profile(profile)
+    return (
+        "<p>Chuyến này hình như đang lăn bánh ra khỏi bản đồ Vinpearl rồi. Mình kéo nhẹ về đúng làn nhé.</p>"
+        f"<p>Trong phạm vi demo, mình tư vấn tốt nhất cho: {escape(SUPPORTED_DESTINATION_NAMES)}. "
+        f"Nếu vẫn muốn một chuyến hợp vibe hiện tại, mình hỏi tiếp vài câu ngắn là chốt được. Profile đang có: {summary}.</p>"
+    )
+
+
+def build_weather_reply(forecast: dict[str, Any], profile: dict[str, Any]) -> str:
+    if forecast.get("error"):
+        return (
+            f"<p>Mình chưa lấy được thời tiết cho {escape(str(profile.get('destination') or 'điểm đến này'))}: "
+            f"{escape(str(forecast['error']))}</p>"
+            "<p>Bạn gửi giúp mình ngày theo dạng YYYY-MM-DD, ví dụ 2026-06-10 đến 2026-06-12 nhé.</p>"
+        )
+
+    daily_items = "".join(
+        "<li>"
+        f"{weather_icon_html(day, compact=True)} "
+        f"{escape(str(day.get('date')))}: "
+        f"{escape(str(day.get('condition')))}, "
+        f"{escape(str(day.get('temp_min_c')))}°C-{escape(str(day.get('temp_max_c')))}°C"
+        f"{', mưa ' + escape(str(day.get('precipitation_mm'))) + 'mm' if day.get('precipitation_mm') is not None else ''}"
+        "</li>"
+        for day in forecast.get("daily_forecast", [])[:5]
+    )
+    rainy_text = (
+        "☀️ Không có ngày mưa đáng kể"
+        if forecast.get("rainy_days", 0) == 0
+        else f"🌧️ Có {escape(str(forecast.get('rainy_days')))} ngày mưa đáng kể"
+    )
+    note = f"<p><em>{escape(str(forecast['note']))}</em></p>" if forecast.get("note") else ""
+    return (
+        "<div class='weather-pick weather-pick-single'>"
+        f"{weather_icon_html(forecast)}"
+        "<div>"
+        f"<strong>{escape(str(forecast['destination']))}: {escape(str(forecast.get('label') or 'thời tiết ổn'))}</strong>"
+        f"<p>{escape(str(forecast['period']))} · {escape(str(forecast['avg_temperature']))} · {rainy_text}. "
+        f"{escape(str(forecast['travel_suitability']).split('—')[0].strip())}.</p>"
+        "</div>"
+        "</div>"
+        f"<ul class='weather-days'>{daily_items}</ul>"
+        f"{note}"
+        "<p>Dữ liệu này là dự báo ngắn hạn, bạn nên kiểm tra lại gần ngày đi trước khi đặt dịch vụ.</p>"
+    )
+
+
+def build_weather_comparison_reply(forecasts: list[dict[str, Any]], start_date: str, end_date: str) -> str:
+    usable = [forecast for forecast in forecasts if not forecast.get("error")]
+    if not usable:
+        return (
+            "<p>Mình muốn so nhanh thời tiết các điểm Vinpearl cho bạn, nhưng hiện chưa lấy được dữ liệu dự báo.</p>"
+            "<p>Bạn thử gửi ngày cụ thể theo dạng YYYY-MM-DD, hoặc chọn trước một điểm như Phú Quốc/Nha Trang để mình kiểm tra lại nhé.</p>"
+        )
+
+    ranked = sorted(usable, key=weather_sort_key)
+    best = ranked[0]
+    best_risk_score = weather_sort_key(best)[0]
+    alternatives = ranked[1:3]
+    alt_html = "".join(
+        "<span class='weather-alt'>"
+        f"{weather_icon_html(item, compact=True)}"
+        f"<span><strong>{escape(str(item['destination']))}</strong><small>{escape(weather_short_phrase(item))}</small></span>"
+        "</span>"
+        for item in alternatives
+    )
+    if best_risk_score >= 3:
+        intro = (
+            "<p>Mình chưa thấy điểm nào thật sự đẹp trời để chốt ngay. "
+            "Nếu vẫn muốn đi trong giai đoạn này, mình sẽ chọn phương án đỡ rủi ro nhất trước.</p>"
+        )
+        title = f"Tạm cân nhắc {escape(str(best['destination']))}"
+        reason = weather_cautious_reason(best)
+    else:
+        intro = "<p>Mình chọn giúp bạn trước một điểm dễ đi nhất theo thời tiết hiện tại nhé.</p>"
+        title = f"Nên ưu tiên {escape(str(best['destination']))}"
+        reason = weather_best_reason(best)
+
+    return (
+        f"{intro}"
+        "<div class='weather-pick'>"
+        f"{weather_icon_html(best)}"
+        "<div>"
+        f"<strong>{title}</strong>"
+        f"<p>{escape(reason)}</p>"
+        "</div>"
+        "</div>"
+        f"<p class='weather-alt-title'>Nếu muốn cân nhắc thêm:</p><div class='weather-alt-row'>{alt_html}</div>"
+        "<p>Bạn muốn chuyến này thiên về nghỉ biển nhẹ, đi với gia đình, hay ưu tiên nơi ít mưa nhất? Mình sẽ chốt shortlist chỗ ở/vui chơi theo vibe đó.</p>"
+    )
+
+
+def weather_sort_key(forecast: dict[str, Any]) -> tuple[int, int]:
+    suitability = normalize_text(str(forecast.get("travel_suitability") or ""))
+    rainy_days = int(forecast.get("rainy_days") or 0)
+    storm_days = int(forecast.get("storm_days") or 0)
+    icon_class = str(forecast.get("icon_class") or "")
+    if storm_days or "storm" in icon_class or "dong" in suitability:
+        score = 4
+    elif "rain" in icon_class or "mua" in suitability:
+        score = 3
+    elif "nang nong" in suitability:
+        score = 2
+    elif "tot" in suitability or "ly tuong" in suitability:
+        score = 0
+    elif "mat me" in suitability:
+        score = 0
+    elif "trung binh" in suitability:
+        score = 2
+    else:
+        score = 1
+    return score, rainy_days + storm_days
+
+
+def weather_rain_phrase(forecast: dict[str, Any]) -> str:
+    rainy_days = int(forecast.get("rainy_days") or 0)
+    storm_days = int(forecast.get("storm_days") or 0)
+    if storm_days:
+        return f"{storm_days} ngày có khả năng dông"
+    if rainy_days == 0:
+        return "ít mưa"
+    return f"{rainy_days} ngày mưa đáng chú ý"
+
+
+def weather_best_reason(forecast: dict[str, Any]) -> str:
+    suitability = str(forecast.get("travel_suitability", "")).split("—")[0].strip()
+    return (
+        f"{forecast.get('label') or 'thời tiết dễ chịu'}, "
+        f"{weather_rain_phrase(forecast)}, "
+        f"nhiệt độ khoảng {forecast.get('avg_temperature', 'N/A')}. "
+        f"{suitability}."
+    )
+
+
+def weather_cautious_reason(forecast: dict[str, Any]) -> str:
+    return (
+        f"{forecast.get('label') or 'thời tiết thay đổi'}, "
+        f"{weather_rain_phrase(forecast)}, "
+        f"nhiệt độ khoảng {forecast.get('avg_temperature', 'N/A')}. "
+        "Nên ưu tiên lịch trong nhà, spa/ăn uống, và tránh xếp quá nhiều hoạt động ngoài trời."
+    )
+
+
+def weather_short_phrase(forecast: dict[str, Any]) -> str:
+    return f"{forecast.get('label') or 'ổn'} · {weather_rain_phrase(forecast)}"
+
+
+def weather_icon_html(forecast: dict[str, Any], *, compact: bool = False) -> str:
+    icon_class = escape(str(forecast.get("icon_class") or "weather-mixed"))
+    fa_icon = escape(str(forecast.get("fa_icon") or "fa-cloud-sun-rain"))
+    label = escape(str(forecast.get("label") or "thời tiết"))
+    size_class = " weather-glyph-sm" if compact else ""
+    return (
+        f"<span class='weather-glyph {icon_class}{size_class}' aria-label='{label}'>"
+        f"<i class='fa-solid {fa_icon}'></i>"
+        "</span>"
     )
 
 
@@ -637,6 +1030,23 @@ class AIChatbotService:
         updates = parse_trip_profile(message)
         profile_result = update_trip_profile(profile, updates)
         current_profile = profile_result["profile"]
+
+        boundary = detect_chatbot_boundary_violation(message, current_profile)
+        if boundary["blocked"]:
+            destination = current_profile.get("destination")
+            weather_context = get_mock_weather_context(destination)
+            return {
+                "reply": build_boundary_reply(boundary, current_profile),
+                "profile": current_profile,
+                "suggestions": _default_suggestions(destination),
+                "cards": [],
+                "confidence": "high",
+                "needs_followup": True,
+                "used_tools": ["update_trip_profile", "detect_chatbot_boundary_violation"],
+                "safety_notice": boundary["safety_notice"],
+                "ui_theme": weather_context["ui_theme"],
+                "context": {},
+            }
 
         reply_text, used_tools, context_data = self._llm.chat(message, history=history)
 

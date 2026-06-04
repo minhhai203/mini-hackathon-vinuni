@@ -413,11 +413,21 @@ document.addEventListener("DOMContentLoaded", () => {
     plannerBackBtn.addEventListener("click", closePlannerPage);
     plannerCloseBtn.addEventListener("click", closePlannerPage);
 
-    plannerForm.addEventListener("submit", () => {
+    plannerForm.addEventListener("submit", (event) => {
+        event.preventDefault();
         const query = plannerInput.value.trim();
         if (!query) return;
         plannerInput.value = "";
+        autoSizeTextInput(plannerInput);
         runPlannerQuery(query);
+    });
+
+    plannerInput.addEventListener("input", () => autoSizeTextInput(plannerInput));
+    plannerInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            plannerForm.requestSubmit();
+        }
     });
 
     plannerGenerateBtn.addEventListener("click", () => {
@@ -706,6 +716,11 @@ document.addEventListener("DOMContentLoaded", () => {
         chatBody.scrollTop = chatBody.scrollHeight;
     }
 
+    function autoSizeTextInput(input) {
+        input.style.height = "auto";
+        input.style.height = `${Math.min(input.scrollHeight, 118)}px`;
+    }
+
     // Handle Form Submit
     chatForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -714,8 +729,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         appendMessage(query, "user");
         chatInput.value = "";
+        autoSizeTextInput(chatInput);
 
         handleBotResponse(query);
+    });
+
+    chatInput.addEventListener("input", () => autoSizeTextInput(chatInput));
+    chatInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            chatForm.requestSubmit();
+        }
     });
 
     // Handle Suggestion Buttons

@@ -234,12 +234,19 @@ flowchart TD
     S --> P["parse_trip_profile\nextract destination, dates, group, budget, priority\nincluding couple, exploration, food, value intent"]
     P --> UP["update_trip_profile\nmerge new info with existing session profile"]
     UP --> RISK["detect_realtime_claim_risk\nprice, availability, voucher, cancellation"]
+    RISK --> BOUNDARY["detect_chatbot_boundary_violation\nblock out-of-scope destinations + prompt injection\nbefore LLM/provider calls"]
+    BOUNDARY -->|"blocked"| OUT
 
-    RISK -->|"high risk"| H["handoff_to_human\nsafe warning + CSKH/MyVinpearl check"]
+    BOUNDARY -->|"weather intent + destination"| WEATHER["get_weather_forecast\nOpen-Meteo forecast + weather icons\nsun, cloud, rain, storm"]
+    WEATHER --> OUT
+    BOUNDARY -->|"weather intent + no destination"| WEATHER_COMPARE["get_weather_forecast x4\ncompare Phu Quoc, Nha Trang, Ha Long, Nam Hoi An\nrecommend by current weather"]
+    WEATHER_COMPARE --> OUT
+
+    BOUNDARY -->|"allowed + high risk"| H["handoff_to_human\nsafe warning + CSKH/MyVinpearl check"]
     H --> LLM["Optional LLM copy writer\nOpenAI Responses API\nsrc/services/llm.py"]
     LLM --> OUT["ChatResponse\nreply, profile, suggestions, cards, confidence"]
 
-    RISK -->|"safe enough"| VAL["validate_user_constraints\nmissing fields + contradictions"]
+    BOUNDARY -->|"allowed + safe enough"| VAL["validate_user_constraints\nmissing fields + contradictions"]
     VAL -->|"core info missing"| Q["generate_followup_questions\nshort recovery questions"]
     Q --> LLM_FOLLOW["OpenAI follow-up copy\nmirror user vibe + ask at most 2 natural questions\nfallback to deterministic questions only if LLM unavailable"]
     LLM_FOLLOW --> OUT
@@ -270,12 +277,14 @@ Current tools:
 | `crawl_vinpearl_page_sync` | Sync wrapper for scripts or non-async agent integrations. |
 | `load_cached_vinpearl_pages` | Loads cached crawl JSON from `data/raw/vinpearl` when available. |
 | `get_mock_weather_context` | Returns mock weather context and UI theme by destination. |
+| `get_weather_forecast` | Calls Open-Meteo for real short-term weather forecast and returns sun/cloud/rain/storm icons for display. |
 | `get_mock_news_context` | Returns mock travel/news signals by destination. |
 | `get_mock_review_signals` | Returns mock review positives and watch-outs by destination. |
 | `extract_resort_info` | Extracts destination, amenities, best-fit tags, highlights, and confidence from crawled markdown. |
 | `extract_policy_guard` | Extracts cancellation/refund, voucher, child surcharge, restriction, and price/availability warnings. |
 | `validate_user_constraints` | Finds missing fields and contradictions in the user's trip profile. |
 | `detect_realtime_claim_risk` | Detects risky questions about exact price, availability, voucher, cancellation, or refund. |
+| `detect_chatbot_boundary_violation` | Blocks unsupported destinations, off-topic non-travel requests, prompt injection, system-prompt/tool-schema requests, and system-impact requests before provider calls. |
 | `generate_followup_questions` | Generates short recovery questions for low-confidence inputs. |
 | `update_trip_profile` | Applies correction-path changes and reports what changed. |
 | `handoff_to_human` | Builds a CSKH/human-review handoff packet for risky cases. |

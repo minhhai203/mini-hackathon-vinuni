@@ -1321,6 +1321,7 @@ body.planner-open {
 .planner-chat-scroll {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -1329,16 +1330,22 @@ body.planner-open {
 }
 
 .planner-msg {
+    min-width: 0;
     max-width: 92%;
     padding: 15px 17px;
     border-radius: 8px;
     font-size: 0.95rem;
     line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     animation: plannerMessageIn 0.28s ease both;
 }
 
 .planner-msg p {
     margin: 0 0 7px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .planner-msg p:last-child {
@@ -1357,6 +1364,116 @@ body.planner-open {
     background: var(--color-navy);
     color: var(--color-white);
     box-shadow: 0 10px 22px rgba(0, 43, 73, 0.16);
+}
+
+.weather-pick {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 10px 0;
+    padding: 13px;
+    border-radius: 8px;
+    background: #fffaf0;
+    border: 1px solid #eadfca;
+}
+
+.weather-pick strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--color-navy);
+}
+
+.weather-pick p {
+    margin: 0;
+    color: #4d4656;
+}
+
+.weather-glyph {
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    color: var(--color-navy);
+    background: #fff1c7;
+    border: 1px solid rgba(224, 160, 65, 0.28);
+    box-shadow: 0 8px 18px rgba(0, 43, 73, 0.09);
+}
+
+.weather-glyph-sm {
+    flex-basis: 30px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+    box-shadow: none;
+}
+
+.weather-sun {
+    color: #9b5f00;
+    background: #fff0b8;
+}
+
+.weather-partly,
+.weather-mixed {
+    color: #0f5f7a;
+    background: #dff4fb;
+}
+
+.weather-cloud,
+.weather-fog {
+    color: #4b6270;
+    background: #e9eef1;
+}
+
+.weather-rain {
+    color: #135f91;
+    background: #dceeff;
+}
+
+.weather-storm {
+    color: #4f3b86;
+    background: #e8e1ff;
+}
+
+.weather-alt-title {
+    margin-top: 10px;
+    color: #5d5664;
+}
+
+.weather-alt-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 10px;
+}
+
+.weather-alt {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 190px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.64);
+    border: 1px solid #eadfca;
+}
+
+.weather-alt strong,
+.weather-alt small {
+    display: block;
+}
+
+.weather-alt small {
+    margin-top: 1px;
+    color: #6f6876;
+}
+
+.weather-days {
+    margin: 8px 0 0 18px;
+    padding: 0;
 }
 
 @keyframes plannerMessageIn {
@@ -1416,8 +1533,15 @@ body.planner-open {
 
 .planner-input {
     width: 100%;
+    min-width: 0;
+    max-height: 118px;
     font-size: 0.95rem;
     line-height: 1.4;
+    resize: none;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .planner-send-btn {
@@ -2778,18 +2902,25 @@ body.planner-open {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    min-width: 0;
 }
 
 .message {
     display: flex;
+    min-width: 0;
     max-width: 85%;
 }
 
 .msg-bubble {
+    min-width: 0;
+    max-width: 100%;
     padding: 12px 16px;
     border-radius: 12px;
     font-size: 0.825rem;
     line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .bot-msg {
@@ -2806,6 +2937,8 @@ body.planner-open {
 
 .bot-msg .msg-bubble p {
     margin: 0 0 8px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .bot-msg .msg-bubble p:last-child {
@@ -2817,6 +2950,7 @@ body.planner-open {
 }
 
 .chat-card {
+    min-width: 0;
     margin: 8px 0;
     border: 1px solid var(--color-border);
     border-left: 3px solid var(--color-gold);
@@ -2837,6 +2971,7 @@ body.planner-open {
 }
 
 .chat-card-content {
+    min-width: 0;
     padding: 10px;
 }
 
@@ -2988,6 +3123,7 @@ body.planner-open {
 .chat-footer {
     display: flex;
     align-items: center;
+    gap: 8px;
     padding: 12px 15px;
     background-color: var(--color-white);
     border-top: 1px solid var(--color-border);
@@ -2995,11 +3131,19 @@ body.planner-open {
 
 .chat-input {
     flex-grow: 1;
+    min-width: 0;
+    max-height: 92px;
     font-size: 0.825rem;
+    line-height: 1.35;
     padding: 8px 12px;
     background-color: var(--color-light-gray);
     border-radius: 20px;
     border: 1px solid var(--color-border);
+    resize: none;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     transition: border-color var(--transition-fast);
 }
 

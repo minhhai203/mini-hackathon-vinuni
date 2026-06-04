@@ -669,7 +669,7 @@
                     </div>
 
                     <form class="planner-composer" id="plannerForm" onsubmit="event.preventDefault();">
-                        <input id="plannerInput" class="planner-input" type="text" autocomplete="off" placeholder="Nói tự nhiên: đi đâu, mấy người, ngân sách, muốn chill hay vui chơi...">
+                        <textarea id="plannerInput" class="planner-input" rows="1" autocomplete="off" placeholder="Nói tự nhiên: đi đâu, mấy người, ngân sách, muốn chill hay vui chơi..."></textarea>
                         <button class="planner-send-btn" id="plannerSendBtn" type="submit" aria-label="Gửi planning prompt">
                             <i class="fa-solid fa-arrow-up"></i>
                         </button>
@@ -794,7 +794,7 @@
 
             <!-- Chat Footer Input -->
             <form class="chat-footer" id="chatForm" onsubmit="event.preventDefault();">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Nhập câu hỏi của bạn..." autocomplete="off">
+                <textarea class="chat-input" id="chatInput" rows="1" placeholder="Nhập câu hỏi của bạn..." autocomplete="off"></textarea>
                 <button type="submit" class="chat-send-btn" id="chatSendBtn" aria-label="Gửi tin nhắn">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
