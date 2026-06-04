@@ -271,7 +271,48 @@ Optional crawler settings live in `.env` and are documented in `.env.example`:
 ```text
 VINPEARL_CRAWLER_TIMEOUT_SECONDS=30
 VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS=6000
+VINPEARL_CRAWL_CACHE_DIR=data/raw/vinpearl
 ```
+
+## Crawl Data On Demand
+
+`crawl4ai-setup` only prepares browser dependencies. It does not crawl Vinpearl data by itself.
+
+Crawl data only when you want to refresh official source snapshots:
+
+```bash
+source .venv/bin/activate
+python scripts/crawl_vinpearl.py
+```
+
+By default, the script crawls a small official Vinpearl seed list and saves JSON files to:
+
+```text
+data/raw/vinpearl/
+```
+
+It also writes:
+
+```text
+data/raw/vinpearl/crawl-summary.json
+```
+
+The cached JSON files are intended to be committed and pushed so teammates do not need to crawl every time they run the app.
+
+Useful commands:
+
+```bash
+# Crawl specific official Vinpearl pages
+python scripts/crawl_vinpearl.py https://vinpearl.com/vi/phu-quoc https://vinpearl.com/vi/nha-trang
+
+# Reuse cache when present, crawl only missing files
+python scripts/crawl_vinpearl.py
+
+# Force refresh all seed URLs
+python scripts/crawl_vinpearl.py --force
+```
+
+The running app does not auto-crawl on startup. It only uses crawler data when a developer runs the script or when a tool explicitly loads the cached JSON.
 
 ## Run With Docker
 

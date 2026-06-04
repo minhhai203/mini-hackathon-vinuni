@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vinpearl AI Deal & Trip Fit Assistant</title>
+    <style>
+      :root {
+        --ink: #17202a;
+        --muted: #667085;
+        --line: #d7dde5;
+        --soft: #f6f8fb;
+        --brand: #086972;
+        --brand-2: #b7791f;
+        --danger: #b42318;
+        --ok: #027a48;
+        --warn: #b54708;
+        --white: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: #eef3f6;
+      }
+
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      header {
+        background: var(--white);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .header-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 18px 20px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      .subtitle {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .mode-pill {
+        border: 1px solid var(--line);
+        background: var(--soft);
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      main {
+        max-width: 1180px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 18px;
+      }
+
+      section {
+        min-width: 0;
+      }
+
+      .panel {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .panel-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-header h2 {
+        margin: 0;
+        font-size: 16px;
+        letter-spacing: 0;
+      }
+
+      .panel-body {
+        padding: 16px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      label {
+        font-size: 13px;
+        color: #344054;
+        font-weight: 650;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 38px;
+        border: 1px solid #cbd5df;
+        border-radius: 6px;
+        padding: 8px 10px;
+        font: inherit;
+        color: var(--ink);
+        background: var(--white);
+      }
+
+      textarea {
+        min-height: 82px;
+        resize: vertical;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      button {
+        min-height: 40px;
+        border: 1px solid var(--brand);
+        border-radius: 6px;
+        background: var(--brand);
+        color: var(--white);
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        background: var(--white);
+        color: var(--brand);
+      }
+
+      button.ghost {
+        border-color: var(--line);
+        background: var(--white);
+        color: #344054;
+        font-weight: 650;
+      }
+
+      .path-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .result-layout {
+        display: grid;
+        gap: 14px;
+      }
+
+      .decision-bar {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+      }
+
+      .decision-bar strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .decision-bar span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .confidence {
+        min-width: 100px;
+        text-align: center;
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .confidence.high {
+        color: var(--ok);
+        background: #ecfdf3;
+      }
+
+      .confidence.medium {
+        color: var(--warn);
+        background: #fffaeb;
+      }
+
+      .confidence.low {
+        color: var(--danger);
+        background: #fef3f2;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        background: var(--white);
+        border-radius: 8px;
+        min-height: 244px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .card-top {
+        min-height: 74px;
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tag {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--brand-2);
+        margin-bottom: 7px;
+      }
+
+      .card h3 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.25;
+      }
+
+      .card-body {
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .small-title {
+        margin: 0 0 4px;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .copy {
+        margin: 0;
+        color: #344054;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .card-foot {
+        border-top: 1px solid var(--line);
+        padding: 12px 14px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .note {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+        padding: 14px;
+      }
+
+      .note.warning {
+        border-left: 4px solid var(--warn);
+      }
+
+      .note.danger {
+        border-left: 4px solid var(--danger);
+      }
+
+      .note h3 {
+        margin: 0 0 8px;
+        font-size: 15px;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 18px;
+        color: #344054;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .empty {
+        min-height: 480px;
+        display: grid;
+        place-items: center;
+        border: 1px dashed #b8c2cc;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        text-align: center;
+        padding: 20px;
+      }
+
+      @media (max-width: 920px) {
+        .header-inner,
+        main,
+        .decision-bar,
+        .cards,
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+
+        .mode-pill {
+          white-space: normal;
+        }
+      }
+
+      @media (max-width: 560px) {
+        main {
+          padding: 12px;
+        }
+
+        .row,
+        .path-buttons {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 21px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="header-inner">
+          <div>
+            <h1>Vinpearl AI Deal & Trip Fit Assistant</h1>
+            <p class="subtitle">Module demo: AI gợi ý shortlist, không tự book, không tự thanh toán.</p>
+          </div>
+          <div class="mode-pill">Track B · Travel & Hospitality · Augmentation</div>
+        </div>
+      </header>
+
+      <main>
+        <section class="panel" aria-label="Thông tin chuyến đi">
+          <div class="panel-header">
+            <h2>Nhu cầu của khách</h2>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label for="destination">Điểm đến</label>
+              <select id="destination">
+                <option value="">Chưa chắc</option>
+                <option value="phu-quoc">Phú Quốc</option>
+                <option value="nha-trang">Nha Trang</option>
+                <option value="ha-long">Hạ Long</option>
+              </select>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="startDate">Ngày đi</label>
+                <input id="startDate" type="date" />
+              </div>
+              <div class="field">
+                <label for="nights">Số đêm</label>
+                <input id="nights" type="number" min="1" max="10" value="2" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="adults">Người lớn</label>
+                <input id="adults" type="number" min="1" max="8" value="2" />
+              </div>
+              <div class="field">
+                <label for="children">Trẻ em</label>
+                <input id="children" type="number" min="0" max="6" value="1" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="budget">Ngân sách dự kiến</label>
+              <select id="budget">
+                <option value="">Chưa rõ</option>
+                <option value="low">Dưới 12 triệu</option>
+                <option value="mid" selected>12-20 triệu</option>
+                <option value="high">20-30 triệu</option>
+                <option value="premium">Trên 30 triệu</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="purpose">Ưu tiên chuyến đi</label>
+              <select id="purpose">
+                <option value="family" selected>Gia đình có trẻ em</option>
+                <option value="beach">Nghỉ biển nhẹ nhàng</option>
+                <option value="deal">Săn ưu đãi tốt nhất</option>
+                <option value="luxury">Trải nghiệm cao cấp</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="membership">Hội viên</label>
+              <select id="membership">
+                <option value="">Chưa biết</option>
+                <option value="none">Chưa có</option>
+                <option value="member">Có VinClub/Pearl Club</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="notes">Ghi chú tự nhiên</label>
+              <textarea id="notes" placeholder="Ví dụ: Muốn có VinWonders, cần phòng cho ông bà, hoặc hỏi deal đặt được ngay tối nay."></textarea>
+            </div>
+
+            <div class="actions">
+              <button id="analyzeBtn">Tạo shortlist</button>
+              <button id="resetBtn" class="secondary">Làm lại</button>
+            </div>
+
+            <div class="path-buttons" aria-label="Demo 4 paths">
+              <button class="ghost" data-path="happy">Happy</button>
+              <button class="ghost" data-path="low">Low-confidence</button>
+              <button class="ghost" data-path="failure">Failure</button>
+              <button class="ghost" data-path="correction">Correction</button>
+            </div>
+          </div>
+        </section>
+
+        <section aria-label="Kết quả AI">
+          <div id="results" class="empty">
+            <div>
+              <strong>Chưa có shortlist</strong>
+              <p>Nhập nhu cầu hoặc chọn một path demo để xem AI decision, confidence và fallback.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const deals = [
+        {
+          id: "pq-family",
+          destination: "phu-quoc",
+          name: "Phú Quốc Family Fun",
+          tag: "Gia đình + VinWonders",
+          budget: "mid",
+          purposes: ["family", "deal"],
+          reason: "Hợp với gia đình có trẻ em vì ưu tiên nghỉ dưỡng kèm hoạt động vui chơi.",
+          condition: "Cần kiểm tra ngày lưu trú, số khách/phòng và vé vui chơi có nằm trong gói không.",
+          source: "Pattern từ offer/app MyVinpearl và ưu đãi Vinpearl public.",
+        },
+        {
+          id: "nt-beachfront",
+          destination: "nha-trang",
+          name: "Nha Trang Beachfront Stay",
+          tag: "Nghỉ biển",
+          budget: "mid",
+          purposes: ["beach", "family"],
+          reason: "Hợp với user muốn nghỉ biển, ít di chuyển, dễ đi cùng trẻ em hoặc người lớn tuổi.",
+          condition: "Một số ưu đãi yêu cầu đặt qua web/app và lưu trú trong giai đoạn cụ thể.",
+          source: "Tham chiếu ưu đãi Vinpearl Beachfront Nha Trang.",
+        },
+        {
+          id: "member-day",
+          destination: "",
+          name: "Member Day / Voucher Credit",
+          tag: "Hội viên",
+          budget: "high",
+          purposes: ["deal", "family"],
+          reason: "Có thể phù hợp nếu user là hội viên và đặt đúng khung ngày ưu đãi.",
+          condition: "Cần đăng nhập tài khoản, kiểm tra ngày đặt, ngày lưu trú và thời hạn dùng voucher.",
+          source: "Tham chiếu Member Day Vinpearl.",
+        },
+        {
+          id: "hl-relax",
+          destination: "ha-long",
+          name: "Hạ Long Relax Package",
+          tag: "Nghỉ dưỡng ngắn ngày",
+          budget: "mid",
+          purposes: ["beach", "deal"],
+          reason: "Phù hợp với chuyến ngắn, ưu tiên nghỉ ngơi và tối ưu thời gian di chuyển.",
+          condition: "Cần kiểm tra giá cuối tuần, phụ thu và số khách/phòng.",
+          source: "Pattern từ booking resort/hospitality.",
+        },
+        {
+          id: "premium",
+          destination: "",
+          name: "Premium Resort Fit",
+          tag: "Cao cấp",
+          budget: "premium",
+          purposes: ["luxury"],
+          reason: "Phù hợp khi user ưu tiên trải nghiệm cao cấp hơn săn giá thấp.",
+          condition: "Cần kiểm tra chính sách hủy, bữa ăn, phụ thu trẻ em và hạng phòng.",
+          source: "Pattern từ app booking cao cấp.",
+        },
+      ];
+
+      const fields = {
+        destination: document.querySelector("#destination"),
+        startDate: document.querySelector("#startDate"),
+        nights: document.querySelector("#nights"),
+        adults: document.querySelector("#adults"),
+        children: document.querySelector("#children"),
+        budget: document.querySelector("#budget"),
+        purpose: document.querySelector("#purpose"),
+        membership: document.querySelector("#membership"),
+        notes: document.querySelector("#notes"),
+      };
+
+      const results = document.querySelector("#results");
+
+      document.querySelector("#analyzeBtn").addEventListener("click", () => render(analyze(readInput())));
+      document.querySelector("#resetBtn").addEventListener("click", reset);
+      document.querySelectorAll("[data-path]").forEach((button) => {
+        button.addEventListener("click", () => {
+          applyPath(button.dataset.path);
+          render(analyze(readInput(), button.dataset.path));
+        });
+      });
+
+      function readInput() {
+        return {
+          destination: fields.destination.value,
+          startDate: fields.startDate.value,
+          nights: Number(fields.nights.value || 0),
+          adults: Number(fields.adults.value || 0),
+          children: Number(fields.children.value || 0),
+          budget: fields.budget.value,
+          purpose: fields.purpose.value,
+          membership: fields.membership.value,
+          notes: fields.notes.value.trim().toLowerCase(),
+        };
+      }
+
+      function analyze(input, forcedPath = "") {
+        const missing = [];
+        if (!input.destination) missing.push("điểm đến");
+        if (!input.startDate) missing.push("ngày đi");
+        if (!input.budget) missing.push("ngân sách");
+        if (!input.membership) missing.push("tình trạng hội viên");
+
+        const realtimeAsk = /đặt được ngay|tối nay|còn phòng|giá rẻ nhất|available|realtime/.test(input.notes);
+        const hasEnough = missing.length <= 1 && input.adults > 0 && input.nights > 0;
+        const path = forcedPath || (realtimeAsk ? "failure" : hasEnough ? "happy" : "low");
+
+        const candidateDeals = deals.filter((deal) => {
+          if (!input.destination) return true;
+          return deal.destination === input.destination || deal.destination === "";
+        });
+
+        const ranked = candidateDeals
+          .map((deal) => ({ ...deal, score: scoreDeal(deal, input) }))
+          .filter((deal) => deal.destination === input.destination || !input.destination || deal.score >= 3)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3);
+
+        const confidence = getConfidence(path, missing, realtimeAsk);
+        const questions = missing.slice(0, 3).map((item) => `Bổ sung ${item} để giảm rủi ro gợi ý sai.`);
+        if (input.children > 0) questions.push("Kiểm tra phụ thu/tuổi trẻ em trong điều kiện phòng hoặc combo.");
+        if (input.membership !== "member") questions.push("Nếu có VinClub/Pearl Club, đăng nhập có thể làm thay đổi ưu đãi.");
+        if (input.destination && ranked.length < 3) questions.push("Không đủ 3 option public cho điểm đến này; prototype chỉ giữ option đúng điểm đến hoặc option áp dụng chung.");
+
+        return {
+          path,
+          confidence,
+          ranked,
+          questions: questions.slice(0, 4),
+          realtimeAsk,
+          missing,
+          learning: [
+            `Constraint chính: ${labelDestination(input.destination)}, ${input.nights || "?"} đêm, ${input.adults || "?"} người lớn, ${input.children} trẻ em.`,
+            `Ưu tiên: ${labelPurpose(input.purpose)}; ngân sách: ${labelBudget(input.budget)}.`,
+            path === "correction" ? "Correction signal: user đổi điểm đến/số người, shortlist cần cập nhật." : "Signal cần ghi: user chọn/reject option nào và vì sao.",
+          ],
+        };
+      }
+
+      function scoreDeal(deal, input) {
+        let score = 0;
+        if (deal.destination && deal.destination === input.destination) score += 4;
+        if (!deal.destination) score += 1;
+        if (deal.budget === input.budget) score += 3;
+        if (deal.purposes.includes(input.purpose)) score += 3;
+        if (input.membership === "member" && deal.id === "member-day") score += 3;
+        if (input.children > 0 && deal.purposes.includes("family")) score += 2;
+        if (/vinwonders|trẻ con|tre con|gia đình|gia dinh/.test(input.notes) && deal.id === "pq-family") score += 2;
+        return score;
+      }
+
+      function getConfidence(path, missing, realtimeAsk) {
+        if (path === "failure" || realtimeAsk) return "low";
+        if (path === "low" || missing.length > 1) return "medium";
+        return "high";
+      }
+
+      function render(model) {
+        const title = {
+          happy: "Happy path: đủ thông tin để tạo shortlist",
+          low: "Low-confidence path: cần hỏi lại",
+          failure: "Failure path: không có dữ liệu realtime",
+          correction: "Correction path: cập nhật theo constraint mới",
+        }[model.path];
+
+        const confidenceLabel = {
+          high: "High",
+          medium: "Medium",
+          low: "Low",
+        }[model.confidence];
+
+        results.className = "result-layout";
+        results.innerHTML = `
+          <div class="decision-bar">
+            <div>
+              <strong>${title}</strong>
+              <span>AI decision: tạo shortlist 2-3 option, giữ user là người quyết định cuối.</span>
+            </div>
+            <div class="confidence ${model.confidence}">${confidenceLabel}</div>
+          </div>
+
+          <div class="cards">
+            ${model.ranked.map(renderCard).join("")}
+          </div>
+
+          <div class="two-col">
+            <div class="note ${model.confidence === "low" ? "danger" : "warning"}">
+              <h3>Fallback / câu hỏi làm rõ</h3>
+              <ul>${model.questions.map((q) => `<li>${q}</li>`).join("")}</ul>
+            </div>
+            <div class="note">
+              <h3>Learning signal cần lưu</h3>
+              <ul>${model.learning.map((item) => `<li>${item}</li>`).join("")}</ul>
+            </div>
+          </div>
+
+          <div class="note">
+            <h3>Cảnh báo trust</h3>
+            <p class="copy">Prototype này không có API availability/price realtime. Khi user hỏi deal đặt được ngay hoặc giá rẻ nhất, AI phải gắn confidence thấp và yêu cầu kiểm tra lại trên MyVinpearl hoặc human support.</p>
+          </div>
+        `;
+      }
+
+      function renderCard(deal) {
+        const confidence = deal.score >= 8 ? "high" : deal.score >= 5 ? "medium" : "low";
+        return `
+          <article class="card">
+            <div class="card-top">
+              <span class="tag">${deal.tag}</span>
+              <h3>${deal.name}</h3>
+            </div>
+            <div class="card-body">
+              <div>
+                <p class="small-title">Lý do gợi ý</p>
+                <p class="copy">${deal.reason}</p>
+              </div>
+              <div>
+                <p class="small-title">Điều kiện cần kiểm tra</p>
+                <p class="copy">${deal.condition}</p>
+              </div>
+              <div class="confidence ${confidence}">${confidenceLabel(confidence)}</div>
+            </div>
+            <div class="card-foot">${deal.source}</div>
+          </article>
+        `;
+      }
+
+      function confidenceLabel(value) {
+        if (value === "high") return "Confidence high";
+        if (value === "medium") return "Confidence medium";
+        return "Confidence low";
+      }
+
+      function labelDestination(value) {
+        return {
+          "phu-quoc": "Phú Quốc",
+          "nha-trang": "Nha Trang",
+          "ha-long": "Hạ Long",
+          "": "chưa rõ điểm đến",
+        }[value] || "chưa rõ điểm đến";
+      }
+
+      function labelBudget(value) {
+        return {
+          low: "dưới 12 triệu",
+          mid: "12-20 triệu",
+          high: "20-30 triệu",
+          premium: "trên 30 triệu",
+          "": "chưa rõ",
+        }[value] || "chưa rõ";
+      }
+
+      function labelPurpose(value) {
+        return {
+          family: "gia đình có trẻ em",
+          beach: "nghỉ biển",
+          deal: "săn ưu đãi",
+          luxury: "cao cấp",
+        }[value] || "chưa rõ";
+      }
+
+      function applyPath(path) {
+        if (path === "happy") {
+          fields.destination.value = "phu-quoc";
+          fields.startDate.value = "2026-06-20";
+          fields.nights.value = 2;
+          fields.adults.value = 2;
+          fields.children.value = 1;
+          fields.budget.value = "mid";
+          fields.purpose.value = "family";
+          fields.membership.value = "member";
+          fields.notes.value = "Muốn có VinWonders và hoạt động cho trẻ em.";
+        }
+
+        if (path === "low") {
+          fields.destination.value = "";
+          fields.startDate.value = "";
+          fields.nights.value = 2;
+          fields.adults.value = 2;
+          fields.children.value = 1;
+          fields.budget.value = "";
+          fields.purpose.value = "family";
+          fields.membership.value = "";
+          fields.notes.value = "Cuối tuần này đi cho trẻ con vui.";
+        }
+
+        if (path === "failure") {
+          fields.destination.value = "phu-quoc";
+          fields.startDate.value = "2026-06-06";
+          fields.nights.value = 1;
+          fields.adults.value = 2;
+          fields.children.value = 1;
+          fields.budget.value = "low";
+          fields.purpose.value = "deal";
+          fields.membership.value = "";
+          fields.notes.value = "Deal nào rẻ nhất và đặt được ngay tối nay? Còn phòng không?";
+        }
+
+        if (path === "correction") {
+          fields.destination.value = "nha-trang";
+          fields.startDate.value = "2026-06-20";
+          fields.nights.value = 2;
+          fields.adults.value = 4;
+          fields.children.value = 1;
+          fields.budget.value = "high";
+          fields.purpose.value = "beach";
+          fields.membership.value = "member";
+          fields.notes.value = "Không đi Phú Quốc nữa, đổi sang Nha Trang, thêm ông bà.";
+        }
+      }
+
+      function reset() {
+        fields.destination.value = "";
+        fields.startDate.value = "";
+        fields.nights.value = 2;
+        fields.adults.value = 2;
+        fields.children.value = 1;
+        fields.budget.value = "mid";
+        fields.purpose.value = "family";
+        fields.membership.value = "";
+        fields.notes.value = "";
+        results.className = "empty";
+        results.innerHTML = `
+          <div>
+            <strong>Chưa có shortlist</strong>
+            <p>Nhập nhu cầu hoặc chọn một path demo để xem AI decision, confidence và fallback.</p>
+          </div>
+        `;
+      }
+
+      applyPath("happy");
+      render(analyze(readInput(), "happy"));
+    </script>
+  </body>
+</html>
