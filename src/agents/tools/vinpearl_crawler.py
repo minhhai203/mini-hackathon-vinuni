@@ -96,6 +96,27 @@ def load_cached_vinpearl_page(
     return json.loads(cache_path.read_text(encoding="utf-8"))
 
 
+def load_cached_vinpearl_pages(
+    *,
+    output_dir: str | Path = DEFAULT_CRAWL_CACHE_DIR,
+) -> list[dict[str, Any]]:
+    """Load all reusable Vinpearl crawl cache files from a directory."""
+    directory = Path(output_dir)
+    if not directory.exists():
+        return []
+
+    pages: list[dict[str, Any]] = []
+    for path in sorted(directory.glob("*.json")):
+        if path.name == "crawl-summary.json":
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        pages.append({**payload, "cache_path": str(path)})
+    return pages
+
+
 async def crawl_vinpearl_page(
     url: str,
     *,

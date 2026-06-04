@@ -22,3 +22,4 @@ class ChatResponse(BaseModel):
     safety_notice: str | None = None
     ui_theme: str = "theme-default"
     context: dict[str, Any] = Field(default_factory=dict)
+    data_source: str | None = None

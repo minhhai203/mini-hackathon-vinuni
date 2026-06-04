@@ -45,6 +45,34 @@ def test_chatbot_recommends_when_profile_is_complete():
     assert "rank_resort_options" in result["used_tools"]
     assert "get_mock_weather_context" in result["used_tools"]
     assert result["safety_notice"]
+    assert result["data_source"] == "knowledge_base"
+    assert "knowledge_base_fallback" in result["used_tools"]
+
+
+def test_chatbot_prefers_crawled_cache_when_available(tmp_path):
+    cache_file = tmp_path / "vinpearl-phu-quoc.json"
+    cache_file.write_text(
+        """
+        {
+          "requested_url": "https://vinpearl.com/vi/phu-quoc",
+          "success": true,
+          "title": "Vinpearl Discovery Phu Quoc",
+          "markdown": "# Vinpearl Discovery Phú Quốc\\nKhu resort biển cho gia đình có bãi biển, hồ bơi, VinWonders và hoạt động cho trẻ em. Voucher và phụ thu trẻ em cần kiểm tra theo từng gói."
+        }
+        """,
+        encoding="utf-8",
+    )
+    service = ChatbotService(llm_service=LLMService(enabled=False), crawl_cache_dir=str(tmp_path))
+
+    result = service.reply(
+        "Gia đình 2 người lớn 1 bé đi Phú Quốc 3 ngày 2 đêm, budget 15-20 triệu, ưu tiên vui chơi cho trẻ em."
+    )
+
+    assert result["data_source"] == "vinpearl_crawl_cache"
+    assert "load_cached_vinpearl_pages" in result["used_tools"]
+    assert "extract_resort_info" in result["used_tools"]
+    assert result["cards"][0]["option"] == "Vinpearl Discovery Phú Quốc"
+    assert result["cards"][0]["context_badges"][0] == "Official crawl"
 
 
 def test_chatbot_can_recommend_with_uncertain_budget():

@@ -22,6 +22,7 @@ from src.agents.tools.vinpearl_crawler import (
     crawl_vinpearl_page,
     crawl_vinpearl_page_sync,
     load_cached_vinpearl_page,
+    load_cached_vinpearl_pages,
     normalize_vinpearl_url,
     save_crawled_vinpearl_page,
     vinpearl_cache_path,
@@ -35,6 +36,7 @@ AGENT_TOOLS = {
     "crawl_vinpearl_page_sync": crawl_vinpearl_page_sync,
     "crawl_and_cache_vinpearl_page_sync": crawl_and_cache_vinpearl_page_sync,
     "load_cached_vinpearl_page": load_cached_vinpearl_page,
+    "load_cached_vinpearl_pages": load_cached_vinpearl_pages,
     "save_crawled_vinpearl_page": save_crawled_vinpearl_page,
     "get_mock_weather_context": get_mock_weather_context,
     "get_mock_news_context": get_mock_news_context,
@@ -78,6 +80,7 @@ __all__ = [
     "update_trip_profile",
     "validate_user_constraints",
     "load_cached_vinpearl_page",
+    "load_cached_vinpearl_pages",
     "save_crawled_vinpearl_page",
     "vinpearl_cache_path",
 ]

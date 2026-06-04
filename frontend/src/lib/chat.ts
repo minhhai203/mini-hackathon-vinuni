@@ -34,6 +34,7 @@ export type ChatResponse = {
   safety_notice?: string | null;
   ui_theme: string;
   context: ChatContext;
+  data_source?: string | null;
 };
 
 export type ChatMessage = {

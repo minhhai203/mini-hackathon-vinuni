@@ -18,6 +18,7 @@ The goal of this prototype is not to replace the booking flow. It helps the user
 - Shows trade-offs and policy guards.
 - Displays confidence instead of pretending all answers are certain.
 - Shows image-based recommendation cards in the chatbot.
+- Uses cached official Vinpearl crawl data when available, with mock/local fallback for demo reliability.
 - Uses mock weather, news, and review signals for prototype context.
 - Handles unclear, conflicting, or risky requests by asking follow-up questions or suggesting human support.
 
@@ -241,7 +242,9 @@ flowchart TD
     Q --> LLM
 
     VAL -->|"rankable or partial rankable"| CTX["Context tools\nget_mock_weather_context\nget_mock_news_context\nget_mock_review_signals"]
-    CTX --> RANK["rank_resort_options\nrank local Vinpearl stay/activity data"]
+    CTX --> DATA["Recommendation data source\nload cached crawl JSON from data/raw/vinpearl\nfallback to KNOWLEDGE_BASE when empty"]
+    DATA --> EXT["extract_resort_info + extract_policy_guard\nconvert crawled markdown into rankable options"]
+    EXT --> RANK["rank_resort_options\nrank crawled data or fallback local data"]
     RANK --> CARD["format_recommendation_card\nimage, badges, trade-off, policy guard"]
     CARD --> SRC["search_vinpearl_pages\nsource candidates for later crawl/verification"]
     SRC --> LLM
@@ -249,7 +252,7 @@ flowchart TD
     OUT --> W
     W --> U
 
-    CRAWL["crawl_vinpearl_page\nofficial vinpearl.com crawler"] -. "used for source expansion / future data refresh" .-> SRC
+    CRAWL["crawl_vinpearl_page\nofficial vinpearl.com crawler"] -. "writes reusable cache" .-> DATA
 ```
 
 Current tools:
@@ -259,6 +262,7 @@ Current tools:
 | `search_vinpearl_pages` | Builds official Vinpearl source candidates from keyword, destination, and category. |
 | `crawl_vinpearl_page` | Async tool that crawls official `vinpearl.com` pages and returns LLM-ready markdown. |
 | `crawl_vinpearl_page_sync` | Sync wrapper for scripts or non-async agent integrations. |
+| `load_cached_vinpearl_pages` | Loads cached crawl JSON from `data/raw/vinpearl` when available. |
 | `get_mock_weather_context` | Returns mock weather context and UI theme by destination. |
 | `get_mock_news_context` | Returns mock travel/news signals by destination. |
 | `get_mock_review_signals` | Returns mock review positives and watch-outs by destination. |
@@ -330,6 +334,8 @@ data/raw/vinpearl/crawl-summary.json
 
 The cached JSON files are intended to be committed and pushed so teammates do not need to crawl every time they run the app.
 
+When cached crawl JSON exists, the chatbot automatically loads it, extracts rankable resort/activity signals, and uses those options before ranking. When the cache folder is empty or has no usable JSON, the chatbot falls back to the built-in `KNOWLEDGE_BASE` mock/local data so the demo still works.
+
 Useful commands:
 
 ```bash
@@ -343,7 +349,7 @@ python scripts/crawl_vinpearl.py
 python scripts/crawl_vinpearl.py --force
 ```
 
-The running app does not auto-crawl on startup. It only uses crawler data when a developer runs the script or when a tool explicitly loads the cached JSON.
+The running app does not auto-crawl on startup. It only reads cached JSON files that already exist in `data/raw/vinpearl`.
 
 ## Run With Docker
 

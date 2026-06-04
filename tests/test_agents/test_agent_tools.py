@@ -125,6 +125,7 @@ def test_agent_tools_registry_contains_project_tools():
     expected = {
         "search_vinpearl_pages",
         "crawl_vinpearl_page",
+        "load_cached_vinpearl_pages",
         "extract_resort_info",
         "extract_policy_guard",
         "validate_user_constraints",

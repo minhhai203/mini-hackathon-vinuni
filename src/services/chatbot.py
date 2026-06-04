@@ -21,6 +21,7 @@ from src.agents.tools import (
 from src.agents.tools.extraction import extract_budget_amounts
 from src.agents.tools.text_utils import contains_any, normalize_text
 from src.services.llm import LLMResult, LLMService
+from src.services.vinpearl_data import load_vinpearl_options_from_cache
 
 
 DESTINATION_ALIASES = {
@@ -234,8 +235,14 @@ KNOWLEDGE_BASE: list[dict[str, Any]] = [
 class ChatbotService:
     """Small deterministic assistant for the prototype chatbot."""
 
-    def __init__(self, llm_service: LLMService | None = None) -> None:
+    def __init__(
+        self,
+        llm_service: LLMService | None = None,
+        *,
+        crawl_cache_dir: str | None = None,
+    ) -> None:
         self.llm_service = llm_service or LLMService()
+        self.crawl_cache_dir = crawl_cache_dir
 
     def reply(self, message: str, profile: dict[str, Any] | None = None) -> dict[str, Any]:
         profile = profile or {}
@@ -304,9 +311,21 @@ class ChatbotService:
                 "context": travel_context,
             }
 
-        ranked = rank_resort_options(current_profile, KNOWLEDGE_BASE)
+        recommendation_options = self.recommendation_options()
+        if recommendation_options:
+            used_tools.extend(["load_cached_vinpearl_pages", "extract_resort_info"])
+            data_source = "vinpearl_crawl_cache"
+        else:
+            recommendation_options = KNOWLEDGE_BASE
+            used_tools.append("knowledge_base_fallback")
+            data_source = "knowledge_base"
+
+        ranked = rank_resort_options(current_profile, recommendation_options)
         used_tools.append("rank_resort_options")
-        cards = [format_recommendation_card(option) for option in ranked["shortlist"]]
+        cards = [
+            format_recommendation_card(option, policy_guard=option.get("policy_guard"))
+            for option in ranked["shortlist"]
+        ]
         source_candidates = search_vinpearl_pages(
             current_profile.get("priority", "resort package"),
             destination=current_profile.get("destination"),
@@ -349,7 +368,12 @@ class ChatbotService:
             ),
             "ui_theme": weather_context["ui_theme"],
             "context": travel_context,
+            "data_source": data_source,
         }
+
+    def recommendation_options(self) -> list[dict[str, Any]]:
+        """Prefer crawled official data when it exists, otherwise let caller fallback."""
+        return load_vinpearl_options_from_cache(self.crawl_cache_dir)
 
 
 def parse_trip_profile(message: str) -> dict[str, Any]:

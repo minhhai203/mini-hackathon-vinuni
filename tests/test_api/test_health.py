@@ -57,3 +57,4 @@ def test_chat_endpoint_returns_recommendations():
     assert payload["needs_followup"] is False
     assert payload["cards"]
     assert payload["confidence"] in {"high", "medium"}
+    assert payload["data_source"] == "knowledge_base"
