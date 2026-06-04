@@ -166,14 +166,35 @@
                         <!-- Input 2: Dates -->
                         <div class="booking-field" id="fieldDates">
                             <label class="field-label"><i class="fa-solid fa-calendar-days icon-gold"></i> Ngày nhận - trả phòng</label>
-                            <div class="field-input-wrapper date-picker-wrapper">
+                            <div class="field-input-wrapper date-picker-wrapper" id="datePickerTrigger">
                                 <div class="date-display" id="dateDisplay">
-                                    <span id="checkInDateDisplay">04 TH06 2026</span>
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                    <span id="checkOutDateDisplay">05 TH06 2026</span>
+                                    <div class="date-range-item">
+                                        <span class="date-range-label">Nhận phòng</span>
+                                        <span class="date-range-value" id="checkInDateDisplay">04 TH06 2026</span>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-right date-range-arrow"></i>
+                                    <div class="date-range-item">
+                                        <span class="date-range-label">Trả phòng</span>
+                                        <span class="date-range-value" id="checkOutDateDisplay">05 TH06 2026</span>
+                                    </div>
                                 </div>
-                                <input type="date" id="inputCheckIn" class="invisible-date-input" value="2026-06-04">
-                                <input type="date" id="inputCheckOut" class="invisible-date-input" value="2026-06-05">
+                                <i class="fa-solid fa-calendar-days field-chevron"></i>
+                            </div>
+                            <!-- Custom Calendar Dropdown -->
+                            <div class="calendar-dropdown" id="calendarDropdown">
+                                <div class="calendar-header">
+                                    <button type="button" class="cal-nav-btn" id="calPrevBtn"><i class="fa-solid fa-chevron-left"></i></button>
+                                    <span class="cal-month-label" id="calMonthLabel"></span>
+                                    <button type="button" class="cal-nav-btn" id="calNextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                                </div>
+                                <div class="calendar-weekdays">
+                                    <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+                                </div>
+                                <div class="calendar-grid" id="calendarGrid"></div>
+                                <div class="calendar-footer">
+                                    <span class="cal-hint" id="calHint">Chọn ngày nhận phòng</span>
+                                    <button type="button" class="btn btn-gold btn-sm" id="calApplyBtn">Áp dụng</button>
+                                </div>
                             </div>
                         </div>
 
@@ -648,7 +669,7 @@
                     </div>
 
                     <form class="planner-composer" id="plannerForm" onsubmit="event.preventDefault();">
-                        <input id="plannerInput" class="planner-input" type="text" autocomplete="off" placeholder="Nói tự nhiên: đi đâu, mấy người, ngân sách, muốn chill hay vui chơi...">
+                        <textarea id="plannerInput" class="planner-input" rows="1" autocomplete="off" placeholder="Nói tự nhiên: đi đâu, mấy người, ngân sách, muốn chill hay vui chơi..."></textarea>
                         <button class="planner-send-btn" id="plannerSendBtn" type="submit" aria-label="Gửi planning prompt">
                             <i class="fa-solid fa-arrow-up"></i>
                         </button>
@@ -773,7 +794,7 @@
 
             <!-- Chat Footer Input -->
             <form class="chat-footer" id="chatForm" onsubmit="event.preventDefault();">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Nhập câu hỏi của bạn..." autocomplete="off">
+                <textarea class="chat-input" id="chatInput" rows="1" placeholder="Nhập câu hỏi của bạn..." autocomplete="off"></textarea>
                 <button type="submit" class="chat-send-btn" id="chatSendBtn" aria-label="Gửi tin nhắn">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>

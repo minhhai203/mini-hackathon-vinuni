@@ -166,14 +166,35 @@
                         <!-- Input 2: Dates -->
                         <div class="booking-field" id="fieldDates">
                             <label class="field-label"><i class="fa-solid fa-calendar-days icon-gold"></i> Ngày nhận - trả phòng</label>
-                            <div class="field-input-wrapper date-picker-wrapper">
+                            <div class="field-input-wrapper date-picker-wrapper" id="datePickerTrigger">
                                 <div class="date-display" id="dateDisplay">
-                                    <span id="checkInDateDisplay">04 TH06 2026</span>
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                    <span id="checkOutDateDisplay">05 TH06 2026</span>
+                                    <div class="date-range-item">
+                                        <span class="date-range-label">Nhận phòng</span>
+                                        <span class="date-range-value" id="checkInDateDisplay">04 TH06 2026</span>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-right date-range-arrow"></i>
+                                    <div class="date-range-item">
+                                        <span class="date-range-label">Trả phòng</span>
+                                        <span class="date-range-value" id="checkOutDateDisplay">05 TH06 2026</span>
+                                    </div>
                                 </div>
-                                <input type="date" id="inputCheckIn" class="invisible-date-input" value="2026-06-04">
-                                <input type="date" id="inputCheckOut" class="invisible-date-input" value="2026-06-05">
+                                <i class="fa-solid fa-calendar-days field-chevron"></i>
+                            </div>
+                            <!-- Custom Calendar Dropdown -->
+                            <div class="calendar-dropdown" id="calendarDropdown">
+                                <div class="calendar-header">
+                                    <button type="button" class="cal-nav-btn" id="calPrevBtn"><i class="fa-solid fa-chevron-left"></i></button>
+                                    <span class="cal-month-label" id="calMonthLabel"></span>
+                                    <button type="button" class="cal-nav-btn" id="calNextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                                </div>
+                                <div class="calendar-weekdays">
+                                    <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+                                </div>
+                                <div class="calendar-grid" id="calendarGrid"></div>
+                                <div class="calendar-footer">
+                                    <span class="cal-hint" id="calHint">Chọn ngày nhận phòng</span>
+                                    <button type="button" class="btn btn-gold btn-sm" id="calApplyBtn">Áp dụng</button>
+                                </div>
                             </div>
                         </div>
 
@@ -648,7 +669,7 @@
                     </div>
 
                     <form class="planner-composer" id="plannerForm" onsubmit="event.preventDefault();">
-                        <input id="plannerInput" class="planner-input" type="text" autocomplete="off" placeholder="Nói tự nhiên: đi đâu, mấy người, ngân sách, muốn chill hay vui chơi...">
+                        <textarea id="plannerInput" class="planner-input" rows="1" autocomplete="off" placeholder="Nói tự nhiên: đi đâu, mấy người, ngân sách, muốn chill hay vui chơi..."></textarea>
                         <button class="planner-send-btn" id="plannerSendBtn" type="submit" aria-label="Gửi planning prompt">
                             <i class="fa-solid fa-arrow-up"></i>
                         </button>
@@ -716,6 +737,57 @@
         </div>
     </section>
 
+    <!-- BOOKING SEARCH RESULTS PAGE -->
+    <section class="results-page" id="resultsPage" aria-hidden="true">
+        <!-- Top bar -->
+        <div class="results-topbar">
+            <button class="results-back-btn" id="resultsBackBtn" aria-label="Quay lại">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="results-search-summary" id="resultsSearchSummary">
+                <span class="results-dest" id="resultsSummaryDest"></span>
+                <span class="results-sep">·</span>
+                <span class="results-dates" id="resultsSummaryDates"></span>
+                <span class="results-sep">·</span>
+                <span class="results-guests" id="resultsSummaryGuests"></span>
+            </div>
+            <button class="results-modify-btn" id="resultsModifyBtn">
+                <i class="fa-solid fa-sliders"></i> Sửa tìm kiếm
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="results-body">
+            <!-- Section heading -->
+            <div class="results-section-head">
+                <div>
+                    <h2 class="results-title" id="resultsTitle">Kết quả tìm kiếm</h2>
+                    <p class="results-subtitle" id="resultsSubtitle"></p>
+                </div>
+                <div class="results-amenity-filters" id="resultsAmenityFilters">
+                    <button class="results-amenity-chip active" data-amenity="all">Tất cả</button>
+                    <button class="results-amenity-chip" data-amenity="beach"><i class="fa-solid fa-umbrella-beach"></i> Bãi biển</button>
+                    <button class="results-amenity-chip" data-amenity="spa"><i class="fa-solid fa-spa"></i> Spa</button>
+                    <button class="results-amenity-chip" data-amenity="pool"><i class="fa-solid fa-water-ladder"></i> Hồ bơi</button>
+                    <button class="results-amenity-chip" data-amenity="kids"><i class="fa-solid fa-children"></i> Gia đình</button>
+                    <button class="results-amenity-chip" data-amenity="golf"><i class="fa-solid fa-golf-ball-tee"></i> Golf</button>
+                    <button class="results-amenity-chip" data-amenity="villa"><i class="fa-solid fa-house"></i> Biệt thự</button>
+                </div>
+            </div>
+
+            <!-- Cards grid -->
+            <div class="results-grid" id="resultsGrid"></div>
+
+            <!-- No results -->
+            <div class="results-empty" id="resultsEmpty" style="display:none;">
+                <i class="fa-solid fa-compass"></i>
+                <h3>Chưa có kết quả cho lựa chọn này</h3>
+                <p>Hãy thử điều chỉnh điểm đến hoặc bộ lọc để xem thêm gợi ý từ Vinpearl.</p>
+                <button class="btn btn-gold" id="resultsResetBtn">Xem tất cả</button>
+            </div>
+        </div>
+    </section>
+
     <!-- AI CHATBOT WIDGET -->
     <div class="ai-chatbot-widget" id="aiChatbotWidget">
         <!-- Floating Chat Trigger Button -->
@@ -773,11 +845,67 @@
 
             <!-- Chat Footer Input -->
             <form class="chat-footer" id="chatForm" onsubmit="event.preventDefault();">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Nhập câu hỏi của bạn..." autocomplete="off">
+                <textarea class="chat-input" id="chatInput" rows="1" placeholder="Nhập câu hỏi của bạn..." autocomplete="off"></textarea>
                 <button type="submit" class="chat-send-btn" id="chatSendBtn" aria-label="Gửi tin nhắn">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- SEARCH MODAL OVERLAY -->
+    <div class="search-overlay" id="searchOverlay" aria-hidden="true" role="dialog" aria-label="Tìm kiếm">
+        <div class="search-modal">
+            <div class="search-modal-header">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" class="search-modal-input" id="searchModalInput"
+                           placeholder="Tìm khách sạn, điểm đến, trải nghiệm..." autocomplete="off">
+                    <button class="search-clear-btn" id="searchClearBtn" aria-label="Xóa từ khóa" style="display:none;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <button class="search-close-btn" id="searchCloseBtn" aria-label="Đóng tìm kiếm">
+                    <i class="fa-solid fa-xmark"></i> Đóng
+                </button>
+            </div>
+
+            <div class="search-filters" id="searchFilters">
+                <button class="search-filter-chip active" data-filter="all">Tất cả</button>
+                <button class="search-filter-chip" data-filter="hotel"><i class="fa-solid fa-hotel"></i> Khách sạn</button>
+                <button class="search-filter-chip" data-filter="experience"><i class="fa-solid fa-compass"></i> Trải nghiệm</button>
+                <button class="search-filter-chip" data-filter="offer"><i class="fa-solid fa-percent"></i> Ưu đãi</button>
+            </div>
+
+            <div class="search-body" id="searchBody">
+                <!-- Empty / default state -->
+                <div class="search-empty-state" id="searchEmptyState">
+                    <p class="search-suggestions-label">Gợi ý tìm kiếm phổ biến</p>
+                    <div class="search-quick-tags">
+                        <span class="search-quick-tag" data-query="Phú Quốc">🏝️ Phú Quốc</span>
+                        <span class="search-quick-tag" data-query="Nha Trang">🌊 Nha Trang</span>
+                        <span class="search-quick-tag" data-query="Hạ Long">⛵ Hạ Long</span>
+                        <span class="search-quick-tag" data-query="Hội An">🏮 Nam Hội An</span>
+                        <span class="search-quick-tag" data-query="spa">💆 Spa</span>
+                        <span class="search-quick-tag" data-query="golf">⛳ Golf</span>
+                        <span class="search-quick-tag" data-query="gia đình">👨‍👩‍👧 Gia đình</span>
+                        <span class="search-quick-tag" data-query="VinWonders">🎢 VinWonders</span>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="search-results-wrapper" id="searchResultsWrapper" style="display:none;">
+                    <p class="search-result-count" id="searchResultCount"></p>
+                    <div class="search-results-grid" id="searchResultsGrid"></div>
+                </div>
+
+                <!-- No results -->
+                <div class="search-no-results" id="searchNoResults" style="display:none;">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                    <p>Không tìm thấy kết quả cho <strong>"<span id="searchNoResultsQuery"></span>"</strong></p>
+                    <p class="search-no-results-hint">Thử từ khóa khác như tên điểm đến, loại tiện ích hoặc tên resort.</p>
+                </div>
+            </div>
         </div>
     </div>
 

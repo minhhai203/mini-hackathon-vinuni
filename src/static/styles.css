@@ -742,40 +742,206 @@ button, input, select, textarea {
 /* Date Display Styling */
 .date-picker-wrapper {
     position: relative;
+    cursor: pointer;
+    user-select: none;
 }
 
 .date-display {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
     width: 100%;
-    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.date-range-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+
+.date-range-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
     font-weight: 600;
-    pointer-events: none; /* Let clicks pass to absolute inputs behind it */
-    z-index: 2;
+    letter-spacing: 0.04em;
 }
 
-.date-display i {
-    font-size: 0.75rem;
+.date-range-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    white-space: nowrap;
+}
+
+.date-range-arrow {
+    font-size: 0.68rem;
     color: var(--color-gold);
+    flex-shrink: 0;
 }
 
-.invisible-date-input {
+/* Custom Calendar Dropdown */
+.calendar-dropdown {
+    display: none;
     position: absolute;
-    top: 0;
-    width: 48%;
-    height: 100%;
-    opacity: 0;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,43,73,0.18);
+    z-index: 200;
+    width: 310px;
+    overflow: hidden;
+}
+
+.calendar-dropdown.show {
+    display: block;
+    animation: calDropIn 0.2s ease;
+}
+
+@keyframes calDropIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    background: var(--color-navy);
+}
+
+.cal-month-label {
+    font-family: var(--font-title);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-white);
+    letter-spacing: 0.03em;
+}
+
+.cal-nav-btn {
+    background: none;
+    border: none;
+    color: var(--color-gold);
     cursor: pointer;
-    z-index: 5;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    font-size: 0.75rem;
 }
 
-#inputCheckIn {
-    left: 0;
+.cal-nav-btn:hover {
+    background: rgba(184, 156, 90, 0.25);
 }
 
-#inputCheckOut {
-    right: 0;
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 7px 10px 4px;
+    background: var(--color-navy-dark);
+}
+
+.calendar-weekdays span {
+    text-align: center;
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    padding: 3px 0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 8px 10px 10px;
+    gap: 2px;
+}
+
+.cal-day {
+    text-align: center;
+    padding: 7px 2px;
+    font-size: 0.81rem;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    color: var(--color-text-dark);
+    border: none;
+    background: none;
+    line-height: 1;
+    font-family: var(--font-primary);
+}
+
+.cal-day:hover:not(.disabled):not(.empty) {
+    background: rgba(184, 156, 90, 0.18);
+    color: var(--color-gold-dark);
+}
+
+.cal-day.today:not(.selected-start):not(.selected-end) {
+    font-weight: 700;
+    color: var(--color-gold);
+    background: rgba(184, 156, 90, 0.09);
+}
+
+.cal-day.selected-start,
+.cal-day.selected-end {
+    background: var(--color-gold) !important;
+    color: var(--color-white) !important;
+    font-weight: 700;
+}
+
+.cal-day.selected-start {
+    border-radius: 5px 0 0 5px;
+}
+
+.cal-day.selected-end {
+    border-radius: 0 5px 5px 0;
+}
+
+.cal-day.selected-start.selected-end {
+    border-radius: 5px;
+}
+
+.cal-day.in-range {
+    background: rgba(184, 156, 90, 0.13);
+    color: var(--color-navy);
+    border-radius: 0;
+}
+
+.cal-day.disabled {
+    color: #CBD5E1;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.cal-day.empty {
+    cursor: default;
+    pointer-events: none;
+}
+
+.calendar-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 13px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-light-gray);
+}
+
+.cal-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-style: italic;
 }
 
 /* Guest Dropdown specifically */
@@ -1155,6 +1321,7 @@ body.planner-open {
 .planner-chat-scroll {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -1163,16 +1330,22 @@ body.planner-open {
 }
 
 .planner-msg {
+    min-width: 0;
     max-width: 92%;
     padding: 15px 17px;
     border-radius: 8px;
     font-size: 0.95rem;
     line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     animation: plannerMessageIn 0.28s ease both;
 }
 
 .planner-msg p {
     margin: 0 0 7px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .planner-msg p:last-child {
@@ -1191,6 +1364,116 @@ body.planner-open {
     background: var(--color-navy);
     color: var(--color-white);
     box-shadow: 0 10px 22px rgba(0, 43, 73, 0.16);
+}
+
+.weather-pick {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 10px 0;
+    padding: 13px;
+    border-radius: 8px;
+    background: #fffaf0;
+    border: 1px solid #eadfca;
+}
+
+.weather-pick strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--color-navy);
+}
+
+.weather-pick p {
+    margin: 0;
+    color: #4d4656;
+}
+
+.weather-glyph {
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    color: var(--color-navy);
+    background: #fff1c7;
+    border: 1px solid rgba(224, 160, 65, 0.28);
+    box-shadow: 0 8px 18px rgba(0, 43, 73, 0.09);
+}
+
+.weather-glyph-sm {
+    flex-basis: 30px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+    box-shadow: none;
+}
+
+.weather-sun {
+    color: #9b5f00;
+    background: #fff0b8;
+}
+
+.weather-partly,
+.weather-mixed {
+    color: #0f5f7a;
+    background: #dff4fb;
+}
+
+.weather-cloud,
+.weather-fog {
+    color: #4b6270;
+    background: #e9eef1;
+}
+
+.weather-rain {
+    color: #135f91;
+    background: #dceeff;
+}
+
+.weather-storm {
+    color: #4f3b86;
+    background: #e8e1ff;
+}
+
+.weather-alt-title {
+    margin-top: 10px;
+    color: #5d5664;
+}
+
+.weather-alt-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 10px;
+}
+
+.weather-alt {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 190px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.64);
+    border: 1px solid #eadfca;
+}
+
+.weather-alt strong,
+.weather-alt small {
+    display: block;
+}
+
+.weather-alt small {
+    margin-top: 1px;
+    color: #6f6876;
+}
+
+.weather-days {
+    margin: 8px 0 0 18px;
+    padding: 0;
 }
 
 @keyframes plannerMessageIn {
@@ -1250,8 +1533,15 @@ body.planner-open {
 
 .planner-input {
     width: 100%;
+    min-width: 0;
+    max-height: 118px;
     font-size: 0.95rem;
     line-height: 1.4;
+    resize: none;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .planner-send-btn {
@@ -2612,18 +2902,25 @@ body.planner-open {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    min-width: 0;
 }
 
 .message {
     display: flex;
+    min-width: 0;
     max-width: 85%;
 }
 
 .msg-bubble {
+    min-width: 0;
+    max-width: 100%;
     padding: 12px 16px;
     border-radius: 12px;
     font-size: 0.825rem;
     line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .bot-msg {
@@ -2640,6 +2937,8 @@ body.planner-open {
 
 .bot-msg .msg-bubble p {
     margin: 0 0 8px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .bot-msg .msg-bubble p:last-child {
@@ -2651,6 +2950,7 @@ body.planner-open {
 }
 
 .chat-card {
+    min-width: 0;
     margin: 8px 0;
     border: 1px solid var(--color-border);
     border-left: 3px solid var(--color-gold);
@@ -2671,6 +2971,7 @@ body.planner-open {
 }
 
 .chat-card-content {
+    min-width: 0;
     padding: 10px;
 }
 
@@ -2822,6 +3123,7 @@ body.planner-open {
 .chat-footer {
     display: flex;
     align-items: center;
+    gap: 8px;
     padding: 12px 15px;
     background-color: var(--color-white);
     border-top: 1px solid var(--color-border);
@@ -2829,11 +3131,19 @@ body.planner-open {
 
 .chat-input {
     flex-grow: 1;
+    min-width: 0;
+    max-height: 92px;
     font-size: 0.825rem;
+    line-height: 1.35;
     padding: 8px 12px;
     background-color: var(--color-light-gray);
     border-radius: 20px;
     border: 1px solid var(--color-border);
+    resize: none;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     transition: border-color var(--transition-fast);
 }
 

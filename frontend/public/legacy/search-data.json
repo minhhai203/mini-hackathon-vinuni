@@ -1,0 +1,581 @@
+[
+  {
+    "name": "Vinpearl Golf",
+    "title": "Golf | Vinpearl",
+    "category": "experience",
+    "destinations": [],
+    "amenities": [
+      "golf",
+      "restaurant"
+    ],
+    "best_for": [
+      "golf_trip",
+      "premium_or_private_stay"
+    ],
+    "option_type": "activity",
+    "summary": "Trải nghiệm golf trong hệ sinh thái Vinpearl.",
+    "image_url": "assets/hero-1.png",
+    "context_badges": [
+      "Official menu",
+      "Golf"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/golf"
+  },
+  {
+    "name": "Hòn Tằm Resort",
+    "title": "[MỚI] Hòn Tằm Resort: Địa chỉ, các loại phòng, dịch vụ và tiện ích",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "beach",
+      "pool",
+      "restaurant",
+      "spa"
+    ],
+    "best_for": [
+      "beach_holiday",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "stay",
+    "summary": "Hòn Tằm Resort thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/hon-tam-resort"
+  },
+  {
+    "name": "Akoya Spa",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "experience",
+    "destinations": [],
+    "amenities": [
+      "spa",
+      "restaurant"
+    ],
+    "best_for": [
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "activity",
+    "summary": "Trải nghiệm spa và nghỉ dưỡng nhẹ trong hệ sinh thái Vinpearl.",
+    "image_url": "assets/destination-danang.png",
+    "context_badges": [
+      "Official menu",
+      "Spa"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/spa"
+  },
+  {
+    "name": "Tin tức du lịch Vinpearl",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "news",
+    "destinations": [],
+    "amenities": [
+      "restaurant",
+      "beach",
+      "kids"
+    ],
+    "best_for": [
+      "inspiration"
+    ],
+    "option_type": "content",
+    "summary": "Tin tức và nội dung truyền cảm hứng du lịch từ Vinpearl.",
+    "image_url": "assets/hero-2.png",
+    "context_badges": [
+      "Official",
+      "News"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/tin-tuc"
+  },
+  {
+    "name": "Trải nghiệm Vinpearl",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "experience",
+    "destinations": [],
+    "amenities": [
+      "kids",
+      "theme_park",
+      "restaurant",
+      "spa",
+      "golf"
+    ],
+    "best_for": [
+      "family_with_children",
+      "culture_light_activity",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "activity",
+    "summary": "Nhóm trải nghiệm trong hệ sinh thái Vinpearl: nghỉ dưỡng, vui chơi giải trí, ẩm thực, spa, golf và hội họp.",
+    "image_url": "assets/hero-2.png",
+    "context_badges": [
+      "Official menu",
+      "Experience"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/trai-nghiem"
+  },
+  {
+    "name": "Ưu đãi khuyến mãi Vinpearl",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "offer",
+    "destinations": [],
+    "amenities": [
+      "voucher",
+      "restaurant",
+      "theme_park",
+      "beach"
+    ],
+    "best_for": [
+      "deal_hunter",
+      "family_with_children"
+    ],
+    "option_type": "offer",
+    "summary": "Trang ưu đãi khuyến mãi chính thức của Vinpearl.",
+    "image_url": "assets/hero-1.png",
+    "context_badges": [
+      "Official",
+      "Offer"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/uu-dai"
+  },
+  {
+    "name": "VinHolidays Fiesta Phú Quốc",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "hotel",
+    "destinations": [
+      "Phu Quoc"
+    ],
+    "amenities": [
+      "restaurant",
+      "pool",
+      "kids"
+    ],
+    "best_for": [
+      "family_with_children",
+      "budget_friendly_stay"
+    ],
+    "option_type": "stay",
+    "summary": "VinHolidays Fiesta Phú Quốc thuộc nhóm khách sạn/resort Vinpearl tại Phu Quoc, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-phuquoc.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Phu Quoc"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinholidays-fiesta-phu-quoc"
+  },
+  {
+    "name": "Vinpearl Beachfront Nha Trang",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "beach",
+      "restaurant",
+      "pool"
+    ],
+    "best_for": [
+      "beach_holiday",
+      "city_beach_stay"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Beachfront Nha Trang thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-beachfront-nha-trang"
+  },
+  {
+    "name": "Vinpearl Cua Hoi Resort, Affiliated by Meliá",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "hotel",
+    "destinations": [
+      "Nghe An"
+    ],
+    "amenities": [
+      "beach",
+      "pool",
+      "restaurant",
+      "spa"
+    ],
+    "best_for": [
+      "beach_holiday",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Cua Hoi Resort, Affiliated by Meliá thuộc nhóm khách sạn/resort Vinpearl tại Nghe An, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/hero-2.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nghe An"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-cua-hoi-resort-affiliated-by-melia"
+  },
+  {
+    "name": "Vinpearl Cua Sot Resort, Affiliated by Meliá",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "hotel",
+    "destinations": [
+      "Ha Tinh"
+    ],
+    "amenities": [
+      "beach",
+      "pool",
+      "restaurant"
+    ],
+    "best_for": [
+      "beach_holiday",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Cua Sot Resort, Affiliated by Meliá thuộc nhóm khách sạn/resort Vinpearl tại Ha Tinh, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/hero-2.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Ha Tinh"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-cua-sot-resort-affiliated-by-melia"
+  },
+  {
+    "name": "Vinpearl Empire Nha Trang, Affiliated by Meliá",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "restaurant",
+      "pool"
+    ],
+    "best_for": [
+      "city_beach_stay",
+      "business_or_short_trip"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Empire Nha Trang, Affiliated by Meliá thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-empire-nha-trang-affiliated-by-melia"
+  },
+  {
+    "name": "Vinpearl Ha Tinh, Affiliated by Meliá",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "hotel",
+    "destinations": [
+      "Ha Tinh"
+    ],
+    "amenities": [
+      "restaurant",
+      "pool"
+    ],
+    "best_for": [
+      "business_or_short_trip"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Ha Tinh, Affiliated by Meliá thuộc nhóm khách sạn/resort Vinpearl tại Ha Tinh, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/hero-2.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Ha Tinh"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-ha-tinh-affiliated-by-melia"
+  },
+  {
+    "name": "Vinpearl Hotel Bắc Ninh",
+    "title": "Vinpearl Hotel Bắc Ninh: Khách sạn sang trọng bậc nhất",
+    "category": "hotel",
+    "destinations": [
+      "Bac Ninh"
+    ],
+    "amenities": [
+      "restaurant",
+      "pool"
+    ],
+    "best_for": [
+      "business_or_short_trip"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Hotel Bắc Ninh thuộc nhóm khách sạn/resort Vinpearl tại Bac Ninh, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/hero-1.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Bac Ninh"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-hotel-bac-ninh"
+  },
+  {
+    "name": "Vinpearl Luxury Nha Trang",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "villa",
+      "spa",
+      "pool",
+      "beach",
+      "restaurant"
+    ],
+    "best_for": [
+      "premium_or_private_stay",
+      "relaxed_couple_or_family",
+      "beach_holiday"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Luxury Nha Trang thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-luxury-nha-trang"
+  },
+  {
+    "name": "Vinpearl Resort & Golf Nam Hội An",
+    "title": "Vinpearl Resort & Golf Nam Hội An | Website chính thức",
+    "category": "hotel",
+    "destinations": [
+      "Nam Hoi An"
+    ],
+    "amenities": [
+      "golf",
+      "pool",
+      "beach",
+      "restaurant",
+      "kids"
+    ],
+    "best_for": [
+      "family_with_children",
+      "golf_trip",
+      "beach_holiday"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Resort & Golf Nam Hội An thuộc nhóm khách sạn/resort Vinpearl tại Nam Hoi An, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-danang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nam Hoi An"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-resort-golf-nam-hoi-an"
+  },
+  {
+    "name": "Vinpearl Resort Nha Trang",
+    "title": "Vinpearl Resort Nha Trang | Official website",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "pool",
+      "beach",
+      "kids",
+      "theme_park"
+    ],
+    "best_for": [
+      "family_with_children",
+      "beach_holiday"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Resort Nha Trang thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-resort-nha-trang"
+  },
+  {
+    "name": "Vinpearl Resort & Spa Hạ Long",
+    "title": "Vinpearl Resort & Spa Hạ Long | Website chính thức",
+    "category": "hotel",
+    "destinations": [
+      "Ha Long"
+    ],
+    "amenities": [
+      "spa",
+      "pool",
+      "beach",
+      "restaurant"
+    ],
+    "best_for": [
+      "short_trip_from_hanoi",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Resort & Spa Hạ Long thuộc nhóm khách sạn/resort Vinpearl tại Ha Long, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-halong.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Ha Long"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-resort-spa-ha-long"
+  },
+  {
+    "name": "Vinpearl Resort & Spa Nha Trang Bay",
+    "title": "Vinpearl Resort & Spa Nha Trang Bay | Website chính thức",
+    "category": "hotel",
+    "destinations": [
+      "Nha Trang"
+    ],
+    "amenities": [
+      "spa",
+      "pool",
+      "beach",
+      "restaurant",
+      "kids"
+    ],
+    "best_for": [
+      "family_with_children",
+      "beach_holiday",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Resort & Spa Nha Trang Bay thuộc nhóm khách sạn/resort Vinpearl tại Nha Trang, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-nhatrang.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Nha Trang"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-resort-spa-nha-trang-bay"
+  },
+  {
+    "name": "Vinpearl Resort & Spa Phú Quốc",
+    "title": "Vinpearl Resort & Spa Phú Quốc | Website chính thức",
+    "category": "hotel",
+    "destinations": [
+      "Phu Quoc"
+    ],
+    "amenities": [
+      "spa",
+      "pool",
+      "beach",
+      "restaurant",
+      "kids"
+    ],
+    "best_for": [
+      "family_with_children",
+      "beach_holiday",
+      "relaxed_couple_or_family"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Resort & Spa Phú Quốc thuộc nhóm khách sạn/resort Vinpearl tại Phu Quoc, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-phuquoc.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Phu Quoc"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-resort-spa-phu-quoc"
+  },
+  {
+    "name": "Vinpearl Wonderworld Phú Quốc",
+    "title": "Trải nghiệm tại Vinwonders | Vinpearl",
+    "category": "hotel",
+    "destinations": [
+      "Phu Quoc"
+    ],
+    "amenities": [
+      "villa",
+      "pool",
+      "beach",
+      "kids",
+      "theme_park"
+    ],
+    "best_for": [
+      "family_with_children",
+      "premium_or_private_stay",
+      "beach_holiday"
+    ],
+    "option_type": "stay",
+    "summary": "Vinpearl Wonderworld Phú Quốc thuộc nhóm khách sạn/resort Vinpearl tại Phu Quoc, phù hợp để đưa vào shortlist lưu trú.",
+    "image_url": "assets/destination-phuquoc.png",
+    "context_badges": [
+      "Official menu",
+      "Stay",
+      "Phu Quoc"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinpearl-wonderworld-phu-quoc"
+  },
+  {
+    "name": "Vui chơi giải trí VinWonders",
+    "title": "VinWonders – Nơi niềm vui bất tận đón chờ!",
+    "category": "experience",
+    "destinations": [],
+    "amenities": [
+      "kids",
+      "theme_park"
+    ],
+    "best_for": [
+      "family_with_children"
+    ],
+    "option_type": "activity",
+    "summary": "Chuỗi công viên chủ đề và hoạt động vui chơi giải trí trong hệ sinh thái Vinpearl.",
+    "image_url": "assets/destination-phuquoc.png",
+    "context_badges": [
+      "Official menu",
+      "VinWonders",
+      "Activity"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi/vinwonders"
+  },
+  {
+    "name": "Vinpearl Vietnam",
+    "title": "Vinpearl | Website chính thức",
+    "category": "homepage",
+    "destinations": [],
+    "amenities": [],
+    "best_for": [],
+    "option_type": "homepage",
+    "summary": "Trang chủ Vinpearl tiếng Việt, nguồn chính để phát hiện khách sạn, trải nghiệm, ưu đãi và tin tức.",
+    "image_url": null,
+    "context_badges": [
+      "Official",
+      "Homepage"
+    ],
+    "confidence": "high",
+    "url": "https://vinpearl.com/vi"
+  }
+]
