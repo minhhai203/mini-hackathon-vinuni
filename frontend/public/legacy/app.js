@@ -820,4 +820,410 @@ document.addEventListener("DOMContentLoaded", () => {
         chatWindow.classList.remove(...themes);
         chatWindow.classList.add(themes.includes(themeName) ? themeName : "theme-default");
     }
+
+    // --- 13. BOOKING SEARCH RESULTS PAGE ---
+    const resultsPage         = document.getElementById("resultsPage");
+    const resultsBackBtn      = document.getElementById("resultsBackBtn");
+    const resultsModifyBtn    = document.getElementById("resultsModifyBtn");
+    const resultsGrid         = document.getElementById("resultsGrid");
+    const resultsEmpty        = document.getElementById("resultsEmpty");
+    const resultsResetBtn     = document.getElementById("resultsResetBtn");
+    const resultsTitleEl      = document.getElementById("resultsTitle");
+    const resultsSubtitleEl   = document.getElementById("resultsSubtitle");
+    const resultsSummaryDest  = document.getElementById("resultsSummaryDest");
+    const resultsSummaryDates = document.getElementById("resultsSummaryDates");
+    const resultsSummaryGuests= document.getElementById("resultsSummaryGuests");
+    const amenityFilterChips  = document.querySelectorAll(".results-amenity-chip");
+
+    // Destination input value → JSON destination key
+    const DEST_INPUT_TO_KEY = {
+        "Phú Quốc":                        ["Phu Quoc"],
+        "Nha Trang":                        ["Nha Trang"],
+        "Đà Nẵng - Hội An":                ["Nam Hoi An"],
+        "Hạ Long":                          ["Ha Long"],
+        "Hải Phòng":                        [],
+        "VinWonders Phú Quốc":             ["Phu Quoc"],
+        "Combo Tour Hòn Khô Nha Trang":    ["Nha Trang"],
+    };
+
+    // Tab → categories to include
+    const TAB_CATEGORY_MAP = {
+        "hotel":  ["hotel"],
+        "ticket": ["experience"],
+        "tour":   ["experience"],
+        "planner":["hotel", "experience"],
+    };
+
+    // Extra filter for ticket tab (must have theme_park or kids)
+    function tabFilter(item, tab) {
+        if (tab === "ticket") {
+            return (item.amenities || []).some(a => ["theme_park", "kids"].includes(a));
+        }
+        return true;
+    }
+
+    const TAB_TITLE_MAP = {
+        "hotel":  "Khách sạn & Resort",
+        "ticket": "Vé vui chơi VinWonders",
+        "tour":   "Tour & Trải nghiệm",
+        "planner":"Gợi ý Vinpearl",
+    };
+
+    let resultsAllItems = [];   // full filtered list (no amenity filter)
+    let activeAmenityFilter = "all";
+
+    // Hook the booking form submit button
+    document.getElementById("formHotel").addEventListener("submit", handleBookingSearch);
+
+    async function handleBookingSearch(e) {
+        e.preventDefault();
+
+        const destination = document.getElementById("inputDestination").value.trim();
+        const checkIn     = document.getElementById("checkInDateDisplay").textContent.trim();
+        const checkOut    = document.getElementById("checkOutDateDisplay").textContent.trim();
+        const guests      = document.getElementById("inputGuests").value.trim();
+        const activeTab   = document.querySelector(".booking-tab-btn.active")?.getAttribute("data-tab") || "hotel";
+
+        // Update top-bar summary
+        resultsSummaryDest.textContent  = destination || "Tất cả điểm đến";
+        resultsSummaryDates.textContent = `${checkIn} → ${checkOut}`;
+        resultsSummaryGuests.textContent = guests;
+
+        // Load + filter data
+        const items = await loadSearchData();
+
+        const destKeys = DEST_INPUT_TO_KEY[destination] ?? null; // null = no dest filter
+        const allowedCats = TAB_CATEGORY_MAP[activeTab] || ["hotel"];
+
+        resultsAllItems = items.filter(item => {
+            if (item.category === "homepage") return false;
+            if (!allowedCats.includes(item.category)) return false;
+            if (!tabFilter(item, activeTab)) return false;
+            if (destKeys !== null && destKeys.length > 0) {
+                const itemDests = item.destinations || [];
+                if (!itemDests.some(d => destKeys.includes(d))) return false;
+            }
+            return true;
+        });
+
+        // Reset amenity filter
+        activeAmenityFilter = "all";
+        amenityFilterChips.forEach(c => c.classList.toggle("active", c.getAttribute("data-amenity") === "all"));
+
+        // Build section title
+        const destLabel = destination || "Tất cả điểm đến";
+        resultsTitleEl.textContent = TAB_TITLE_MAP[activeTab] || "Kết quả tìm kiếm";
+        resultsSubtitleEl.textContent = `${destLabel} · ${resultsAllItems.length} kết quả`;
+
+        renderResultCards(resultsAllItems);
+        openResultsPage();
+    }
+
+    function applyAmenityFilter(amenity) {
+        activeAmenityFilter = amenity;
+        let filtered = resultsAllItems;
+        if (amenity !== "all") {
+            filtered = resultsAllItems.filter(item => (item.amenities || []).includes(amenity));
+        }
+        resultsSubtitleEl.textContent = resultsSubtitleEl.textContent.replace(/·.*kết quả/, `· ${filtered.length} kết quả`);
+        renderResultCards(filtered);
+    }
+
+    amenityFilterChips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            amenityFilterChips.forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            applyAmenityFilter(chip.getAttribute("data-amenity"));
+        });
+    });
+
+    function renderResultCards(items) {
+        resultsGrid.innerHTML = "";
+
+        if (items.length === 0) {
+            resultsEmpty.style.display = "";
+            resultsGrid.style.display = "none";
+            return;
+        }
+
+        resultsEmpty.style.display = "none";
+        resultsGrid.style.display = "";
+
+        const AMENITY_ICONS = {
+            "spa":        '<i class="fa-solid fa-spa"></i>',
+            "pool":       '<i class="fa-solid fa-water-ladder"></i>',
+            "beach":      '<i class="fa-solid fa-umbrella-beach"></i>',
+            "restaurant": '<i class="fa-solid fa-utensils"></i>',
+            "kids":       '<i class="fa-solid fa-children"></i>',
+            "golf":       '<i class="fa-solid fa-golf-ball-tee"></i>',
+            "villa":      '<i class="fa-solid fa-house"></i>',
+            "theme_park": '<i class="fa-solid fa-ferris-wheel"></i>',
+        };
+
+        resultsGrid.innerHTML = items.map(item => {
+            const imgUrl    = item.image_url || "assets/hero-1.png";
+            const catLabel  = CAT_LABELS[item.category] || item.category;
+            const destLabel = (item.destinations || []).map(d => DEST_LABELS[d] || d).join(", ");
+            const isGold    = item.category === "offer";
+            const confHigh  = item.confidence === "high";
+
+            const amenityTags = (item.amenities || []).slice(0, 4).map(a =>
+                `<span class="result-amenity-tag">${AMENITY_ICONS[a] || ""} ${escapeHtml(AMENITY_VI[a] || a)}</span>`
+            ).join("");
+
+            return `
+            <div class="result-card animate-scroll">
+                <div class="result-card-image" style="background-image:url('${escapeHtml(imgUrl)}')">
+                    <span class="result-card-category-badge ${isGold ? "badge-gold" : ""}">${escapeHtml(catLabel)}</span>
+                </div>
+                <div class="result-card-content">
+                    ${destLabel ? `<div class="result-card-dest"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(destLabel)}</div>` : ""}
+                    <div class="result-card-name">${escapeHtml(item.name || "")}</div>
+                    <div class="result-card-amenities">${amenityTags}</div>
+                    <div class="result-card-summary">${escapeHtml(item.summary || "")}</div>
+                    <div class="result-card-footer">
+                        <span class="result-card-confidence ${confHigh ? "high" : ""}">
+                            ${confHigh ? '<i class="fa-solid fa-circle-check"></i> Xác nhận chính thức' : '<i class="fa-regular fa-clock"></i> Cần xác nhận'}
+                        </span>
+                        <a class="result-card-cta" href="${escapeHtml(item.url || "#")}" target="_blank" rel="noopener">
+                            Xem chi tiết <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+        }).join("");
+
+        // Trigger scroll animations for newly added cards
+        document.querySelectorAll("#resultsGrid .animate-scroll").forEach(el => {
+            appearanceObserver.observe(el);
+        });
+    }
+
+    function openResultsPage() {
+        resultsPage.classList.add("show");
+        resultsPage.setAttribute("aria-hidden", "false");
+        document.body.classList.add("planner-open"); // reuse overflow lock
+        resultsPage.querySelector(".results-body").scrollTop = 0;
+    }
+
+    function closeResultsPage() {
+        resultsPage.classList.remove("show");
+        resultsPage.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("planner-open");
+    }
+
+    resultsBackBtn.addEventListener("click", closeResultsPage);
+
+    resultsModifyBtn.addEventListener("click", () => {
+        closeResultsPage();
+        setTimeout(() => document.getElementById("booking-section").scrollIntoView({ behavior: "smooth" }), 320);
+    });
+
+    resultsResetBtn.addEventListener("click", () => {
+        activeAmenityFilter = "all";
+        amenityFilterChips.forEach(c => c.classList.toggle("active", c.getAttribute("data-amenity") === "all"));
+        renderResultCards(resultsAllItems);
+    });
+
+    // --- 14. SEARCH MODAL ---
+    const searchOverlay     = document.getElementById("searchOverlay");
+    const searchModalInput  = document.getElementById("searchModalInput");
+    const searchClearBtn    = document.getElementById("searchClearBtn");
+    const searchCloseBtn    = document.getElementById("searchCloseBtn");
+    const searchFilterChips = document.querySelectorAll(".search-filter-chip");
+    const searchEmptyState  = document.getElementById("searchEmptyState");
+    const searchResultsWrapper = document.getElementById("searchResultsWrapper");
+    const searchResultsGrid = document.getElementById("searchResultsGrid");
+    const searchResultCount = document.getElementById("searchResultCount");
+    const searchNoResults   = document.getElementById("searchNoResults");
+    const searchNoResultsQuery = document.getElementById("searchNoResultsQuery");
+    const searchQuickTags   = document.querySelectorAll(".search-quick-tag");
+
+    let searchData = null;
+    let activeFilter = "all";
+
+    const DEST_LABELS = {
+        "Phu Quoc":  "Phú Quốc",
+        "Nha Trang": "Nha Trang",
+        "Ha Long":   "Hạ Long",
+        "Nam Hoi An":"Nam Hội An",
+        "Bac Ninh":  "Bắc Ninh",
+        "Ha Tinh":   "Hà Tĩnh",
+        "Nghe An":   "Nghệ An",
+    };
+
+    const CAT_LABELS = {
+        "hotel":      "Khách sạn",
+        "experience": "Trải nghiệm",
+        "offer":      "Ưu đãi",
+        "news":       "Tin tức",
+        "homepage":   "Trang chủ",
+    };
+
+    const AMENITY_VI = {
+        "spa":        "Spa",
+        "pool":       "Hồ bơi",
+        "beach":      "Bãi biển",
+        "restaurant": "Ẩm thực",
+        "kids":       "Gia đình",
+        "golf":       "Golf",
+        "villa":      "Biệt thự",
+        "theme_park": "VinWonders",
+    };
+
+    const BEST_FOR_VI = {
+        "family_with_children":    "Gia đình có bé",
+        "beach_holiday":           "Nghỉ biển",
+        "relaxed_couple_or_family":"Nghỉ dưỡng nhẹ",
+        "short_trip_from_hanoi":   "Gần Hà Nội",
+        "premium_or_private_stay": "Cao cấp / Riêng tư",
+        "golf_trip":               "Golf",
+        "business_or_short_trip":  "Công tác",
+        "budget_friendly_stay":    "Tiết kiệm",
+        "city_beach_stay":         "Biển phố thị",
+        "culture_light_activity":  "Văn hóa",
+        "deal_hunter":             "Săn ưu đãi",
+        "inspiration":             "Cảm hứng du lịch",
+    };
+
+    async function loadSearchData() {
+        if (searchData) return searchData;
+        try {
+            const res = await fetch("search-data.json");
+            searchData = await res.json();
+        } catch {
+            searchData = [];
+        }
+        return searchData;
+    }
+
+    function openSearchModal() {
+        searchOverlay.classList.add("show");
+        searchOverlay.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        setTimeout(() => searchModalInput.focus(), 80);
+        loadSearchData();
+    }
+
+    function closeSearchModal() {
+        searchOverlay.classList.remove("show");
+        searchOverlay.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        searchModalInput.value = "";
+        searchClearBtn.style.display = "none";
+        resetSearchView();
+    }
+
+    function resetSearchView() {
+        searchEmptyState.style.display = "";
+        searchResultsWrapper.style.display = "none";
+        searchNoResults.style.display = "none";
+    }
+
+    document.getElementById("searchTriggerBtn").addEventListener("click", openSearchModal);
+    searchCloseBtn.addEventListener("click", closeSearchModal);
+    searchOverlay.addEventListener("click", (e) => {
+        if (e.target === searchOverlay) closeSearchModal();
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && searchOverlay.classList.contains("show")) closeSearchModal();
+    });
+
+    searchFilterChips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            searchFilterChips.forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            activeFilter = chip.getAttribute("data-filter");
+            const query = searchModalInput.value.trim();
+            if (query) runSearch(query);
+        });
+    });
+
+    searchQuickTags.forEach(tag => {
+        tag.addEventListener("click", () => {
+            const query = tag.getAttribute("data-query");
+            searchModalInput.value = query;
+            searchClearBtn.style.display = "flex";
+            runSearch(query);
+        });
+    });
+
+    searchModalInput.addEventListener("input", () => {
+        const query = searchModalInput.value;
+        searchClearBtn.style.display = query ? "flex" : "none";
+        if (query.trim()) {
+            runSearch(query.trim());
+        } else {
+            resetSearchView();
+        }
+    });
+
+    searchClearBtn.addEventListener("click", () => {
+        searchModalInput.value = "";
+        searchClearBtn.style.display = "none";
+        resetSearchView();
+        searchModalInput.focus();
+    });
+
+    async function runSearch(query) {
+        const items = await loadSearchData();
+        const norm = normalizeForMatch(query);
+
+        const filtered = items.filter(item => {
+            if (item.category === "homepage") return false;
+            if (activeFilter !== "all" && item.category !== activeFilter) return false;
+
+            const name    = normalizeForMatch(item.name || "");
+            const summary = normalizeForMatch(item.summary || "");
+            const dests   = (item.destinations || []).map(d => normalizeForMatch(DEST_LABELS[d] || d)).join(" ");
+            const amenities = (item.amenities || []).map(a => normalizeForMatch(AMENITY_VI[a] || a)).join(" ");
+            const bestFor = (item.best_for || []).map(b => normalizeForMatch(BEST_FOR_VI[b] || b)).join(" ");
+            const category = normalizeForMatch(CAT_LABELS[item.category] || item.category || "");
+
+            const haystack = [name, summary, dests, amenities, bestFor, category].join(" ");
+            return norm.split(/\s+/).every(word => haystack.includes(word));
+        });
+
+        renderSearchResults(filtered, query);
+    }
+
+    function renderSearchResults(items, query) {
+        if (items.length === 0) {
+            searchEmptyState.style.display = "none";
+            searchResultsWrapper.style.display = "none";
+            searchNoResults.style.display = "";
+            searchNoResultsQuery.textContent = query;
+            return;
+        }
+
+        searchEmptyState.style.display = "none";
+        searchNoResults.style.display = "none";
+        searchResultsWrapper.style.display = "";
+
+        searchResultCount.textContent = `Tìm thấy ${items.length} kết quả`;
+
+        searchResultsGrid.innerHTML = items.map(item => {
+            const imgUrl = item.image_url || "assets/hero-1.png";
+            const catLabel = CAT_LABELS[item.category] || item.category;
+            const destLabels = (item.destinations || []).map(d => DEST_LABELS[d] || d).join(", ");
+            const amenityBadges = (item.amenities || []).slice(0, 3)
+                .map(a => `<span class="search-result-badge">${escapeHtml(AMENITY_VI[a] || a)}</span>`)
+                .join("");
+
+            return `
+                <a class="search-result-card" href="${escapeHtml(item.url || '#')}" target="_blank" rel="noopener">
+                    <div class="search-result-thumb" style="background-image:url('${escapeHtml(imgUrl)}')"></div>
+                    <div class="search-result-info">
+                        <div class="search-result-name">${escapeHtml(item.name || "")}</div>
+                        <div class="search-result-summary">${escapeHtml(item.summary || "")}</div>
+                        <div class="search-result-badges">
+                            <span class="search-result-badge badge-category">${escapeHtml(catLabel)}</span>
+                            ${destLabels ? `<span class="search-result-badge badge-dest"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(destLabels)}</span>` : ""}
+                            ${amenityBadges}
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right search-result-arrow"></i>
+                </a>`;
+        }).join("");
+    }
 });
