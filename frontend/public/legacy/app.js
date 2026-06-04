@@ -1110,9 +1110,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (item.category === "homepage") return false;
             if (!allowedCats.includes(item.category)) return false;
             if (!tabFilter(item, activeTab)) return false;
-            if (destKeys !== null && destKeys.length > 0) {
+            if (destKeys !== null) {
+                if (destKeys.length === 0) return false; // điểm đến chưa có dữ liệu
                 const itemDests = item.destinations || [];
-                if (!itemDests.some(d => destKeys.includes(d))) return false;
+                // Item không có điểm đến cụ thể (dịch vụ toàn quốc) → không lọc theo điểm đến
+                if (itemDests.length > 0 && !itemDests.some(d => destKeys.includes(d))) return false;
             }
             return true;
         });
