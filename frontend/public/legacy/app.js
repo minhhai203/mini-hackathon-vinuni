@@ -432,7 +432,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ["vui chơi cho trẻ em", ["tre em", "trẻ em", "vinwonders", "safari", "vui choi", "vui chơi"]],
             ["nghỉ biển", ["bien", "biển", "beach", "bai bien", "bãi biển"]],
             ["spa và nghỉ dưỡng nhẹ", ["spa", "nghi duong", "nghỉ dưỡng", "chill", "lich nhe", "lịch nhẹ"]],
-            ["ẩm thực và lịch nhẹ", ["am thuc", "ẩm thực", "an uong", "ăn uống"]]
+            ["ẩm thực và lịch nhẹ", ["am thuc", "ẩm thực", "an uong", "ăn uống", "nha hang", "nhà hàng"]],
+            ["tham quan và khám phá", ["tham quan", "kham pha", "khám phá", "di chuyen", "di chuyển", "trai nghiem", "trải nghiệm"]],
+            ["tiết kiệm chi phí", ["gia re", "giá rẻ", "tiet kiem", "tiết kiệm", "budget thap", "budget thấp"]]
         ];
 
         const destinationMatch = destinations.find(([, aliases]) => aliases.some(alias => normalized.includes(normalizeForMatch(alias))));
@@ -441,7 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const originMatch = origins.find(([, aliases]) => aliases.some(alias => normalized.includes(normalizeForMatch(alias))));
         if (originMatch) updates.origin = originMatch[0];
 
-        if (/(người|nguoi|bé|be|trẻ em|tre em|gia đình|gia dinh|cặp đôi|cap doi|bạn bè|ban be)/i.test(text)) {
+        if (/(người|nguoi|bé|be|trẻ em|tre em|gia đình|gia dinh|cặp đôi|cap doi|người yêu|nguoi yeu|couple|bạn bè|ban be)/i.test(text)) {
             updates.group = text;
         }
         if (/(ngày|ngay|đêm|dem|tuần|tuan|tháng|thang|2026|2027)/i.test(text)) {

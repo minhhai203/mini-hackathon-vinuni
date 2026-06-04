@@ -231,7 +231,7 @@ flowchart TD
     PLANNER --> API
     API --> S["ChatbotService.reply\nsrc/services/chatbot.py"]
 
-    S --> P["parse_trip_profile\nextract destination, dates, group, budget, priority"]
+    S --> P["parse_trip_profile\nextract destination, dates, group, budget, priority\nincluding couple, exploration, food, value intent"]
     P --> UP["update_trip_profile\nmerge new info with existing session profile"]
     UP --> RISK["detect_realtime_claim_risk\nprice, availability, voucher, cancellation"]
 
@@ -240,8 +240,9 @@ flowchart TD
     LLM --> OUT["ChatResponse\nreply, profile, suggestions, cards, confidence"]
 
     RISK -->|"safe enough"| VAL["validate_user_constraints\nmissing fields + contradictions"]
-    VAL -->|"core info missing"| Q["generate_followup_questions\nask basic trip questions"]
-    Q --> LLM
+    VAL -->|"core info missing"| Q["generate_followup_questions\nshort recovery questions"]
+    Q --> LLM_FOLLOW["OpenAI follow-up copy\nmirror user vibe + ask at most 2 natural questions\nfallback to deterministic questions only if LLM unavailable"]
+    LLM_FOLLOW --> OUT
 
     VAL -->|"rankable or partial rankable"| CTX["Context tools\nget_mock_weather_context\nget_mock_news_context\nget_mock_review_signals"]
     CTX --> DATA["Recommendation data source\nload cached crawl JSON from data/raw/vinpearl\nfallback to KNOWLEDGE_BASE when empty"]
@@ -290,7 +291,7 @@ The crawler tool is restricted to official `vinpearl.com` URLs. It respects `rob
 
 The chatbot supports a real OpenAI API key through `src/services/llm.py`.
 
-The LLM is used only as a response copy writer after deterministic tools have already parsed the profile, checked safety, ranked options, and formatted cards. It must not create new options or confirm realtime price, room availability, voucher eligibility, cancellation, refund, or booking.
+The LLM is used only as a response copy writer after deterministic tools have already parsed the profile, checked safety, ranked options, and formatted cards. In follow-up mode, it mirrors the user's travel vibe and asks at most two natural clarification questions; deterministic question lists are only the fallback when the LLM is unavailable. It must not create new options or confirm realtime price, room availability, voucher eligibility, cancellation, refund, or booking.
 
 Configure in `.env`:
 
@@ -417,7 +418,7 @@ The assistant must not:
 - Claim exact price or availability without an API/source.
 - Confirm voucher or cancellation policy without enough booking context.
 - Suggest options outside the user's hard destination constraint.
-- Return generic brochure text without decision support.
+- Return generic brochure text or rigid form-like follow-ups without decision support.
 
 ## Evaluation Criteria
 

@@ -53,9 +53,37 @@ PRIORITY_ALIASES = {
     ],
     "villa riêng tư": ["villa", "biet thu", "biệt thự", "private", "rieng tu", "riêng tư"],
     "ẩm thực và lịch nhẹ": ["am thuc", "ẩm thực", "an uong", "ăn uống", "nha hang", "nhà hàng"],
+    "tham quan và khám phá": [
+        "tham quan",
+        "kham pha",
+        "khám phá",
+        "di chuyen",
+        "di chuyển",
+        "lich trinh",
+        "lịch trình",
+        "trai nghiem",
+        "trải nghiệm",
+    ],
+    "tiết kiệm chi phí": ["gia re", "giá rẻ", "tiet kiem", "tiết kiệm", "budget thap", "budget thấp"],
 }
 
-GROUP_KEYWORDS = ["người lớn", "nguoi lon", "trẻ em", "tre em", "bé", "be", "gia đình", "family", "cặp đôi"]
+GROUP_KEYWORDS = [
+    "người lớn",
+    "nguoi lon",
+    "trẻ em",
+    "tre em",
+    "bé",
+    "be",
+    "gia đình",
+    "family",
+    "cặp đôi",
+    "cap doi",
+    "người yêu",
+    "nguoi yeu",
+    "couple",
+    "đôi",
+    "doi",
+]
 BUDGET_KEYWORDS = ["triệu", "trieu", "ngân sách", "budget", "vnd", "vnđ", "đồng", "/dem", "/đêm"]
 DATE_KEYWORDS = ["ngày", "ngay", "đêm", "dem", "cuối tuần", "cuoi tuan", "tháng", "thang", "2026"]
 
@@ -293,7 +321,7 @@ class ChatbotService:
             }
 
         if not validation["can_rank"] and not can_recommend_with_partial_profile(current_profile, validation):
-            questions = generate_followup_questions(current_profile, max_questions=4)
+            questions = generate_followup_questions(current_profile, max_questions=3)
             used_tools.append("generate_followup_questions")
             llm_result = self.llm_service.generate_chatbot_copy(
                 mode="followup",
@@ -461,8 +489,11 @@ def build_followup_reply(
     if validation["contradictions"]:
         contradiction = "<p><strong>Lưu ý:</strong> " + escape(" ".join(validation["contradictions"])) + "</p>"
     intro = llm_paragraph(llm_text)
+    if intro:
+        return f"{intro}{contradiction}"
+
     return (
-        f"{intro or f'<p>Mình đã ghi nhận: {summary}</p>'}"
+        f"<p>Mình đã ghi nhận: {summary}</p>"
         f"{contradiction}"
         "<p>Để match chỗ ở hoặc điểm vui chơi sát hơn, bạn cho mình thêm vài thông tin:</p>"
         f"<ol>{question_items}</ol>"

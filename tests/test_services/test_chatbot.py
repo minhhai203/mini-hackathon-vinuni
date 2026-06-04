@@ -105,6 +105,17 @@ def test_chatbot_understands_light_schedule_correction():
     assert "Ưu tiên chính" not in result["reply"]
 
 
+def test_chatbot_understands_couple_exploration_food_and_value_intent():
+    profile = parse_trip_profile(
+        "Tôi muốn đi cùng người yêu, thích tham quan khám phá di chuyển, và các khu ăn uống ngon miệng, giá rẻ"
+    )
+
+    assert "người yêu" in profile["group"]
+    assert "tham quan và khám phá" in profile["priority"]
+    assert "ẩm thực và lịch nhẹ" in profile["priority"]
+    assert "tiết kiệm chi phí" in profile["priority"]
+
+
 def test_chatbot_refuses_realtime_confirmation():
     service = make_service()
 
@@ -140,3 +151,17 @@ def test_chatbot_uses_llm_copy_when_configured():
     assert "LLM đã viết lời dẫn cá nhân hóa." in result["reply"]
     assert "openai_responses_api" in result["used_tools"]
     assert result["cards"]
+
+
+def test_followup_uses_llm_copy_without_appending_rigid_question_list():
+    service = ChatbotService(llm_service=FakeLLMService())
+
+    result = service.reply(
+        "Tôi muốn đi cùng người yêu, thích tham quan khám phá di chuyển, và các khu ăn uống ngon miệng, giá rẻ"
+    )
+
+    assert result["needs_followup"] is True
+    assert "LLM đã viết lời dẫn cá nhân hóa." in result["reply"]
+    assert "Để match chỗ ở hoặc điểm vui chơi sát hơn" not in result["reply"]
+    assert "<ol>" not in result["reply"]
+    assert "openai_responses_api" in result["used_tools"]
