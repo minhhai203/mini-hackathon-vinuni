@@ -18,7 +18,6 @@ Sản phẩm không thay người dùng đặt phòng hay thanh toán. AI chỉ 
 | Nguyễn Đức Thành | 2A202600838 | Test / failure path | 4 test cases: happy, low-confidence, failure, correction; evidence empty-state/loading |
 | Cả nhóm | Demo script / final handoff | Demo 3-5 phút, checklist nộp bài, Q&A |
 
-Nguồn phân công lấy từ `codebase/docs/lab5/02-group-spec/spec-final.md`.
 
 ## Cấu Trúc Repo
 
@@ -123,7 +122,6 @@ npm run build
 
 - Final SPEC: `spec/spec.md`
 - Codebase instructions: `codebase/README.md`
-- Evidence and Day05 group spec archive: `codebase/docs/lab5/02-group-spec/`
 - Technical guide: `codebase/docs/guide/`
 
 ## Scope Không Build
