@@ -396,6 +396,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const plannerPage = document.getElementById("plannerPage");
     const plannerBackBtn = document.getElementById("plannerBackBtn");
     const plannerCloseBtn = document.getElementById("plannerCloseBtn");
+    const plannerClearBtn = document.getElementById("plannerClearBtn");
+    const plannerTraceBtn = document.getElementById("plannerTraceBtn");
     const plannerForm = document.getElementById("plannerForm");
     const plannerInput = document.getElementById("plannerInput");
     const plannerMessages = document.getElementById("plannerMessages");
@@ -403,15 +405,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const plannerProgressRing = document.getElementById("plannerProgressRing");
     const plannerProgressText = document.getElementById("plannerProgressText");
     const plannerResultPanel = document.getElementById("plannerResultPanel");
+    const plannerResultIcon = document.getElementById("plannerResultIcon");
+    const plannerResultTitle = document.getElementById("plannerResultTitle");
+    const plannerResultText = document.getElementById("plannerResultText");
     const plannerSteps = document.querySelectorAll(".planner-step");
     const plannerChips = document.querySelectorAll(".planner-chip");
     const destinationAiBtns = document.querySelectorAll(".card-ai-btn");
     const plannerFields = ["destination", "origin", "group", "dates", "priority"];
+    const plannerStorageKey = "vinpearl_ai_planner_state_v1";
+    const chatStorageKey = "vinpearl_ai_widget_state_v1";
+    const defaultPlannerLog = [
+        {
+            sender: "bot",
+            allowHtml: true,
+            text: "<p><strong>Đi chơi nhưng chưa biết muốn gì cũng được.</strong></p><p>Mình sẽ hỏi vài điều cơ bản rồi gợi ý điểm đến, chỗ ở và lịch vui chơi hợp với bạn.</p>"
+        }
+    ];
+    const defaultChatLog = [
+        {
+            sender: "bot",
+            allowHtml: true,
+            text: "Xin chào! Tôi là Trợ lý Ảo <strong>Vinpearl AI</strong>. Tôi có thể tư vấn các địa điểm du lịch nghỉ dưỡng, khách sạn, vé vui chơi VinWonders tại Phú Quốc, Nha Trang, Đà Nẵng, Hạ Long. Bạn đang lên kế hoạch du lịch ở đâu?"
+        }
+    ];
     let plannerProfile = {};
+    let plannerHistory = [];
+    let plannerChatLog = [...defaultPlannerLog];
     let plannerBusy = false;
+    let previousCompletedFields = new Set();
+
+    resetStoredChatOnReload();
 
     plannerBackBtn.addEventListener("click", closePlannerPage);
     plannerCloseBtn.addEventListener("click", closePlannerPage);
+    plannerClearBtn.addEventListener("click", clearPlannerHistory);
+    plannerTraceBtn.addEventListener("click", () => toggleTraceMode(plannerPage, plannerTraceBtn));
 
     plannerForm.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -431,7 +459,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     plannerGenerateBtn.addEventListener("click", () => {
-        const query = buildPlannerPrompt();
+        if (!isPlannerComplete()) return;
+        const query = buildPlannerPlanPrompt();
         runPlannerQuery(query);
     });
 
@@ -488,7 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({
                     message: query,
                     profile: plannerProfile,
-                    history: []
+                    history: plannerHistory.slice(-8)
                 })
             });
 
@@ -498,10 +527,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const data = await response.json();
             plannerProfile = { ...plannerProfile, ...(data.profile || {}) };
+            plannerHistory.push({ role: "user", content: query });
+            plannerHistory.push({ role: "assistant", content: data.reply || "" });
             removePlannerTyping();
             appendPlannerMessage(data.reply || "Mình đã ghi nhận. Bạn nói thêm một chút để mình chốt lịch nhé.", "bot", true);
             renderPlannerCards(data.cards || []);
             updatePlannerChecklist();
+            savePlannerState();
         } catch (error) {
             removePlannerTyping();
             appendPlannerMessage("Hiện planner chưa kết nối được backend. Bạn kiểm tra FastAPI rồi thử lại nhé.", "bot");
@@ -524,6 +556,19 @@ document.addEventListener("DOMContentLoaded", () => {
             plannerProfile.dates ? `Thời gian: ${plannerProfile.dates}.` : "",
             plannerProfile.budget ? `Ngân sách: ${plannerProfile.budget}.` : "",
             plannerProfile.priority ? `Ưu tiên: ${plannerProfile.priority}.` : ""
+        ].filter(Boolean).join(" ");
+    }
+
+    function buildPlannerPlanPrompt() {
+        return [
+            "Tôi đã chuẩn bị đủ thông tin. Hãy thiết kế một plan đi chơi Vinpearl cá nhân hóa, dễ đọc, ưu tiên phương án phù hợp nhất trước rồi mới đưa lựa chọn dự phòng.",
+            `Điểm đến: ${plannerProfile.destination}.`,
+            `Xuất phát: ${plannerProfile.origin}.`,
+            `Nhóm đi: ${plannerProfile.group}.`,
+            `Thời gian: ${plannerProfile.dates}.`,
+            plannerProfile.budget ? `Ngân sách: ${plannerProfile.budget}.` : "",
+            `Ưu tiên: ${plannerProfile.priority}.`,
+            "Trả lời bằng tiếng Việt thân thiện, có lịch trình gợi ý theo buổi, lưu ý thời tiết nếu có, và không làm người dùng bị rối vì quá nhiều lựa chọn."
         ].filter(Boolean).join(" ");
     }
 
@@ -576,7 +621,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updatePlannerChecklist() {
-        const completed = plannerFields.filter(field => Boolean(plannerProfile[field])).length;
+        const completedFields = plannerFields.filter(field => Boolean(plannerProfile[field]));
+        const completed = completedFields.length;
         plannerProgressRing.textContent = `${completed}/5`;
         plannerProgressText.textContent = `${completed} of 5 captured`;
         plannerSteps.forEach(step => {
@@ -584,12 +630,45 @@ document.addEventListener("DOMContentLoaded", () => {
             const description = step.querySelector("p");
             if (plannerProfile[field]) {
                 step.classList.add("completed");
+                if (!previousCompletedFields.has(field)) {
+                    step.classList.add("just-completed");
+                    plannerProgressRing.classList.remove("progress-bump");
+                    void plannerProgressRing.offsetWidth;
+                    plannerProgressRing.classList.add("progress-bump");
+                    window.setTimeout(() => step.classList.remove("just-completed"), 760);
+                }
                 description.textContent = plannerProfile[field];
             } else {
-                step.classList.remove("completed");
+                step.classList.remove("completed", "just-completed");
                 description.textContent = getPlannerPlaceholder(field);
             }
         });
+        previousCompletedFields = new Set(completedFields);
+        updatePlannerResultPanel(completed);
+    }
+
+    function isPlannerComplete() {
+        return plannerFields.every(field => Boolean(plannerProfile[field]));
+    }
+
+    function updatePlannerResultPanel(completed) {
+        const missingCount = plannerFields.length - completed;
+        const ready = missingCount === 0;
+        plannerResultPanel.classList.toggle("planner-result-ready", ready);
+        plannerResultPanel.classList.toggle("planner-result-locked", !ready);
+        plannerGenerateBtn.hidden = !ready;
+        plannerGenerateBtn.disabled = !ready;
+
+        if (ready) {
+            plannerResultIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            plannerResultTitle.textContent = "Đủ đồ nghề rồi, chuyến này bắt đầu ra dáng";
+            plannerResultText.textContent = "Bạn đã chuẩn bị đủ thông tin để mình thiết kế plan đi chơi riêng cho bạn.";
+            return;
+        }
+
+        plannerResultIcon.innerHTML = '<i class="fa-solid fa-list-check"></i>';
+        plannerResultTitle.textContent = missingCount === 1 ? "Còn 1 mảnh nữa là mở khóa plan" : `Còn ${missingCount} mảnh nữa`;
+        plannerResultText.textContent = "Cứ trả lời tự nhiên ở khung chat. Mỗi thông tin đúng sẽ làm sáng một node bên cạnh.";
     }
 
     function getPlannerPlaceholder(field) {
@@ -603,7 +682,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return placeholders[field] || "Cho mình thêm một chút thông tin";
     }
 
-    function appendPlannerMessage(text, sender, allowHtml = false) {
+    function appendPlannerMessage(text, sender, allowHtml = false, persist = true) {
         const message = document.createElement("div");
         message.className = `planner-msg ${sender === "user" ? "planner-user-msg" : "planner-bot-msg"}`;
         if (allowHtml) {
@@ -613,6 +692,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         plannerMessages.appendChild(message);
         plannerMessages.scrollTop = plannerMessages.scrollHeight;
+        if (persist) {
+            plannerChatLog.push({ text, sender, allowHtml });
+            savePlannerState();
+        }
     }
 
     function appendPlannerTyping() {
@@ -629,19 +712,52 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typing) typing.remove();
     }
 
+    function renderPlannerLog() {
+        plannerMessages.innerHTML = "";
+        plannerChatLog.forEach(message => appendPlannerMessage(message.text, message.sender, message.allowHtml, false));
+    }
+
+    function savePlannerState() {
+        writeBrowserState(plannerStorageKey, {
+            profile: plannerProfile,
+            history: plannerHistory,
+            messages: plannerChatLog
+        });
+    }
+
+    function restorePlannerState() {
+        const saved = readBrowserState(plannerStorageKey);
+        if (!saved) {
+            plannerProfile = {};
+            plannerHistory = [];
+            previousCompletedFields = new Set();
+            plannerChatLog = [...defaultPlannerLog];
+            renderPlannerLog();
+            updatePlannerChecklist();
+            return;
+        }
+        plannerProfile = saved.profile || {};
+        plannerHistory = Array.isArray(saved.history) ? saved.history : [];
+        previousCompletedFields = new Set(plannerFields.filter(field => Boolean(plannerProfile[field])));
+        plannerChatLog = Array.isArray(saved.messages) && saved.messages.length ? saved.messages : [...defaultPlannerLog];
+        renderPlannerLog();
+        updatePlannerChecklist();
+    }
+
+    function clearPlannerHistory() {
+        plannerProfile = {};
+        plannerHistory = [];
+        previousCompletedFields = new Set();
+        plannerChatLog = [...defaultPlannerLog];
+        removeBrowserState(plannerStorageKey);
+        renderPlannerLog();
+        renderPlannerCards([]);
+        updatePlannerChecklist();
+    }
+
     function renderPlannerCards(cards) {
         plannerResultPanel.querySelectorAll(".planner-result-card").forEach(card => card.remove());
-        cards.slice(0, 3).forEach((card, index) => {
-            const cardEl = document.createElement("div");
-            cardEl.className = "planner-result-card";
-            const badges = (card.context_badges || []).slice(0, 3).map(badge => `<span>${escapeHtml(badge)}</span>`).join("");
-            cardEl.innerHTML = `
-                <strong>${index + 1}. ${escapeHtml(card.option || "Vinpearl option")}</strong>
-                <p>${escapeHtml(card.why_it_fits || "Phù hợp với profile chuyến đi.")}</p>
-                <div>${badges}</div>
-            `;
-            plannerResultPanel.appendChild(cardEl);
-        });
+        // Recommendations are rendered inside the chat answer; the board stays focused on trip readiness.
     }
 
     function normalizeForMatch(text) {
@@ -662,6 +778,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatbotTriggerBtn = document.getElementById("chatbotTriggerBtn");
     const chatWindow = document.getElementById("chatWindow");
     const chatCloseBtn = document.getElementById("chatCloseBtn");
+    const chatClearBtn = document.getElementById("chatClearBtn");
+    const chatTraceBtn = document.getElementById("chatTraceBtn");
     const chatForm = document.getElementById("chatForm");
     const chatInput = document.getElementById("chatInput");
     const chatMessages = document.getElementById("chatMessages");
@@ -671,7 +789,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatbotIconOpen = chatbotTriggerBtn.querySelector(".chatbot-icon-open");
     const chatbotIconClose = chatbotTriggerBtn.querySelector(".chatbot-icon-close");
     let chatProfile = {};
-    const chatHistory = [];
+    let chatHistory = [];
+    let chatLog = [...defaultChatLog];
 
     // Toggle Chat Window
     chatbotTriggerBtn.addEventListener("click", (e) => {
@@ -695,6 +814,16 @@ document.addEventListener("DOMContentLoaded", () => {
         chatWindow.classList.remove("show");
         chatbotIconOpen.style.display = "block";
         chatbotIconClose.style.display = "none";
+    });
+
+    chatClearBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        clearChatHistory();
+    });
+
+    chatTraceBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleTraceMode(chatWindow, chatTraceBtn);
     });
 
     // Close chat if clicked outside chat window (excluding trigger button)
@@ -752,7 +881,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Append Message to UI
-    function appendMessage(text, sender, allowHtml = false) {
+    function appendMessage(text, sender, allowHtml = false, persist = true) {
         const msgDiv = document.createElement("div");
         msgDiv.classList.add("message", sender === "user" ? "user-msg" : "bot-msg");
         const bubble = document.createElement("div");
@@ -765,6 +894,10 @@ document.addEventListener("DOMContentLoaded", () => {
         msgDiv.appendChild(bubble);
         chatMessages.appendChild(msgDiv);
         scrollChatToBottom();
+        if (persist) {
+            chatLog.push({ text, sender, allowHtml });
+            saveChatState();
+        }
     }
 
     async function handleBotResponse(query) {
@@ -796,12 +929,83 @@ document.addEventListener("DOMContentLoaded", () => {
             applyChatTheme(data.ui_theme);
             appendMessage(data.reply, "bot", true);
             updateQuickSuggestions(data.suggestions || []);
+            saveChatState();
         } catch (error) {
             typingIndicator.classList.remove("active");
             appendMessage(
                 "Xin lỗi, hiện trợ lý AI chưa kết nối được backend. Bạn thử chạy lại server hoặc gửi lại câu hỏi sau nhé.",
                 "bot"
             );
+        }
+    }
+
+    function renderChatLog() {
+        chatMessages.innerHTML = "";
+        chatLog.forEach(message => appendMessage(message.text, message.sender, message.allowHtml, false));
+        scrollChatToBottom();
+    }
+
+    function saveChatState() {
+        writeBrowserState(chatStorageKey, {
+            profile: chatProfile,
+            history: chatHistory,
+            messages: chatLog
+        });
+    }
+
+    function restoreChatState() {
+        const saved = readBrowserState(chatStorageKey);
+        if (!saved) {
+            chatLog = [...defaultChatLog];
+            renderChatLog();
+            return;
+        }
+        chatProfile = saved.profile || {};
+        chatHistory = Array.isArray(saved.history) ? saved.history : [];
+        chatLog = Array.isArray(saved.messages) && saved.messages.length ? saved.messages : [...defaultChatLog];
+        renderChatLog();
+    }
+
+    function clearChatHistory() {
+        chatProfile = {};
+        chatHistory = [];
+        chatLog = [...defaultChatLog];
+        removeBrowserState(chatStorageKey);
+        renderChatLog();
+        updateQuickSuggestions(["Tư vấn Phú Quốc", "Tư vấn Nha Trang", "So sánh các điểm đến Vinpearl"]);
+    }
+
+    function readBrowserState(key) {
+        try {
+            return JSON.parse(localStorage.getItem(key) || "null");
+        } catch (error) {
+            removeBrowserState(key);
+            return null;
+        }
+    }
+
+    function writeBrowserState(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (error) {
+            // Storage can be disabled in private mode; the chat still works in memory.
+        }
+    }
+
+    function removeBrowserState(key) {
+        try {
+            localStorage.removeItem(key);
+        } catch (error) {
+            // Storage can be disabled in private mode.
+        }
+    }
+
+    function resetStoredChatOnReload() {
+        const navigationEntry = performance.getEntriesByType("navigation")[0];
+        const isReload = navigationEntry ? navigationEntry.type === "reload" : performance.navigation?.type === 1;
+        if (isReload) {
+            removeBrowserState(plannerStorageKey);
+            removeBrowserState(chatStorageKey);
         }
     }
 
@@ -820,4 +1024,419 @@ document.addEventListener("DOMContentLoaded", () => {
         chatWindow.classList.remove(...themes);
         chatWindow.classList.add(themes.includes(themeName) ? themeName : "theme-default");
     }
+
+    function toggleTraceMode(container, button) {
+        const enabled = container.classList.toggle("trace-mode");
+        button.classList.toggle("active", enabled);
+        button.setAttribute("aria-label", enabled ? "Tắt trace mode" : "Bật trace mode");
+        button.setAttribute("title", enabled ? "Trace mode đang bật" : "Trace mode");
+    }
+
+    // --- 13. BOOKING SEARCH RESULTS PAGE ---
+    const resultsPage         = document.getElementById("resultsPage");
+    const resultsBackBtn      = document.getElementById("resultsBackBtn");
+    const resultsModifyBtn    = document.getElementById("resultsModifyBtn");
+    const resultsGrid         = document.getElementById("resultsGrid");
+    const resultsEmpty        = document.getElementById("resultsEmpty");
+    const resultsResetBtn     = document.getElementById("resultsResetBtn");
+    const resultsTitleEl      = document.getElementById("resultsTitle");
+    const resultsSubtitleEl   = document.getElementById("resultsSubtitle");
+    const resultsSummaryDest  = document.getElementById("resultsSummaryDest");
+    const resultsSummaryDates = document.getElementById("resultsSummaryDates");
+    const resultsSummaryGuests= document.getElementById("resultsSummaryGuests");
+    const amenityFilterChips  = document.querySelectorAll(".results-amenity-chip");
+
+    // Destination input value → JSON destination key
+    const DEST_INPUT_TO_KEY = {
+        "Phú Quốc":                        ["Phu Quoc"],
+        "Nha Trang":                        ["Nha Trang"],
+        "Đà Nẵng - Hội An":                ["Nam Hoi An"],
+        "Hạ Long":                          ["Ha Long"],
+        "Hải Phòng":                        [],
+        "VinWonders Phú Quốc":             ["Phu Quoc"],
+        "Combo Tour Hòn Khô Nha Trang":    ["Nha Trang"],
+    };
+
+    // Tab → categories to include
+    const TAB_CATEGORY_MAP = {
+        "hotel":  ["hotel"],
+        "ticket": ["experience"],
+        "tour":   ["experience"],
+        "planner":["hotel", "experience"],
+    };
+
+    // Extra filter for ticket tab (must have theme_park or kids)
+    function tabFilter(item, tab) {
+        if (tab === "ticket") {
+            return (item.amenities || []).some(a => ["theme_park", "kids"].includes(a));
+        }
+        return true;
+    }
+
+    const TAB_TITLE_MAP = {
+        "hotel":  "Khách sạn & Resort",
+        "ticket": "Vé vui chơi VinWonders",
+        "tour":   "Tour & Trải nghiệm",
+        "planner":"Gợi ý Vinpearl",
+    };
+
+    let resultsAllItems = [];   // full filtered list (no amenity filter)
+    let activeAmenityFilter = "all";
+
+    // Hook the booking form submit button
+    document.getElementById("formHotel").addEventListener("submit", handleBookingSearch);
+
+    async function handleBookingSearch(e) {
+        e.preventDefault();
+
+        const destination = document.getElementById("inputDestination").value.trim();
+        const checkIn     = document.getElementById("checkInDateDisplay").textContent.trim();
+        const checkOut    = document.getElementById("checkOutDateDisplay").textContent.trim();
+        const guests      = document.getElementById("inputGuests").value.trim();
+        const activeTab   = document.querySelector(".booking-tab-btn.active")?.getAttribute("data-tab") || "hotel";
+
+        // Update top-bar summary
+        resultsSummaryDest.textContent  = destination || "Tất cả điểm đến";
+        resultsSummaryDates.textContent = `${checkIn} → ${checkOut}`;
+        resultsSummaryGuests.textContent = guests;
+
+        // Load + filter data
+        const items = await loadSearchData();
+
+        const destKeys = DEST_INPUT_TO_KEY[destination] ?? null; // null = no dest filter
+        const allowedCats = TAB_CATEGORY_MAP[activeTab] || ["hotel"];
+
+        resultsAllItems = items.filter(item => {
+            if (item.category === "homepage") return false;
+            if (!allowedCats.includes(item.category)) return false;
+            if (!tabFilter(item, activeTab)) return false;
+            if (destKeys !== null && destKeys.length > 0) {
+                const itemDests = item.destinations || [];
+                if (!itemDests.some(d => destKeys.includes(d))) return false;
+            }
+            return true;
+        });
+
+        // Reset amenity filter
+        activeAmenityFilter = "all";
+        amenityFilterChips.forEach(c => c.classList.toggle("active", c.getAttribute("data-amenity") === "all"));
+
+        // Build section title
+        const destLabel = destination || "Tất cả điểm đến";
+        resultsTitleEl.textContent = TAB_TITLE_MAP[activeTab] || "Kết quả tìm kiếm";
+        resultsSubtitleEl.textContent = `${destLabel} · ${resultsAllItems.length} kết quả`;
+
+        renderResultCards(resultsAllItems);
+        openResultsPage();
+    }
+
+    function applyAmenityFilter(amenity) {
+        activeAmenityFilter = amenity;
+        let filtered = resultsAllItems;
+        if (amenity !== "all") {
+            filtered = resultsAllItems.filter(item => (item.amenities || []).includes(amenity));
+        }
+        resultsSubtitleEl.textContent = resultsSubtitleEl.textContent.replace(/·.*kết quả/, `· ${filtered.length} kết quả`);
+        renderResultCards(filtered);
+    }
+
+    amenityFilterChips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            amenityFilterChips.forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            applyAmenityFilter(chip.getAttribute("data-amenity"));
+        });
+    });
+
+    function renderResultCards(items) {
+        resultsGrid.innerHTML = "";
+
+        if (items.length === 0) {
+            resultsEmpty.style.display = "";
+            resultsGrid.style.display = "none";
+            return;
+        }
+
+        resultsEmpty.style.display = "none";
+        resultsGrid.style.display = "";
+
+        const AMENITY_ICONS = {
+            "spa":        '<i class="fa-solid fa-spa"></i>',
+            "pool":       '<i class="fa-solid fa-water-ladder"></i>',
+            "beach":      '<i class="fa-solid fa-umbrella-beach"></i>',
+            "restaurant": '<i class="fa-solid fa-utensils"></i>',
+            "kids":       '<i class="fa-solid fa-children"></i>',
+            "golf":       '<i class="fa-solid fa-golf-ball-tee"></i>',
+            "villa":      '<i class="fa-solid fa-house"></i>',
+            "theme_park": '<i class="fa-solid fa-ferris-wheel"></i>',
+        };
+
+        resultsGrid.innerHTML = items.map(item => {
+            const imgUrl    = item.image_url || "assets/hero-1.png";
+            const catLabel  = CAT_LABELS[item.category] || item.category;
+            const destLabel = (item.destinations || []).map(d => DEST_LABELS[d] || d).join(", ");
+            const isGold    = item.category === "offer";
+            const confHigh  = item.confidence === "high";
+
+            const amenityTags = (item.amenities || []).slice(0, 4).map(a =>
+                `<span class="result-amenity-tag">${AMENITY_ICONS[a] || ""} ${escapeHtml(AMENITY_VI[a] || a)}</span>`
+            ).join("");
+
+            return `
+            <div class="result-card animate-scroll">
+                <div class="result-card-image" style="background-image:url('${escapeHtml(imgUrl)}')">
+                    <span class="result-card-category-badge ${isGold ? "badge-gold" : ""}">${escapeHtml(catLabel)}</span>
+                </div>
+                <div class="result-card-content">
+                    ${destLabel ? `<div class="result-card-dest"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(destLabel)}</div>` : ""}
+                    <div class="result-card-name">${escapeHtml(item.name || "")}</div>
+                    <div class="result-card-amenities">${amenityTags}</div>
+                    <div class="result-card-summary">${escapeHtml(item.summary || "")}</div>
+                    <div class="result-card-footer">
+                        <span class="result-card-confidence ${confHigh ? "high" : ""}">
+                            ${confHigh ? '<i class="fa-solid fa-circle-check"></i> Xác nhận chính thức' : '<i class="fa-regular fa-clock"></i> Cần xác nhận'}
+                        </span>
+                        <a class="result-card-cta" href="${escapeHtml(item.url || "#")}" target="_blank" rel="noopener">
+                            Xem chi tiết <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+        }).join("");
+
+        // Trigger scroll animations for newly added cards
+        document.querySelectorAll("#resultsGrid .animate-scroll").forEach(el => {
+            appearanceObserver.observe(el);
+        });
+    }
+
+    function openResultsPage() {
+        resultsPage.classList.add("show");
+        resultsPage.setAttribute("aria-hidden", "false");
+        document.body.classList.add("planner-open"); // reuse overflow lock
+        resultsPage.querySelector(".results-body").scrollTop = 0;
+    }
+
+    function closeResultsPage() {
+        resultsPage.classList.remove("show");
+        resultsPage.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("planner-open");
+    }
+
+    resultsBackBtn.addEventListener("click", closeResultsPage);
+
+    resultsModifyBtn.addEventListener("click", () => {
+        closeResultsPage();
+        setTimeout(() => document.getElementById("booking-section").scrollIntoView({ behavior: "smooth" }), 320);
+    });
+
+    resultsResetBtn.addEventListener("click", () => {
+        activeAmenityFilter = "all";
+        amenityFilterChips.forEach(c => c.classList.toggle("active", c.getAttribute("data-amenity") === "all"));
+        renderResultCards(resultsAllItems);
+    });
+
+    // --- 14. SEARCH MODAL ---
+    const searchOverlay     = document.getElementById("searchOverlay");
+    const searchModalInput  = document.getElementById("searchModalInput");
+    const searchClearBtn    = document.getElementById("searchClearBtn");
+    const searchCloseBtn    = document.getElementById("searchCloseBtn");
+    const searchFilterChips = document.querySelectorAll(".search-filter-chip");
+    const searchEmptyState  = document.getElementById("searchEmptyState");
+    const searchResultsWrapper = document.getElementById("searchResultsWrapper");
+    const searchResultsGrid = document.getElementById("searchResultsGrid");
+    const searchResultCount = document.getElementById("searchResultCount");
+    const searchNoResults   = document.getElementById("searchNoResults");
+    const searchNoResultsQuery = document.getElementById("searchNoResultsQuery");
+    const searchQuickTags   = document.querySelectorAll(".search-quick-tag");
+
+    let searchData = null;
+    let activeFilter = "all";
+
+    const DEST_LABELS = {
+        "Phu Quoc":  "Phú Quốc",
+        "Nha Trang": "Nha Trang",
+        "Ha Long":   "Hạ Long",
+        "Nam Hoi An":"Nam Hội An",
+        "Bac Ninh":  "Bắc Ninh",
+        "Ha Tinh":   "Hà Tĩnh",
+        "Nghe An":   "Nghệ An",
+    };
+
+    const CAT_LABELS = {
+        "hotel":      "Khách sạn",
+        "experience": "Trải nghiệm",
+        "offer":      "Ưu đãi",
+        "news":       "Tin tức",
+        "homepage":   "Trang chủ",
+    };
+
+    const AMENITY_VI = {
+        "spa":        "Spa",
+        "pool":       "Hồ bơi",
+        "beach":      "Bãi biển",
+        "restaurant": "Ẩm thực",
+        "kids":       "Gia đình",
+        "golf":       "Golf",
+        "villa":      "Biệt thự",
+        "theme_park": "VinWonders",
+    };
+
+    const BEST_FOR_VI = {
+        "family_with_children":    "Gia đình có bé",
+        "beach_holiday":           "Nghỉ biển",
+        "relaxed_couple_or_family":"Nghỉ dưỡng nhẹ",
+        "short_trip_from_hanoi":   "Gần Hà Nội",
+        "premium_or_private_stay": "Cao cấp / Riêng tư",
+        "golf_trip":               "Golf",
+        "business_or_short_trip":  "Công tác",
+        "budget_friendly_stay":    "Tiết kiệm",
+        "city_beach_stay":         "Biển phố thị",
+        "culture_light_activity":  "Văn hóa",
+        "deal_hunter":             "Săn ưu đãi",
+        "inspiration":             "Cảm hứng du lịch",
+    };
+
+    async function loadSearchData() {
+        if (searchData) return searchData;
+        try {
+            const res = await fetch("search-data.json");
+            searchData = await res.json();
+        } catch {
+            searchData = [];
+        }
+        return searchData;
+    }
+
+    function openSearchModal() {
+        searchOverlay.classList.add("show");
+        searchOverlay.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        setTimeout(() => searchModalInput.focus(), 80);
+        loadSearchData();
+    }
+
+    function closeSearchModal() {
+        searchOverlay.classList.remove("show");
+        searchOverlay.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        searchModalInput.value = "";
+        searchClearBtn.style.display = "none";
+        resetSearchView();
+    }
+
+    function resetSearchView() {
+        searchEmptyState.style.display = "";
+        searchResultsWrapper.style.display = "none";
+        searchNoResults.style.display = "none";
+    }
+
+    document.getElementById("searchTriggerBtn").addEventListener("click", openSearchModal);
+    searchCloseBtn.addEventListener("click", closeSearchModal);
+    searchOverlay.addEventListener("click", (e) => {
+        if (e.target === searchOverlay) closeSearchModal();
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && searchOverlay.classList.contains("show")) closeSearchModal();
+    });
+
+    searchFilterChips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            searchFilterChips.forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            activeFilter = chip.getAttribute("data-filter");
+            const query = searchModalInput.value.trim();
+            if (query) runSearch(query);
+        });
+    });
+
+    searchQuickTags.forEach(tag => {
+        tag.addEventListener("click", () => {
+            const query = tag.getAttribute("data-query");
+            searchModalInput.value = query;
+            searchClearBtn.style.display = "flex";
+            runSearch(query);
+        });
+    });
+
+    searchModalInput.addEventListener("input", () => {
+        const query = searchModalInput.value;
+        searchClearBtn.style.display = query ? "flex" : "none";
+        if (query.trim()) {
+            runSearch(query.trim());
+        } else {
+            resetSearchView();
+        }
+    });
+
+    searchClearBtn.addEventListener("click", () => {
+        searchModalInput.value = "";
+        searchClearBtn.style.display = "none";
+        resetSearchView();
+        searchModalInput.focus();
+    });
+
+    async function runSearch(query) {
+        const items = await loadSearchData();
+        const norm = normalizeForMatch(query);
+
+        const filtered = items.filter(item => {
+            if (item.category === "homepage") return false;
+            if (activeFilter !== "all" && item.category !== activeFilter) return false;
+
+            const name    = normalizeForMatch(item.name || "");
+            const summary = normalizeForMatch(item.summary || "");
+            const dests   = (item.destinations || []).map(d => normalizeForMatch(DEST_LABELS[d] || d)).join(" ");
+            const amenities = (item.amenities || []).map(a => normalizeForMatch(AMENITY_VI[a] || a)).join(" ");
+            const bestFor = (item.best_for || []).map(b => normalizeForMatch(BEST_FOR_VI[b] || b)).join(" ");
+            const category = normalizeForMatch(CAT_LABELS[item.category] || item.category || "");
+
+            const haystack = [name, summary, dests, amenities, bestFor, category].join(" ");
+            return norm.split(/\s+/).every(word => haystack.includes(word));
+        });
+
+        renderSearchResults(filtered, query);
+    }
+
+    function renderSearchResults(items, query) {
+        if (items.length === 0) {
+            searchEmptyState.style.display = "none";
+            searchResultsWrapper.style.display = "none";
+            searchNoResults.style.display = "";
+            searchNoResultsQuery.textContent = query;
+            return;
+        }
+
+        searchEmptyState.style.display = "none";
+        searchNoResults.style.display = "none";
+        searchResultsWrapper.style.display = "";
+
+        searchResultCount.textContent = `Tìm thấy ${items.length} kết quả`;
+
+        searchResultsGrid.innerHTML = items.map(item => {
+            const imgUrl = item.image_url || "assets/hero-1.png";
+            const catLabel = CAT_LABELS[item.category] || item.category;
+            const destLabels = (item.destinations || []).map(d => DEST_LABELS[d] || d).join(", ");
+            const amenityBadges = (item.amenities || []).slice(0, 3)
+                .map(a => `<span class="search-result-badge">${escapeHtml(AMENITY_VI[a] || a)}</span>`)
+                .join("");
+
+            return `
+                <a class="search-result-card" href="${escapeHtml(item.url || '#')}" target="_blank" rel="noopener">
+                    <div class="search-result-thumb" style="background-image:url('${escapeHtml(imgUrl)}')"></div>
+                    <div class="search-result-info">
+                        <div class="search-result-name">${escapeHtml(item.name || "")}</div>
+                        <div class="search-result-summary">${escapeHtml(item.summary || "")}</div>
+                        <div class="search-result-badges">
+                            <span class="search-result-badge badge-category">${escapeHtml(catLabel)}</span>
+                            ${destLabels ? `<span class="search-result-badge badge-dest"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(destLabels)}</span>` : ""}
+                            ${amenityBadges}
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right search-result-arrow"></i>
+                </a>`;
+        }).join("");
+    }
+    restorePlannerState();
+    restoreChatState();
 });
