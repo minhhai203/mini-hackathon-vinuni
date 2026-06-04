@@ -75,6 +75,8 @@ presentation/          Demo day slides
 
 - Python 3.11+ recommended
 - `pip`
+- Node.js 20+ recommended
+- `npm`
 
 The project currently uses:
 
@@ -88,26 +90,77 @@ The project currently uses:
 - TypeScript
 - ESLint
 
-## Run Locally
+## Run Project Step By Step
 
-Backend from the project root:
+Run the backend first, then the Next.js frontend. Keep both terminals open.
+
+### 1. Install Backend
+
+From the project root:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+```
+
+Prepare Crawl4AI browser dependencies:
+
+```bash
 crawl4ai-setup
-uvicorn src.main:app --reload
 ```
 
 `crawl4ai-setup` prepares the browser dependencies used by the Vinpearl crawler tool.
 
-Frontend in a second terminal:
+Optional environment setup:
+
+```bash
+cp .env.example .env
+```
+
+### 2. Start Backend
+
+From the project root:
+
+```bash
+source .venv/bin/activate
+python -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Check backend:
+
+```text
+http://127.0.0.1:8000/api/health
+```
+
+Expected response:
+
+```json
+{"status":"ok"}
+```
+
+### 3. Install Frontend
+
+Open a second terminal:
 
 ```bash
 cd frontend
 npm install
+cp .env.example .env.local
+```
+
+By default, `frontend/.env.example` points the frontend to:
+
+```text
+BACKEND_URL="http://127.0.0.1:8000"
+```
+
+### 4. Start Frontend
+
+In the same frontend terminal:
+
+```bash
 npm run dev
 ```
 
@@ -119,22 +172,19 @@ http://127.0.0.1:3000/
 
 The Next.js frontend proxies `/api/*` to FastAPI using `BACKEND_URL`.
 
-FastAPI backend URL:
+### 5. Normal Development Loop
+
+- Edit backend agent/tools in `src/`.
+- Edit Next.js wrapper UI in `frontend/src/`.
+- Edit the preserved Vinpearl static UI in `frontend/public/legacy/`.
+- If agent behavior or tools change, update the Mermaid diagram in this README.
+
+Useful URLs:
 
 ```text
-http://127.0.0.1:8000/
-```
-
-Health check:
-
-```text
-http://127.0.0.1:8000/api/health
-```
-
-Expected response:
-
-```json
-{"status":"ok"}
+Frontend: http://127.0.0.1:3000/
+Backend:  http://127.0.0.1:8000/
+Health:   http://127.0.0.1:8000/api/health
 ```
 
 ## Run Tests
