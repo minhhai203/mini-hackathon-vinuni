@@ -567,7 +567,7 @@ button, input, select, textarea {
     background-color: var(--color-white);
     border-radius: 8px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
+    /* overflow: hidden removed — it was clipping the destination dropdown */
 }
 
 /* Booking Tabs */
@@ -575,6 +575,8 @@ button, input, select, textarea {
     display: flex;
     background-color: var(--color-light-gray);
     border-bottom: 1px solid var(--color-border);
+    border-radius: 8px 8px 0 0; /* top corners to match booking-box */
+    overflow: hidden; /* clip tab active indicator corners */
 }
 
 .booking-tab-btn {
@@ -1069,9 +1071,10 @@ body.planner-open {
 }
 
 .planner-shell {
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .planner-topbar {
@@ -1132,19 +1135,21 @@ body.planner-open {
 }
 
 .planner-layout {
-    min-height: calc(100vh - 72px);
+    flex: 1;
     display: grid;
-    grid-template-columns: minmax(360px, 41vw) 1fr;
+    grid-template-columns: minmax(340px, 38vw) 1fr;
+    overflow: hidden;
 }
 
 .planner-chat-panel {
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 72px);
+    height: calc(100vh - 72px);
     padding: 42px 26px 24px;
     background: #fff;
     border-right: 1px solid rgba(15, 23, 42, 0.08);
+    overflow: hidden;
 }
 
 .planner-chat-scroll {
@@ -1269,14 +1274,16 @@ body.planner-open {
 }
 
 .planner-board {
-    min-height: calc(100vh - 72px);
+    height: calc(100vh - 72px);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 44px;
+    overflow-y: auto;
     background:
         linear-gradient(135deg, rgba(0, 75, 90, 0.92), rgba(184, 156, 90, 0.42)),
-        url("assets/hero-2.png") center/cover;
+        url("assets/hero-2.png") center/cover no-repeat;
+    background-color: #004B5A; /* fallback if image fails */
 }
 
 .planner-board-inner {
@@ -1320,7 +1327,7 @@ body.planner-open {
 
 .planner-title {
     font-family: var(--font-title);
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-size: clamp(0.95rem, 1.4vw, 1.2rem);
     line-height: 1.15;
     color: #fff;
 }
@@ -1493,18 +1500,21 @@ body.planner-open {
 
     .planner-layout {
         grid-template-columns: 1fr;
-        min-height: calc(100vh - 72px);
+        height: auto;
         overflow-y: auto;
     }
 
     .planner-chat-panel {
-        min-height: 48vh;
+        height: auto;
+        min-height: 52vh;
         border-right: 0;
         border-bottom: 1px solid rgba(15, 23, 42, 0.08);
         padding: 28px 20px 20px;
+        overflow: visible;
     }
 
     .planner-board {
+        height: auto;
         min-height: 52vh;
         padding: 32px 20px;
     }
