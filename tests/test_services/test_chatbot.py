@@ -1,4 +1,9 @@
 from src.services.chatbot import ChatbotService, parse_trip_profile
+from src.services.llm import LLMResult, LLMService
+
+
+def make_service() -> ChatbotService:
+    return ChatbotService(llm_service=LLMService(enabled=False))
 
 
 def test_parse_trip_profile_extracts_core_fields():
@@ -13,7 +18,7 @@ def test_parse_trip_profile_extracts_core_fields():
 
 
 def test_chatbot_asks_followup_for_incomplete_profile():
-    service = ChatbotService()
+    service = make_service()
 
     result = service.reply("Tư vấn du lịch Phú Quốc")
 
@@ -25,7 +30,7 @@ def test_chatbot_asks_followup_for_incomplete_profile():
 
 
 def test_chatbot_recommends_when_profile_is_complete():
-    service = ChatbotService()
+    service = make_service()
 
     result = service.reply(
         "Gia đình 2 người lớn 1 bé đi Phú Quốc 3 ngày 2 đêm, budget 15-20 triệu, ưu tiên vui chơi cho trẻ em."
@@ -43,7 +48,7 @@ def test_chatbot_recommends_when_profile_is_complete():
 
 
 def test_chatbot_can_recommend_with_uncertain_budget():
-    service = ChatbotService()
+    service = make_service()
 
     result = service.reply("Đi Nha Trang, ưu tiên nghỉ biển và vui chơi cho trẻ em.")
 
@@ -54,7 +59,7 @@ def test_chatbot_can_recommend_with_uncertain_budget():
 
 
 def test_chatbot_understands_light_schedule_correction():
-    service = ChatbotService()
+    service = make_service()
 
     result = service.reply(
         "lịch nhẹ",
@@ -73,7 +78,7 @@ def test_chatbot_understands_light_schedule_correction():
 
 
 def test_chatbot_refuses_realtime_confirmation():
-    service = ChatbotService()
+    service = make_service()
 
     result = service.reply(
         "Tôi muốn villa, voucher dùng được chắc chắn và còn phòng tối nay không?",
@@ -90,3 +95,20 @@ def test_chatbot_refuses_realtime_confirmation():
     assert result["needs_followup"] is True
     assert "chưa thể xác nhận chắc chắn" in result["reply"]
     assert "handoff_to_human" in result["used_tools"]
+
+
+class FakeLLMService:
+    def generate_chatbot_copy(self, **kwargs):
+        return LLMResult(text="LLM đã viết lời dẫn cá nhân hóa.", used_provider=True, provider="openai")
+
+
+def test_chatbot_uses_llm_copy_when_configured():
+    service = ChatbotService(llm_service=FakeLLMService())
+
+    result = service.reply(
+        "Gia đình 2 người lớn 1 bé đi Phú Quốc 3 ngày 2 đêm, budget 15-20 triệu, ưu tiên vui chơi cho trẻ em."
+    )
+
+    assert "LLM đã viết lời dẫn cá nhân hóa." in result["reply"]
+    assert "openai_responses_api" in result["used_tools"]
+    assert result["cards"]

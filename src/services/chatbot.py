@@ -20,6 +20,7 @@ from src.agents.tools import (
 )
 from src.agents.tools.extraction import extract_budget_amounts
 from src.agents.tools.text_utils import contains_any, normalize_text
+from src.services.llm import LLMResult, LLMService
 
 
 DESTINATION_ALIASES = {
@@ -233,6 +234,9 @@ KNOWLEDGE_BASE: list[dict[str, Any]] = [
 class ChatbotService:
     """Small deterministic assistant for the prototype chatbot."""
 
+    def __init__(self, llm_service: LLMService | None = None) -> None:
+        self.llm_service = llm_service or LLMService()
+
     def reply(self, message: str, profile: dict[str, Any] | None = None) -> dict[str, Any]:
         profile = profile or {}
         updates = parse_trip_profile(message)
@@ -255,8 +259,16 @@ class ChatbotService:
         if realtime_risk["risk_level"] == "high":
             handoff = handoff_to_human("realtime_or_policy_claim", current_profile)
             used_tools.append("handoff_to_human")
+            llm_result = self.llm_service.generate_chatbot_copy(
+                mode="risk",
+                user_message=message,
+                profile=current_profile,
+                travel_context=travel_context,
+                safety_notice=realtime_risk["safe_response_hint"],
+            )
+            used_tools.extend(llm_used_tools(llm_result))
             return {
-                "reply": build_risk_reply(handoff, realtime_risk, current_profile),
+                "reply": build_risk_reply(handoff, realtime_risk, current_profile, llm_text=llm_result.text),
                 "profile": current_profile,
                 "suggestions": ["Kiểm tra trên MyVinpearl", "Cho tôi ngày đi cụ thể", "Tư vấn option an toàn hơn"],
                 "cards": [],
@@ -271,8 +283,16 @@ class ChatbotService:
         if not validation["can_rank"] and not can_recommend_with_partial_profile(current_profile, validation):
             questions = generate_followup_questions(current_profile, max_questions=4)
             used_tools.append("generate_followup_questions")
+            llm_result = self.llm_service.generate_chatbot_copy(
+                mode="followup",
+                user_message=message,
+                profile=current_profile,
+                followup_questions=questions,
+                travel_context=travel_context,
+            )
+            used_tools.extend(llm_used_tools(llm_result))
             return {
-                "reply": build_followup_reply(current_profile, questions, validation),
+                "reply": build_followup_reply(current_profile, questions, validation, llm_text=llm_result.text),
                 "profile": current_profile,
                 "suggestions": questions[:3],
                 "cards": [],
@@ -297,6 +317,16 @@ class ChatbotService:
         questions = generate_followup_questions(current_profile, max_questions=2)
         used_tools.append("generate_followup_questions")
         needs_followup = ranked["needs_followup"] or bool(validation["missing_fields"])
+        llm_result = self.llm_service.generate_chatbot_copy(
+            mode="recommendation",
+            user_message=message,
+            profile=current_profile,
+            cards=cards,
+            followup_questions=questions if validation["missing_fields"] else [],
+            travel_context=travel_context,
+            safety_notice="Các gợi ý là shortlist hỗ trợ quyết định, chưa xác nhận giá/phòng trống/voucher realtime.",
+        )
+        used_tools.extend(llm_used_tools(llm_result))
 
         return {
             "reply": build_recommendation_reply(
@@ -306,6 +336,7 @@ class ChatbotService:
                 source_candidates,
                 travel_context=travel_context,
                 followup_questions=questions if validation["missing_fields"] else [],
+                llm_text=llm_result.text,
             ),
             "profile": current_profile,
             "suggestions": ["Đổi điểm đến", "Ưu tiên vui chơi", "Ưu tiên nghỉ dưỡng nhẹ"],
@@ -359,25 +390,56 @@ def can_recommend_with_partial_profile(profile: dict[str, Any], validation: dict
     return has_core_intent and soft_missing_only and not validation["contradictions"]
 
 
-def build_followup_reply(profile: dict[str, Any], questions: list[str], validation: dict[str, Any]) -> str:
+def llm_used_tools(result: LLMResult) -> list[str]:
+    if result.used_provider:
+        return ["openai_responses_api"]
+    if result.error == "LLM is not configured.":
+        return ["llm_fallback_not_configured"]
+    return ["llm_fallback_error"]
+
+
+def llm_paragraph(llm_text: str) -> str:
+    if not llm_text:
+        return ""
+    escaped_lines = [escape(line.strip()) for line in llm_text.splitlines() if line.strip()]
+    if not escaped_lines:
+        return ""
+    return "".join(f"<p>{line}</p>" for line in escaped_lines[:3])
+
+
+def build_followup_reply(
+    profile: dict[str, Any],
+    questions: list[str],
+    validation: dict[str, Any],
+    *,
+    llm_text: str = "",
+) -> str:
     summary = summarize_profile(profile)
     question_items = "".join(f"<li>{escape(question)}</li>" for question in questions)
     contradiction = ""
     if validation["contradictions"]:
         contradiction = "<p><strong>Lưu ý:</strong> " + escape(" ".join(validation["contradictions"])) + "</p>"
+    intro = llm_paragraph(llm_text)
     return (
-        f"<p>Mình đã ghi nhận: {summary}</p>"
+        f"{intro or f'<p>Mình đã ghi nhận: {summary}</p>'}"
         f"{contradiction}"
         "<p>Để match chỗ ở hoặc điểm vui chơi sát hơn, bạn cho mình thêm vài thông tin:</p>"
         f"<ol>{question_items}</ol>"
     )
 
 
-def build_risk_reply(handoff: dict[str, Any], risk: dict[str, Any], profile: dict[str, Any]) -> str:
+def build_risk_reply(
+    handoff: dict[str, Any],
+    risk: dict[str, Any],
+    profile: dict[str, Any],
+    *,
+    llm_text: str = "",
+) -> str:
     context = summarize_profile(profile)
     missing = escape(", ".join(risk["missing_context"]))
+    intro = llm_paragraph(llm_text)
     return (
-        f"<p>Mình đã ghi nhận: {context}</p>"
+        f"{intro or f'<p>Mình đã ghi nhận: {context}</p>'}"
         "<p><strong>Mình chưa thể xác nhận chắc chắn</strong> giá, phòng trống, voucher hoặc hủy miễn phí vì cần dữ liệu realtime.</p>"
         f"<p>Thông tin cần kiểm tra: {missing}.</p>"
         f"<p>{escape(handoff['message'])}</p>"
@@ -392,6 +454,7 @@ def build_recommendation_reply(
     *,
     travel_context: dict[str, Any],
     followup_questions: list[str],
+    llm_text: str = "",
 ) -> str:
     summary = summarize_profile(profile)
     if not cards:
@@ -434,7 +497,7 @@ def build_recommendation_reply(
         )
 
     return (
-        f"<p>Dựa trên profile: {summary}</p>"
+        f"{llm_paragraph(llm_text) or f'<p>Dựa trên profile: {summary}</p>'}"
         f"{context_html}"
         "<p>Đây là top 3 chỗ ở/điểm vui chơi match nhất:</p>"
         f"{card_html}"

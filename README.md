@@ -119,6 +119,16 @@ Optional environment setup:
 cp .env.example .env
 ```
 
+Put your real API key in `.env` only:
+
+```text
+OPENAI_API_KEY="your_real_key_here"
+OPENAI_MODEL="gpt-4.1-mini"
+LLM_ENABLED="true"
+```
+
+Do not commit `.env`.
+
 ### 2. Start Backend
 
 From the project root:
@@ -223,17 +233,18 @@ flowchart TD
     UP --> RISK["detect_realtime_claim_risk\nprice, availability, voucher, cancellation"]
 
     RISK -->|"high risk"| H["handoff_to_human\nsafe warning + CSKH/MyVinpearl check"]
-    H --> OUT["ChatResponse\nreply, profile, suggestions, cards, confidence"]
+    H --> LLM["Optional LLM copy writer\nOpenAI Responses API\nsrc/services/llm.py"]
+    LLM --> OUT["ChatResponse\nreply, profile, suggestions, cards, confidence"]
 
     RISK -->|"safe enough"| VAL["validate_user_constraints\nmissing fields + contradictions"]
     VAL -->|"core info missing"| Q["generate_followup_questions\nask basic trip questions"]
-    Q --> OUT
+    Q --> LLM
 
     VAL -->|"rankable or partial rankable"| CTX["Context tools\nget_mock_weather_context\nget_mock_news_context\nget_mock_review_signals"]
     CTX --> RANK["rank_resort_options\nrank local Vinpearl stay/activity data"]
     RANK --> CARD["format_recommendation_card\nimage, badges, trade-off, policy guard"]
     CARD --> SRC["search_vinpearl_pages\nsource candidates for later crawl/verification"]
-    SRC --> OUT
+    SRC --> LLM
 
     OUT --> W
     W --> U
@@ -265,6 +276,26 @@ Current tools:
 | `score_agent_response` | Scores an output against the relevance, trust, and recovery rubric. |
 
 The crawler tool is restricted to official `vinpearl.com` URLs. It respects `robots.txt`, returns source metadata, and does not crawl arbitrary external domains.
+
+## Real LLM / API Key
+
+The chatbot supports a real OpenAI API key through `src/services/llm.py`.
+
+The LLM is used only as a response copy writer after deterministic tools have already parsed the profile, checked safety, ranked options, and formatted cards. It must not create new options or confirm realtime price, room availability, voucher eligibility, cancellation, refund, or booking.
+
+Configure in `.env`:
+
+```text
+OPENAI_API_KEY="your_real_key_here"
+OPENAI_MODEL="gpt-4.1-mini"
+OPENAI_BASE_URL=""
+OPENAI_MAX_OUTPUT_TOKENS="450"
+LLM_ENABLED="true"
+```
+
+If `OPENAI_API_KEY` is missing, `LLM_ENABLED=false`, the SDK is unavailable, or the provider returns an error, the backend falls back to the rule-based response builder and the app still works.
+
+For OpenAI-compatible providers, set `OPENAI_BASE_URL`. Leave it empty for the official OpenAI API.
 
 Optional crawler settings live in `.env` and are documented in `.env.example`:
 

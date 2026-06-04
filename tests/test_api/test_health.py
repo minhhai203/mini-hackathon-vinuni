@@ -1,6 +1,13 @@
 from fastapi.testclient import TestClient
 
+from src.api import routes
 from src.main import app
+from src.services.chatbot import ChatbotService
+from src.services.llm import LLMService
+
+
+def disable_llm_for_api_tests():
+    routes.chatbot_service = ChatbotService(llm_service=LLMService(enabled=False))
 
 
 def test_health_check():
@@ -22,6 +29,7 @@ def test_static_homepage_served():
 
 
 def test_chat_endpoint_returns_followup():
+    disable_llm_for_api_tests()
     client = TestClient(app)
 
     response = client.post("/api/chat", json={"message": "Tư vấn du lịch Nha Trang"})
@@ -34,6 +42,7 @@ def test_chat_endpoint_returns_followup():
 
 
 def test_chat_endpoint_returns_recommendations():
+    disable_llm_for_api_tests()
     client = TestClient(app)
 
     response = client.post(
