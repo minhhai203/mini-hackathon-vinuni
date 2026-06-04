@@ -7,7 +7,10 @@ from typing import Any
 
 from openai import OpenAI
 
+from src.logger import get_logger
 from src.providers.base import WEATHER_TOOL_SCHEMA, LLMProvider, build_system_prompt, execute_tool
+
+log = get_logger("chatbot.provider.openai")
 
 # OpenAI tool format wraps the schema under a "function" key
 _OPENAI_TOOLS: list[dict] = [
@@ -53,26 +56,33 @@ class OpenAICompatibleProvider(LLMProvider):
         context: dict[str, Any] = {}
 
         for _ in range(5):
-            response = self._client.chat.completions.create(
-                model=self._model,
-                messages=messages,
-                tools=_OPENAI_TOOLS,
-            )
+            try:
+                response = self._client.chat.completions.create(
+                    model=self._model,
+                    messages=messages,
+                    tools=_OPENAI_TOOLS,
+                )
+            except Exception as exc:
+                log.error("OPENAI_ERROR | model=%s | error=%s", self._model, exc)
+                raise
 
             choice = response.choices[0]
 
             if choice.finish_reason != "tool_calls":
                 return choice.message.content or "", used_tools, context
 
-            # Append the assistant's tool-call turn to the conversation
             messages.append(choice.message)
 
-            # Execute every requested tool and send results back
             for tc in choice.message.tool_calls:
                 fn_name = tc.function.name
                 fn_args = json.loads(tc.function.arguments)
+                log.debug("TOOL_CALL | name=%s | args=%s", fn_name, fn_args)
                 used_tools.append(fn_name)
                 result = execute_tool(fn_name, fn_args)
+                if "error" in result:
+                    log.warning("TOOL_ERROR | name=%s | result=%s", fn_name, result)
+                else:
+                    log.debug("TOOL_OK   | name=%s | result_keys=%s", fn_name, list(result.keys()))
                 context[fn_name] = result
                 messages.append(
                     {

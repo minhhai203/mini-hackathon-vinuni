@@ -8,7 +8,10 @@ from typing import Any
 from google import genai
 from google.genai import types
 
+from src.logger import get_logger
 from src.providers.base import WEATHER_TOOL_SCHEMA, LLMProvider, build_system_prompt, execute_tool
+
+log = get_logger("chatbot.provider.google")
 
 
 def _build_gemini_tool() -> types.Tool:
@@ -70,7 +73,11 @@ class GoogleProvider(LLMProvider):
 
         used_tools: list[str] = []
         context: dict[str, Any] = {}
-        response = session.send_message(message)
+        try:
+            response = session.send_message(message)
+        except Exception as exc:
+            log.error("GEMINI_ERROR | model=%s | error=%s", self._model, exc)
+            raise
 
         for _ in range(5):
             fn_calls = response.function_calls
@@ -79,8 +86,13 @@ class GoogleProvider(LLMProvider):
 
             parts: list[types.Part] = []
             for fc in fn_calls:
+                log.debug("TOOL_CALL | name=%s | args=%s", fc.name, dict(fc.args))
                 used_tools.append(fc.name)
                 result = execute_tool(fc.name, dict(fc.args))
+                if "error" in result:
+                    log.warning("TOOL_ERROR | name=%s | result=%s", fc.name, result)
+                else:
+                    log.debug("TOOL_OK   | name=%s | result_keys=%s", fc.name, list(result.keys()))
                 context[fc.name] = result
                 parts.append(
                     types.Part.from_function_response(

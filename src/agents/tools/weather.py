@@ -88,10 +88,18 @@ def get_weather_forecast(destination: str, start_date: str, end_date: str) -> di
     """
     location, loc_key = _resolve_location(destination)
 
+    def _parse_date(s: str) -> datetime.date:
+        for fmt in ("%d-%m-%Y", "%Y-%m-%d"):
+            try:
+                return datetime.datetime.strptime(s, fmt).date()
+            except ValueError:
+                continue
+        raise ValueError(f"Không nhận dạng được định dạng ngày: {s!r}")
+
     try:
         today = datetime.date.today()
-        start = datetime.date.fromisoformat(start_date)
-        end = datetime.date.fromisoformat(end_date)
+        start = _parse_date(start_date)
+        end = _parse_date(end_date)
     except ValueError as exc:
         return {"error": f"Định dạng ngày không hợp lệ: {exc}", "destination": destination}
 
