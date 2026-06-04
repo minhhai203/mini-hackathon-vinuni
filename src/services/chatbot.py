@@ -931,7 +931,7 @@ def build_recommendation_reply(
     weather = travel_context["weather"]
     reviews = travel_context["reviews"]
     context_html = (
-        "<div class='chat-context-strip'>"
+        "<div class='chat-context-strip trace-detail'>"
         f"<span>{escape(weather['condition_summary'])}</span>"
         f"<span>Review signal: {escape(', '.join(reviews['positive'][:2]))}</span>"
         "</div>"
@@ -944,15 +944,15 @@ def build_recommendation_reply(
         f"<strong>{index}. {escape(card['option'])}</strong>"
         f"<div class='chat-card-badges'>{build_badges(card.get('context_badges') or [])}</div>"
         f"<p>{escape(card['why_it_fits'])}</p>"
-        f"<p><strong>Trade-off:</strong> {escape(' '.join(card['trade_off']))}</p>"
-        f"<p><strong>Confidence:</strong> {escape(card['confidence'])}</p>"
+        f"<p class='trace-detail'><strong>Trade-off:</strong> {escape(' '.join(card['trade_off']))}</p>"
+        f"<p class='trace-detail'><strong>Confidence:</strong> {escape(card['confidence'])}</p>"
         "</div>"
         "</div>"
         for index, card in enumerate(cards, start=1)
     )
     source_hint = ""
     if source_candidates.get("candidate_urls"):
-        source_hint = f"<p>Nguồn nên kiểm tra tiếp: {escape(source_candidates['candidate_urls'][0])}</p>"
+        source_hint = f"<p class='trace-detail'>Nguồn nên kiểm tra tiếp: {escape(source_candidates['candidate_urls'][0])}</p>"
     followup_html = ""
     if followup_questions:
         question_items = "".join(f"<li>{escape(question)}</li>" for question in followup_questions)
@@ -967,9 +967,9 @@ def build_recommendation_reply(
         "<p>Đây là top 3 chỗ ở/điểm vui chơi match nhất:</p>"
         f"{card_html}"
         f"{followup_html}"
-        "<p><strong>Policy guard:</strong> chưa xác nhận giá/phòng trống/voucher realtime. Trước khi đặt nên kiểm tra trên Vinpearl/MyVinpearl hoặc CSKH.</p>"
+        "<p class='trace-detail'><strong>Policy guard:</strong> chưa xác nhận giá/phòng trống/voucher realtime. Trước khi đặt nên kiểm tra trên Vinpearl/MyVinpearl hoặc CSKH.</p>"
         f"{source_hint}"
-        f"<p>Độ tin cậy tổng: <strong>{ranked['confidence']}</strong>.</p>"
+        f"<p class='trace-detail'>Độ tin cậy tổng: <strong>{ranked['confidence']}</strong>.</p>"
     )
 
 

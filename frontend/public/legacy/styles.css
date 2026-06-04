@@ -1255,7 +1255,9 @@ body.planner-open {
 }
 
 .planner-back-btn,
-.planner-close-btn {
+.planner-close-btn,
+.planner-clear-btn,
+.planner-trace-btn {
     width: 42px;
     height: 42px;
     border-radius: 50%;
@@ -1267,7 +1269,26 @@ body.planner-open {
     background: var(--color-white);
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+    transition: transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.planner-topbar-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.planner-clear-btn {
+    color: #6f6876;
+}
+
+.planner-clear-btn:hover,
+.planner-trace-btn:hover,
+.planner-trace-btn.active {
+    transform: translateY(-1px);
+    border-color: #d8a649;
+    color: var(--color-gold-dark);
+    background: #fffaf0;
 }
 
 .planner-back-btn:hover,
@@ -1303,7 +1324,7 @@ body.planner-open {
 .planner-layout {
     flex: 1;
     display: grid;
-    grid-template-columns: minmax(340px, 38vw) 1fr;
+    grid-template-columns: minmax(420px, 44vw) minmax(460px, 1fr);
     overflow: hidden;
 }
 
@@ -1325,8 +1346,37 @@ body.planner-open {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 4px 6px 18px;
+    padding: 4px 14px 18px 6px;
+    scrollbar-gutter: stable;
     scroll-behavior: smooth;
+}
+
+.planner-chat-scroll::-webkit-scrollbar,
+.planner-board::-webkit-scrollbar,
+.planner-input::-webkit-scrollbar {
+    width: 8px;
+}
+
+.planner-chat-scroll::-webkit-scrollbar-track,
+.planner-board::-webkit-scrollbar-track,
+.planner-input::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.planner-chat-scroll::-webkit-scrollbar-thumb,
+.planner-board::-webkit-scrollbar-thumb,
+.planner-input::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(0, 43, 73, 0.18);
+}
+
+.trace-detail {
+    display: none;
+}
+
+.planner-page.trace-mode .trace-detail,
+.chat-window.trace-mode .trace-detail {
+    display: block;
 }
 
 .planner-msg {
@@ -1570,6 +1620,7 @@ body.planner-open {
     justify-content: center;
     padding: 44px;
     overflow-y: auto;
+    scrollbar-gutter: stable;
     background:
         linear-gradient(135deg, rgba(0, 75, 90, 0.92), rgba(184, 156, 90, 0.42)),
         url("assets/hero-2.png") center/cover no-repeat;
@@ -1603,6 +1654,11 @@ body.planner-open {
     font-weight: 800;
     font-size: 1rem;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.planner-progress-ring.progress-bump {
+    animation: plannerProgressBump 0.52s ease both;
 }
 
 .planner-kicker {
@@ -1635,16 +1691,6 @@ body.planner-open {
     margin-left: 34px;
 }
 
-.planner-timeline::before {
-    content: "";
-    position: absolute;
-    top: 20px;
-    bottom: 20px;
-    left: 18px;
-    width: 1px;
-    background: rgba(255, 255, 255, 0.32);
-}
-
 .planner-step {
     position: relative;
     display: grid;
@@ -1654,23 +1700,41 @@ body.planner-open {
     animation: plannerPanelIn 0.42s ease both;
 }
 
+.planner-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 47px;
+    bottom: -16px;
+    left: 18px;
+    width: 1px;
+    z-index: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.16));
+}
+
+.planner-step.completed:not(:last-child)::after {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(224, 160, 65, 0.46));
+}
+
 .planner-step:nth-child(2) { animation-delay: 0.04s; }
 .planner-step:nth-child(3) { animation-delay: 0.08s; }
 .planner-step:nth-child(4) { animation-delay: 0.12s; }
 .planner-step:nth-child(5) { animation-delay: 0.16s; }
 
 .planner-step-dot {
+    position: relative;
+    z-index: 1;
     width: 38px;
     height: 38px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 255, 255, 0.74);
-    background: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.78);
+    background: rgba(0, 75, 90, 0.52);
     border: 1px solid rgba(255, 255, 255, 0.34);
     backdrop-filter: blur(8px);
-    transition: transform var(--transition-normal), background-color var(--transition-normal), color var(--transition-normal);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08);
+    transition: transform var(--transition-normal), background-color var(--transition-normal), color var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
 }
 
 .planner-step strong {
@@ -1690,9 +1754,11 @@ body.planner-open {
 }
 
 .planner-step.completed .planner-step-dot {
-    transform: scale(1.05);
+    transform: scale(1.08);
     background: #fff;
     color: var(--color-navy);
+    border-color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.16), 0 12px 28px rgba(0, 43, 73, 0.26);
 }
 
 .planner-step.completed p {
@@ -1700,14 +1766,66 @@ body.planner-open {
     font-weight: 700;
 }
 
+.planner-step.just-completed .planner-step-dot {
+    animation: plannerNodeComplete 0.58s ease both;
+}
+
+.planner-step.just-completed .planner-step-dot::after {
+    content: "";
+    position: absolute;
+    inset: -9px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    animation: plannerNodePing 0.72s ease-out both;
+}
+
 .planner-result-panel {
     margin: 36px 0 0 34px;
-    padding: 22px;
+    padding: 18px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.9);
     color: #3a3142;
     box-shadow: 0 24px 50px rgba(15, 23, 42, 0.22);
     animation: plannerPanelIn 0.42s ease 0.18s both;
+    transition: transform var(--transition-normal), background-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.planner-result-status {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+}
+
+.planner-result-status strong {
+    display: block;
+    color: var(--color-navy);
+    font-size: 0.95rem;
+}
+
+.planner-result-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--color-navy);
+    background: #f4ecd9;
+    border: 1px solid #eadfca;
+}
+
+.planner-result-ready {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 28px 60px rgba(0, 43, 73, 0.28);
+}
+
+.planner-result-ready .planner-result-icon {
+    color: #fff;
+    background: var(--color-navy);
+    border-color: rgba(0, 43, 73, 0.22);
+    animation: plannerNodeComplete 0.58s ease both;
 }
 
 @keyframes plannerPanelIn {
@@ -1721,7 +1839,47 @@ body.planner-open {
     }
 }
 
+@keyframes plannerNodeComplete {
+    0% {
+        transform: scale(0.82);
+    }
+    58% {
+        transform: scale(1.16);
+    }
+    100% {
+        transform: scale(1.08);
+    }
+}
+
+@keyframes plannerNodePing {
+    from {
+        opacity: 0.72;
+        transform: scale(0.88);
+    }
+    to {
+        opacity: 0;
+        transform: scale(1.55);
+    }
+}
+
+@keyframes plannerProgressBump {
+    0% {
+        transform: scale(1);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    }
+    48% {
+        transform: scale(1.08);
+        border-color: rgba(255, 255, 255, 0.82);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.32), 0 0 28px rgba(255, 255, 255, 0.22);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    }
+}
+
 .planner-generate-btn {
+    margin-top: 16px;
     width: 100%;
     min-height: 54px;
     display: inline-flex;
@@ -1736,6 +1894,17 @@ body.planner-open {
     transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+.planner-generate-btn[hidden] {
+    display: none;
+}
+
+.planner-generate-btn:disabled {
+    cursor: default;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
 .planner-generate-btn:hover {
     transform: translateY(-2px);
     background: var(--color-gold-dark);
@@ -1743,10 +1912,11 @@ body.planner-open {
 }
 
 .planner-result-panel p {
-    margin: 14px 0 0;
-    text-align: center;
+    margin: 4px 0 0;
+    text-align: left;
     color: #6a5f70;
     font-size: 0.88rem;
+    line-height: 1.45;
 }
 
 .planner-result-card {
@@ -1796,7 +1966,7 @@ body.planner-open {
 
     .planner-chat-panel {
         height: auto;
-        min-height: 52vh;
+        min-height: 58vh;
         border-right: 0;
         border-bottom: 1px solid rgba(15, 23, 42, 0.08);
         padding: 28px 20px 20px;
@@ -1805,8 +1975,13 @@ body.planner-open {
 
     .planner-board {
         height: auto;
-        min-height: 52vh;
+        min-height: 44vh;
         padding: 32px 20px;
+        align-items: flex-start;
+    }
+
+    .planner-board-inner {
+        width: min(680px, 100%);
     }
 }
 
@@ -1829,7 +2004,12 @@ body.planner-open {
     }
 
     .planner-chat-panel {
-        min-height: 52vh;
+        min-height: 60vh;
+        padding: 20px 12px 14px;
+    }
+
+    .planner-chat-scroll {
+        padding-right: 10px;
     }
 
     .planner-msg {
@@ -1843,8 +2023,9 @@ body.planner-open {
     }
 
     .planner-board {
-        min-height: 48vh;
+        min-height: 40vh;
         align-items: flex-start;
+        padding: 26px 16px;
     }
 
     .planner-progress-card {
@@ -1862,8 +2043,24 @@ body.planner-open {
         margin-left: 0;
     }
 
+    .planner-timeline {
+        gap: 20px;
+    }
+
+    .planner-step:not(:last-child)::after {
+        bottom: -12px;
+    }
+
     .planner-step p {
         font-size: 0.9rem;
+    }
+
+    .planner-result-panel {
+        padding: 16px;
+    }
+
+    .planner-result-status {
+        gap: 10px;
     }
 
     .card-actions {
@@ -2881,6 +3078,26 @@ body.planner-open {
     font-size: 1.1rem;
     cursor: pointer;
     transition: var(--transition-fast);
+}
+
+.chat-header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-clear-btn,
+.chat-trace-btn {
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.chat-clear-btn:hover,
+.chat-trace-btn:hover,
+.chat-trace-btn.active {
+    color: var(--color-gold);
 }
 
 .chat-close-btn:hover {
