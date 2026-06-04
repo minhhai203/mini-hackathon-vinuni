@@ -18,9 +18,13 @@ from src.agents.tools.trip_planning import (
     validate_user_constraints,
 )
 from src.agents.tools.vinpearl_crawler import (
+    crawl_and_cache_vinpearl_page_sync,
     crawl_vinpearl_page,
     crawl_vinpearl_page_sync,
+    load_cached_vinpearl_page,
     normalize_vinpearl_url,
+    save_crawled_vinpearl_page,
+    vinpearl_cache_path,
 )
 
 
@@ -29,6 +33,9 @@ AGENT_TOOLS = {
     "search_vinpearl_pages": search_vinpearl_pages,
     "crawl_vinpearl_page": crawl_vinpearl_page,
     "crawl_vinpearl_page_sync": crawl_vinpearl_page_sync,
+    "crawl_and_cache_vinpearl_page_sync": crawl_and_cache_vinpearl_page_sync,
+    "load_cached_vinpearl_page": load_cached_vinpearl_page,
+    "save_crawled_vinpearl_page": save_crawled_vinpearl_page,
     "get_mock_weather_context": get_mock_weather_context,
     "get_mock_news_context": get_mock_news_context,
     "get_mock_review_signals": get_mock_review_signals,
@@ -52,6 +59,7 @@ __all__ = [
     "compare_previous_recommendations",
     "crawl_vinpearl_page",
     "crawl_vinpearl_page_sync",
+    "crawl_and_cache_vinpearl_page_sync",
     "detect_realtime_claim_risk",
     "extract_policy_guard",
     "extract_resort_info",
@@ -69,4 +77,7 @@ __all__ = [
     "search_vinpearl_pages",
     "update_trip_profile",
     "validate_user_constraints",
+    "load_cached_vinpearl_page",
+    "save_crawled_vinpearl_page",
+    "vinpearl_cache_path",
 ]

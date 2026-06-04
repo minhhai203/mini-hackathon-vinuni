@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
+import re
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
@@ -11,6 +15,7 @@ from urllib.parse import urlparse
 ALLOWED_VINPEARL_HOSTS = {"vinpearl.com", "www.vinpearl.com"}
 DEFAULT_TIMEOUT_SECONDS = int(os.getenv("VINPEARL_CRAWLER_TIMEOUT_SECONDS", "30"))
 DEFAULT_MAX_MARKDOWN_CHARS = int(os.getenv("VINPEARL_CRAWLER_MAX_MARKDOWN_CHARS", "6000"))
+DEFAULT_CRAWL_CACHE_DIR = Path(os.getenv("VINPEARL_CRAWL_CACHE_DIR", "data/raw/vinpearl"))
 
 
 def normalize_vinpearl_url(url: str) -> str:
@@ -49,6 +54,46 @@ def _markdown_to_text(markdown: Any) -> str:
         return str(raw_markdown)
 
     return str(markdown)
+
+
+def vinpearl_cache_path(url: str, *, output_dir: str | Path = DEFAULT_CRAWL_CACHE_DIR) -> Path:
+    normalized_url = normalize_vinpearl_url(url)
+    parsed = urlparse(normalized_url)
+    path = parsed.path.strip("/") or "home"
+    slug_source = f"{parsed.netloc}-{path}"
+    slug = re.sub(r"[^a-zA-Z0-9]+", "-", slug_source).strip("-").lower()
+    return Path(output_dir) / f"{slug}.json"
+
+
+def save_crawled_vinpearl_page(
+    crawl_result: dict[str, Any],
+    *,
+    output_dir: str | Path = DEFAULT_CRAWL_CACHE_DIR,
+) -> Path:
+    url = str(crawl_result.get("requested_url") or crawl_result.get("url") or "")
+    if not url:
+        raise ValueError("Crawl result must include url or requested_url.")
+
+    output_path = vinpearl_cache_path(url, output_dir=output_dir)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        **crawl_result,
+        "cached_at": datetime.now(timezone.utc).isoformat(),
+        "cache_version": 1,
+    }
+    output_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
+def load_cached_vinpearl_page(
+    url: str,
+    *,
+    output_dir: str | Path = DEFAULT_CRAWL_CACHE_DIR,
+) -> dict[str, Any] | None:
+    cache_path = vinpearl_cache_path(url, output_dir=output_dir)
+    if not cache_path.exists():
+        return None
+    return json.loads(cache_path.read_text(encoding="utf-8"))
 
 
 async def crawl_vinpearl_page(
@@ -115,3 +160,25 @@ def crawl_vinpearl_page_sync(
             timeout_seconds=timeout_seconds,
         )
     )
+
+
+def crawl_and_cache_vinpearl_page_sync(
+    url: str,
+    *,
+    output_dir: str | Path = DEFAULT_CRAWL_CACHE_DIR,
+    force: bool = False,
+    max_markdown_chars: int = DEFAULT_MAX_MARKDOWN_CHARS,
+    timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
+    """Crawl on demand and persist the result for team reuse."""
+    cached = None if force else load_cached_vinpearl_page(url, output_dir=output_dir)
+    if cached:
+        return {"from_cache": True, "path": str(vinpearl_cache_path(url, output_dir=output_dir)), "result": cached}
+
+    result = crawl_vinpearl_page_sync(
+        url,
+        max_markdown_chars=max_markdown_chars,
+        timeout_seconds=timeout_seconds,
+    )
+    path = save_crawled_vinpearl_page(result, output_dir=output_dir)
+    return {"from_cache": False, "path": str(path), "result": result}

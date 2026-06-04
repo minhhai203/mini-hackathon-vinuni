@@ -5,7 +5,10 @@ import pytest
 
 from src.agents.tools.vinpearl_crawler import (
     crawl_vinpearl_page,
+    load_cached_vinpearl_page,
     normalize_vinpearl_url,
+    save_crawled_vinpearl_page,
+    vinpearl_cache_path,
 )
 
 
@@ -16,6 +19,28 @@ def test_normalize_vinpearl_url_adds_https():
 def test_normalize_vinpearl_url_rejects_non_vinpearl_domain():
     with pytest.raises(ValueError, match="vinpearl.com"):
         normalize_vinpearl_url("https://example.com")
+
+
+def test_vinpearl_cache_path_is_stable(tmp_path):
+    path = vinpearl_cache_path("https://vinpearl.com/vi/phu-quoc", output_dir=tmp_path)
+
+    assert path == tmp_path / "vinpearl-com-vi-phu-quoc.json"
+
+
+def test_save_and_load_cached_vinpearl_page(tmp_path):
+    payload = {
+        "requested_url": "https://vinpearl.com/vi/phu-quoc",
+        "success": True,
+        "markdown": "cached content",
+    }
+
+    saved_path = save_crawled_vinpearl_page(payload, output_dir=tmp_path)
+    cached = load_cached_vinpearl_page("https://vinpearl.com/vi/phu-quoc", output_dir=tmp_path)
+
+    assert saved_path.exists()
+    assert cached is not None
+    assert cached["markdown"] == "cached content"
+    assert cached["cache_version"] == 1
 
 
 def test_crawl_vinpearl_page_uses_crawl4ai(monkeypatch):
